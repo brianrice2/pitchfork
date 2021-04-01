@@ -1,4 +1,10 @@
-# MSiA423 Template Repository
+# MSiA423 Class Project
+
+Developer: Brian Rice
+
+Quality Assurance: Cheng Hao Ke
+
+---
 
 <!-- toc -->
 
