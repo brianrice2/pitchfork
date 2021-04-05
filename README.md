@@ -1,4 +1,4 @@
-# MSiA423 Class Project
+# p4k.ai
 
 Developer: Brian Rice
 
@@ -8,11 +8,12 @@ Quality Assurance: Cheng Hao Ke
 
 <!-- toc -->
 
+- [Project charter](#project-charter)
 - [Directory structure](#directory-structure)
 - [Running the app](#running-the-app)
   * [1. Initialize the database](#1-initialize-the-database)
-    + [Create the database with a single song](#create-the-database-with-a-single-song)
-    + [Adding additional songs](#adding-additional-songs)
+    + [Create the database with a single song](#create-the-database)
+    + [Adding additional songs](#adding-songs)
     + [Defining your engine string](#defining-your-engine-string)
       - [Local SQLite database](#local-sqlite-database)
   * [2. Configure Flask app](#2-configure-flask-app)
@@ -21,9 +22,39 @@ Quality Assurance: Cheng Hao Ke
   * [1. Build the image](#1-build-the-image)
   * [2. Run the container](#2-run-the-container)
   * [3. Kill the container](#3-kill-the-container)
-  * [Workaround for potential Docker problem for Windows.](#workaround-for-potential-docker-problem-for-windows)
+- [Testing](#testing)
 
 <!-- tocstop -->
+
+## Project charter
+
+### Background
+
+Pitchfork is a music publication company which offers spotlights, ratings, and detailed reviews for new albums, tracks, and reissues. With over 1.5 million unique visitors per month, it carries incredible influence in the music community and can significantly impact the trajectory of musicians' careers. The ratings it gives are particularly competitive, with just twelve albums having achieved a perfect 10.0 rating in the site's history. Of course there's more to music than one critic's rating, but an honor such as Best New Album or a 9+ rating can launch a musician's career to the next level and provide new access to endorsements, royalties, labels, and gigs. However, complaints are made that the site is biased and pretentious&mdash;there is little insight into how scores are developed and then reviews are presented matter-of-factly, failing to acknowledge that music is evaluated differently by different people.
+
+### Vision
+
+How do music characteristics affect an album's rating on Pitchfork? This app promotes transparency in the Pitchfork review process and helps readers understand and musicians create what makes "good" music in Pitchfork's eyes.
+
+### Mission
+
+The app predicts Pitchfork's rating given Spotify's information about an album (artist, genre, energy, tempo, etc.). Users can examine the predicted rating for the album of their choice, or tweak album qualities and study the rating's sensitivity to different inputs. 
+
+For Pitchfork readers, having a better understanding of the site's review process can allow them to make better judgments for themselves about the quality of a particular album, accounting for potential biases for or against certain artists or styles of music. Musicians can also consult with the app during their own creation process to explore any tweaks to their music that might bump up their rating and catch the eye of a famous producer or resonate with a larger audience. 
+
+### Data source
+
+Pinter, A. T., J. M. Paul, J. Smith, and J. R. Brubaker. “P4KxSpotify: A Dataset of Pitchfork Music Reviews and Spotify Musical Features”. Proceedings of the International AAAI Conference on Web and Social Media, vol. 14, no. 1, May 2020, pp. 895-02, https://ojs.aaai.org/index.php/ICWSM/article/view/7355. ([paper](https://cmci.colorado.edu/idlab/assets/bibliography/pdf/Pinter2020-icwsm.pdf), [dataset](https://zenodo.org/record/3603330#.YGpIzC1h3RX))
+
+The dataset is released under the [Creative Commons Attribution 4.0 International license](https://creativecommons.org/licenses/by/4.0/legalcode) (summary [here](https://creativecommons.org/licenses/by/4.0/)) by Anthony T. Pinter, Jacob M. Paul, Jessie Smith, and Jed R. Brubaker, and used without modification except for routine data cleaning/preparation.
+
+### Success criteria
+
+1. Model performance metric
+    + Target RMSE of 1.0. The predicted rating should be, on average, within 1.0 of the actual rating so that users have a somewhat accurate estimate of the Pitchfork rating. It's important for readers and musicians to have some confidence in the output, so they can better contextualize Pitchfork's rating or create music (respectively). Given that lyrics are a key part of a musical composition but are not included in this dataset, this may need to be negotiated later on.
+2. Business metrics
+    + Average actual Pitchfork rating. Results will be compared via A/B testing between musicians who did use the app versus those who did not. 
+    + Average change in Pitchfork reader sentiment. A random selection of Pitchfork readers will be surveyed on their feeling of understanding the Pitchfork review process, exposed to the app, and then surveyed again. Given sufficiently quick turnaround between the first and second surveys, the impact of other variables besides the app should be negligible.
 
 ## Directory structure 
 
@@ -70,35 +101,39 @@ Quality Assurance: Cheng Hao Ke
 ```
 
 ## Running the app
-### 1. Initialize the database 
 
-#### Create the database 
+### 1. Initialize the database
+
+#### Create the database
+
 To create the database in the location configured in `config.py` run: 
 
 `python run.py create_db --engine_string=<engine_string>`
 
 By default, `python run.py create_db` creates a database at `sqlite:///data/tracks.db`.
 
-#### Adding songs 
+#### Adding songs
+
 To add songs to the database:
 
 `python run.py ingest --engine_string=<engine_string> --artist=<ARTIST> --title=<TITLE> --album=<ALBUM>`
 
 By default, `python run.py ingest` adds *Minor Cause* by Emancipator to the SQLite database located in `sqlite:///data/tracks.db`.
 
-#### Defining your engine string 
+#### Defining your engine string
+
 A SQLAlchemy database connection is defined by a string with the following format:
 
 `dialect+driver://username:password@host:port/database`
 
 The `+dialect` is optional and if not provided, a default is used. For a more detailed description of what `dialect` and `driver` are and how a connection is made, you can see the documentation [here](https://docs.sqlalchemy.org/en/13/core/engines.html). We will cover SQLAlchemy and connection strings in the SQLAlchemy lab session on 
+
 ##### Local SQLite database 
 
 A local SQLite database can be created for development and local testing. It does not require a username or password and replaces the host and port with the path to the database file: 
 
 ```python
-engine_string='sqlite:///data/tracks.db'
-
+engine_string = 'sqlite:///data/tracks.db'
 ```
 
 The three `///` denote that it is a relative path to where the code is being run (which is from the root of this directory).
@@ -116,11 +151,11 @@ engine_string = 'sqlite://///Users/cmawer/Repos/2020-MSIA423-template-repository
 
 ```python
 DEBUG = True  # Keep True for debugging, change to False when moving to production 
-LOGGING_CONFIG = "config/logging/local.conf"  # Path to file that configures Python logger
-HOST = "0.0.0.0" # the host that is running the app. 0.0.0.0 when running locally 
+LOGGING_CONFIG = 'config/logging/local.conf'  # Path to file that configures Python logger
+HOST = '0.0.0.0' # the host that is running the app. 0.0.0.0 when running locally 
 PORT = 5000  # What port to expose app on. Must be the same as the port exposed in app/Dockerfile 
 SQLALCHEMY_DATABASE_URI = 'sqlite:///data/tracks.db'  # URI (engine string) for database that contains tracks
-APP_NAME = "penny-lane"
+APP_NAME = 'penny-lane'
 SQLALCHEMY_TRACK_MODIFICATIONS = True 
 SQLALCHEMY_ECHO = False  # If true, SQL for queries made will be printed
 MAX_ROWS_SHOW = 100 # Limits the number of rows returned from the database 
@@ -187,7 +222,7 @@ then run the `docker run` command:
 docker run -p 5000:5000 --name test pennylane app.py
 ```
 
-The new image defines the entry point command as `python3`. Building the sample PennyLane image this way will require initializing the database prior to building the image so that it is copied over, rather than created when the container is run. Therefore, please **do the step [Create the database with a single song](#create-the-database-with-a-single-song) above before building the image**.
+The new image defines the entry point command as `python3`. Building the sample PennyLane image this way will require initializing the database prior to building the image so that it is copied over, rather than created when the container is run. Therefore, please **do the step [Create the database](#create-the-database) above before building the image**.
 
 # Testing
 
