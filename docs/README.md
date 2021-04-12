@@ -16,8 +16,8 @@
 
 Open up `build/html/index.html` to access documentation. 
 
+## Sphinx setup guide
 
-## Sphinx setup guide 
 This documentation was created by doing the following from this directory: 
 
 1. Install the necessary packages
@@ -84,10 +84,8 @@ make html
 
 If new files are added, the autodoc files should be recreated by running 
 
-
 ```bash
-    sphinx-apidoc -f -o source/ ../ 
-
+sphinx-apidoc -f -o source/ ../ 
 ```
 
 as in step 3 in the setup guide above. 
