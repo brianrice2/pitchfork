@@ -6,25 +6,33 @@ Quality Assurance: Cheng Hao Ke
 
 ---
 
-<!-- START doctoc -->
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**
 
-- [Project charter](#project-charter)
-- [Directory structure](#directory-structure)
-- [Running the app](#running-the-app)
-  * [1. Initialize the database](#1-initialize-the-database)
-    + [Create the database with a single song](#create-the-database)
-    + [Adding additional songs](#adding-songs)
-    + [Defining your engine string](#defining-your-engine-string)
-      - [Local SQLite database](#local-sqlite-database)
-  * [2. Configure Flask app](#2-configure-flask-app)
-  * [3. Run the Flask app](#3-run-the-flask-app)
-- [Running the app in Docker](#running-the-app-in-docker)
-  * [1. Build the image](#1-build-the-image)
-  * [2. Run the container](#2-run-the-container)
-  * [3. Kill the container](#3-kill-the-container)
+  - [Project charter](#project-charter)
+    - [Background](#background)
+    - [Vision](#vision)
+    - [Mission](#mission)
+    - [Data source](#data-source)
+    - [Success criteria](#success-criteria)
+  - [Directory structure](#directory-structure)
+  - [Running the app](#running-the-app)
+    - [1. Initialize the database](#1-initialize-the-database)
+      - [Create the database](#create-the-database)
+      - [Adding songs](#adding-songs)
+      - [Defining your engine string](#defining-your-engine-string)
+        - [Local SQLite database](#local-sqlite-database)
+    - [2. Configure Flask app](#2-configure-flask-app)
+    - [3. Run the Flask app](#3-run-the-flask-app)
+  - [Running the app in Docker](#running-the-app-in-docker)
+    - [1. Build the image](#1-build-the-image)
+    - [2. Run the container](#2-run-the-container)
+    - [3. Kill the container](#3-kill-the-container)
+    - [Example using `python3` as an entry point](#example-using-python3-as-an-entry-point)
 - [Testing](#testing)
 
-<!-- END doctoc -->
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 ## Project charter
 
