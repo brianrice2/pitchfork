@@ -6,7 +6,7 @@ Quality Assurance: Cheng Hao Ke
 
 ---
 
-<!-- toc -->
+<!-- START doctoc -->
 
 - [Project charter](#project-charter)
 - [Directory structure](#directory-structure)
@@ -24,7 +24,7 @@ Quality Assurance: Cheng Hao Ke
   * [3. Kill the container](#3-kill-the-container)
 - [Testing](#testing)
 
-<!-- tocstop -->
+<!-- END doctoc -->
 
 ## Project charter
 
