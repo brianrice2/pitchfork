@@ -1,5 +1,9 @@
 name: TOC Generator
-on: push
+on:
+  push:
+    branches:
+      - main
+      - develop
 jobs:
   generateTOC:
     name: TOC Generator
