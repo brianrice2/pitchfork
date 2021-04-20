@@ -1,4 +1,4 @@
-name: "Sphinx Docs Check"
+name: "Sphinx Docs"
 on:
   push:
     branches:
