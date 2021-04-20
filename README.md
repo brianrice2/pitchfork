@@ -61,7 +61,6 @@ The dataset is released under the [Creative Commons Attribution 4.0 Internationa
 1. Model performance metric
     + Target RMSE of 1.0. The predicted rating should be, on average, within 1.0 of the actual rating so that users have a somewhat accurate estimate of the Pitchfork rating. It's important for readers and musicians to have some confidence in the output, so they can better contextualize Pitchfork's rating or create music (respectively). Given that lyrics are a key part of a musical composition but are not included in this dataset, this may need to be negotiated later on.
 2. Business metrics
-    + Average actual Pitchfork rating. Results will be compared via (randomized) A/B testing between musicians who did use the app versus those who did not. 
     + Average change in Pitchfork reader sentiment. A random selection of Pitchfork readers will be surveyed on their feeling of understanding the Pitchfork review process, exposed to the app, and then surveyed again. Given sufficiently quick turnaround between the first and second surveys, the impact of other variables besides the app should be negligible.
 
 ## Directory structure 
