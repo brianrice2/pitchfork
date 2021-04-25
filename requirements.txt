@@ -1,7 +1,11 @@
-Flask-SQLAlchemy==2.4.1
-SQLAlchemy==1.3.15
-PyYAML==5.3.1
 Flask==1.1.1
+Flask-SQLAlchemy==2.4.1
+furo==2021.4.11b34
+matplotlib==3.4.1
+numpy==1.20.2
+pandas==1.2.4
 pymysql==0.9.3
 pytest==5.4.2
-furo==2021.4.11b34
+PyYAML==5.3.1
+seaborn==0.11.1
+SQLAlchemy==1.3.15
