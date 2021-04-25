@@ -6,7 +6,9 @@ __pycache__/
 .idea/
 .log
 .ipynb_checkpoints/
+.vscode/
 
+venv/
 
 data/*
 !data/sample/
