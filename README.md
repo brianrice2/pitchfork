@@ -120,15 +120,36 @@ To create the database in the location configured in `config.py` run:
 
 `python run.py create_db --engine_string=<engine_string>`
 
-By default, `python run.py create_db` creates a database at `sqlite:///data/tracks.db`.
+By default, `python run.py create_db` creates a database at `sqlite:///data/albums.db`.
 
 #### Adding songs
 
 To add songs to the database:
 
-`python run.py ingest --engine_string=<engine_string> --artist=<ARTIST> --title=<TITLE> --album=<ALBUM>`
+```bash
+python run.py ingest \
+  --engine_string=<engine_string> \
+  --album=<ALBUM> \
+  --artist=<ARTIST> \
+  --reviewauthor=<REVIEWAUTHOR> \
+  --score=<SCORE> \
+  --releaseyear=<RELEASEYEAR> \
+  --reviewdate=<REVIEWDATE> \
+  --recordlabel=<RECORDLABEL> \
+  --genre=<GENRE> \
+  --danceability=<DANCEABILITY> \
+  --energy=<ENERGY> \
+  --key=<KEY> \
+  --loudness=<LOUDNESS> \
+  --speechiness=<SPEECHINESS> \
+  --acousticness=<ACOUSTICNESS> \
+  --instrumentalness=<INSTRUMENTALNESS> \
+  --liveness=<LIVENESS> \
+  --valence=<VALENCE> \
+  --tempo=<TEMPO>
+```
 
-By default, `python run.py ingest` adds *Minor Cause* by Emancipator to the SQLite database located in `sqlite:///data/tracks.db`.
+By default, `python run.py ingest` adds *Run the Jewels 2* by Run the Jewels to the SQLite database located in `sqlite:///data/albums.db`.
 
 #### Defining your engine string
 
@@ -143,7 +164,7 @@ The `+dialect` is optional and if not provided, a default is used. For a more de
 A local SQLite database can be created for development and local testing. It does not require a username or password and replaces the host and port with the path to the database file:
 
 ```python
-engine_string = 'sqlite:///data/tracks.db'
+engine_string = 'sqlite:///data/albums.db'
 ```
 
 The three `///` denote that it is a relative path to where the code is being run (which is from the root of this directory).
@@ -151,7 +172,7 @@ The three `///` denote that it is a relative path to where the code is being run
 You can also define the absolute path with four `////`, for example:
 
 ```python
-engine_string = 'sqlite://///Users/cmawer/Repos/2020-MSIA423-template-repository/data/tracks.db'
+engine_string = 'sqlite://///Users/brianrice/dev/2021-msia423-rice-brian-project/data/albums.db'
 ```
 
 ### 2. Configure Flask app
@@ -163,8 +184,8 @@ DEBUG = True  # Keep True for debugging, change to False when moving to producti
 LOGGING_CONFIG = 'config/logging/local.conf'  # Path to file that configures Python logger
 HOST = '0.0.0.0' # the host that is running the app. 0.0.0.0 when running locally 
 PORT = 5000  # What port to expose app on. Must be the same as the port exposed in app/Dockerfile 
-SQLALCHEMY_DATABASE_URI = 'sqlite:///data/tracks.db'  # URI (engine string) for database that contains tracks
-APP_NAME = 'penny-lane'
+SQLALCHEMY_DATABASE_URI = 'sqlite:///data/albums.db'  # URI (engine string) for database that contains albums
+APP_NAME = 'pitchfork'
 SQLALCHEMY_TRACK_MODIFICATIONS = True 
 SQLALCHEMY_ECHO = False  # If true, SQL for queries made will be printed
 MAX_ROWS_SHOW = 100 # Limits the number of rows returned from the database 
@@ -187,22 +208,22 @@ You should now be able to access the app at http://0.0.0.0:5000/ in your browser
 The Dockerfile for running the flask app is in the `app/` folder. To build the image, run from this directory (the root of the repo): 
 
 ```bash
- docker build -f app/Dockerfile -t pennylane .
+ docker build -f app/Dockerfile -t pitchfork .
 ```
 
-This command builds the Docker image, with the tag `pennylane`, based on the instructions in `app/Dockerfile` and the files existing in this directory.
+This command builds the Docker image, with the tag `pitchfork`, based on the instructions in `app/Dockerfile` and the files existing in this directory.
 
 ### 2. Run the container
 
 To run the app, run from this directory:
 
 ```bash
-docker run -p 5000:5000 --name test pennylane
+docker run -p 5000:5000 --name test pitchfork
 ```
 
 You should now be able to access the app at http://0.0.0.0:5000/ in your browser.
 
-This command runs the `pennylane` image as a container named `test` and forwards the port 5000 from container to your laptop so that you can access the flask app exposed through that port.
+This command runs the `pitchfork` image as a container named `test` and forwards the port 5000 from container to your laptop so that you can access the flask app exposed through that port.
 
 If `PORT` in `config/flaskconfig.py` is changed, this port should be changed accordingly (as should the `EXPOSE 5000` line in `app/Dockerfile`)
 
@@ -223,16 +244,16 @@ We have included another example of a Dockerfile, `app/Dockerfile_python` that h
 To build this image:
 
 ```bash
- docker build -f app/Dockerfile_python -t pennylane .
+ docker build -f app/Dockerfile_python -t pitchfork .
 ```
 
 then run the `docker run` command:
 
 ```bash
-docker run -p 5000:5000 --name test pennylane app.py
+docker run -p 5000:5000 --name test pitchfork app.py
 ```
 
-The new image defines the entry point command as `python3`. Building the sample PennyLane image this way will require initializing the database prior to building the image so that it is copied over, rather than created when the container is run. Therefore, please **do the step [Create the database](#create-the-database) above before building the image**.
+The new image defines the entry point command as `python3`. Building the sample pitchfork image this way will require initializing the database prior to building the image so that it is copied over, rather than created when the container is run. Therefore, please **do the step [Create the database](#create-the-database) above before building the image**.
 
 ## Testing
 
@@ -245,11 +266,11 @@ python -m pytest
 Using Docker, run the following, if the image has not been built yet:
 
 ```bash
- docker build -f app/Dockerfile_python -t pennylane .
+ docker build -f app/Dockerfile_python -t pitchfork .
 ```
 
 To run the tests, run:
 
 ```bash
- docker run penny -m pytest
+ docker run pitchfork -m pytest
 ```

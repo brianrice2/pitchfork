@@ -24,9 +24,9 @@ sys.path.insert(0, os.path.abspath("../src"))
 
 # -- Project information -----------------------------------------------------
 
-project = "pennylane"
+project = "pitchfork"
 copyright = "2020, Chloe Mawer"
-author = "Chloe Mawer"
+author = "Brian Rice"
 
 # The full version, including alpha/beta/rc tags
 release = "0.1"
@@ -63,7 +63,6 @@ exclude_patterns = []
 # a list of builtin themes.
 
 html_theme = "furo"
-# html_theme_path = [furo.get_html_theme_path()]
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,

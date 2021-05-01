@@ -33,14 +33,14 @@ def index():
     """
 
     try:
-        tracks = (
+        albums = (
             track_manager.session.query(Albums).limit(app.config["MAX_ROWS_SHOW"]).all()
         )
         logger.debug("Index page accessed")
-        return render_template("index.html", tracks=tracks)
+        return render_template("index.html", albums=albums)
     except:
         traceback.print_exc()
-        logger.warning("Not able to display tracks, error page returned")
+        logger.warning("Not able to display albums, error page returned")
         return render_template("error.html")
 
 
@@ -62,7 +62,7 @@ def add_entry():
         )
         return redirect(url_for("index"))
     except:
-        logger.warning("Not able to display tracks, error page returned")
+        logger.warning("Not able to display albums, error page returned")
         return render_template("error.html")
 
 
