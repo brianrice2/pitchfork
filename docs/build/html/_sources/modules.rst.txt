@@ -1,5 +1,5 @@
-2020-MSIA423-template-repository
-================================
+2021-msia423-rice-brian-project
+===============================
 
 .. toctree::
    :maxdepth: 4

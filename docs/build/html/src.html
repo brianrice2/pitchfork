@@ -2,11 +2,10 @@
 <html class="no-js">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
-<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="app module" href="app.html" /><link rel="prev" title="Welcome to pennylane’s documentation!" href="index.html" />
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="app module" href="app.html" /><link rel="prev" title="Welcome to pennylane’s documentation!" href="index.html" />
 
-    <meta name="generator" content="sphinx-3.1.2, furo 2021.04.11.beta34"/>
-        <title>src package - pennylane 0.1 documentation</title>
+    <meta name="generator" content="sphinx-3.5.4, furo 2021.04.11.beta34"/>
+        <title>src package - pitchfork 0.1 documentation</title>
       <link rel="stylesheet" href="_static/styles/furo.css?digest=59ab60ac09ea94ccfe6deddff6d715cce948a6fc">
     <link rel="stylesheet" href="_static/pygments.css">
     <link media="(prefers-color-scheme: dark)" rel="stylesheet" href="_static/pygments_dark.css">
@@ -87,7 +86,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="index.html"><div class="brand">pennylane 0.1 documentation</div></a>
+      <a href="index.html"><div class="brand">pitchfork 0.1 documentation</div></a>
     </div>
     <div class="header-right">
       <label class="toc-overlay-icon toc-header-icon" for="__toc">
@@ -101,14 +100,14 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
   
   
-  <span class="sidebar-brand-text">pennylane 0.1 documentation</span>
+  <span class="sidebar-brand-text">pitchfork 0.1 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="search.html">
   <input class="sidebar-search" placeholder=Search name="q">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form><div class="sidebar-scroll"><div class="sidebar-tree">
-  <p><span class="caption-text">Contents:</span></p>
+  <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1 current current-page"><a class="current reference internal" href="#">src package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="app.html">app module</a></li>
@@ -126,18 +125,173 @@
         <label class="toc-overlay-icon toc-content-icon" for="__toc">
           <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
         </label>
-        <section id="src-package">
+        <div class="section" id="src-package">
 <h1>src package<a class="headerlink" href="#src-package" title="Permalink to this headline">¶</a></h1>
-<section id="submodules">
+<div class="section" id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
-</section>
-<section id="src-add-songs-module">
-<h2>src.add_songs module<a class="headerlink" href="#src-add-songs-module" title="Permalink to this headline">¶</a></h2>
-</section>
-<section id="module-src">
+</div>
+<div class="section" id="module-src.add_albums">
+<span id="src-add-albums-module"></span><h2>src.add_albums module<a class="headerlink" href="#module-src.add_albums" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="src.add_albums.AlbumManager">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">src.add_albums.</span></code><code class="sig-name descname"><span class="pre">AlbumManager</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">engine_string</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/add_albums.html#AlbumManager"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.add_albums.AlbumManager" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Manages Flask &lt;-&gt; SQLAlchemy connection and adds data to database.</p>
+<dl class="py method">
+<dt id="src.add_albums.AlbumManager.add_album">
+<code class="sig-name descname"><span class="pre">add_album</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">album</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">artist</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reviewauthor</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">score</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">releaseyear</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reviewdate</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recordlabel</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">genre</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">danceability</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">energy</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loudness</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">speechiness</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">acousticness</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instrumentalness</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">liveness</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">valence</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tempo</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> → <span class="pre">None</span><a class="reference internal" href="_modules/src/add_albums.html#AlbumManager.add_album"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.add_albums.AlbumManager.add_album" title="Permalink to this definition">¶</a></dt>
+<dd><p>Seeds an existing database with additional albums.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>album</strong> (<em>str</em>) – Album title</p></li>
+<li><p><strong>artist</strong> (<em>str</em>) – Artist</p></li>
+<li><p><strong>reviewauthor</strong> (<em>str</em>) – Name of reviewing author</p></li>
+<li><p><strong>score</strong> (<em>float</em>) – Pitchfork rating</p></li>
+<li><p><strong>releaseyear</strong> (<em>int</em>) – Album release year</p></li>
+<li><p><strong>reviewdate</strong> (<em>str</em>) – Album review date (%B %d %Y)</p></li>
+<li><p><strong>recordlabel</strong> (<em>str</em>) – Album’s record label(s)</p></li>
+<li><p><strong>genre</strong> (<em>str</em>) – Album genre</p></li>
+<li><p><strong>danceability</strong> (<em>float</em>) – Spotify danceability score</p></li>
+<li><p><strong>energy</strong> (<em>float</em>) – Spotify energy score</p></li>
+<li><p><strong>key</strong> (<em>float</em>) – Spotify key score</p></li>
+<li><p><strong>loudness</strong> (<em>float</em>) – Spotify loudness score</p></li>
+<li><p><strong>speechiness</strong> (<em>float</em>) – Spotify speechiness score</p></li>
+<li><p><strong>acousticness</strong> (<em>float</em>) – Spotify acousticness score</p></li>
+<li><p><strong>instrumentalness</strong> (<em>float</em>) – Spotify instrumentalness score</p></li>
+<li><p><strong>liveness</strong> (<em>float</em>) – Spotify liveness score</p></li>
+<li><p><strong>valence</strong> (<em>float</em>) – Spotify valence score</p></li>
+<li><p><strong>tempo</strong> (<em>float</em>) – Spotify tempo score</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="src.add_albums.AlbumManager.add_dataset">
+<code class="sig-name descname"><span class="pre">add_dataset</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_or_path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sql_table_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'albums'</span></span></em><span class="sig-paren">)</span> → <span class="pre">None</span><a class="reference internal" href="_modules/src/add_albums.html#AlbumManager.add_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.add_albums.AlbumManager.add_dataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Seeds an existing database with entries from a CSV file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>file_or_path</strong> (<em>str</em>) – Location of dataset to load into database</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="src.add_albums.AlbumManager.close">
+<code class="sig-name descname"><span class="pre">close</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> → <span class="pre">None</span><a class="reference internal" href="_modules/src/add_albums.html#AlbumManager.close"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.add_albums.AlbumManager.close" title="Permalink to this definition">¶</a></dt>
+<dd><p>Closes the current SQLAlchemy session.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+</dd></dl>
+<dl class="py class">
+<dt id="src.add_albums.Albums">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">src.add_albums.</span></code><code class="sig-name descname"><span class="pre">Albums</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/add_albums.html#Albums"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.add_albums.Albums" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.ext.declarative.api.Base</span></code></p>
+<p>Create a data model for the database to be set up for capturing albums.</p>
+<dl class="py attribute">
+<dt id="src.add_albums.Albums.acousticness">
+<code class="sig-name descname"><span class="pre">acousticness</span></code><a class="headerlink" href="#src.add_albums.Albums.acousticness" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py attribute">
+<dt id="src.add_albums.Albums.album">
+<code class="sig-name descname"><span class="pre">album</span></code><a class="headerlink" href="#src.add_albums.Albums.album" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py attribute">
+<dt id="src.add_albums.Albums.artist">
+<code class="sig-name descname"><span class="pre">artist</span></code><a class="headerlink" href="#src.add_albums.Albums.artist" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py attribute">
+<dt id="src.add_albums.Albums.danceability">
+<code class="sig-name descname"><span class="pre">danceability</span></code><a class="headerlink" href="#src.add_albums.Albums.danceability" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py attribute">
+<dt id="src.add_albums.Albums.energy">
+<code class="sig-name descname"><span class="pre">energy</span></code><a class="headerlink" href="#src.add_albums.Albums.energy" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py attribute">
+<dt id="src.add_albums.Albums.genre">
+<code class="sig-name descname"><span class="pre">genre</span></code><a class="headerlink" href="#src.add_albums.Albums.genre" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py attribute">
+<dt id="src.add_albums.Albums.instrumentalness">
+<code class="sig-name descname"><span class="pre">instrumentalness</span></code><a class="headerlink" href="#src.add_albums.Albums.instrumentalness" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py attribute">
+<dt id="src.add_albums.Albums.key">
+<code class="sig-name descname"><span class="pre">key</span></code><a class="headerlink" href="#src.add_albums.Albums.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py attribute">
+<dt id="src.add_albums.Albums.liveness">
+<code class="sig-name descname"><span class="pre">liveness</span></code><a class="headerlink" href="#src.add_albums.Albums.liveness" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py attribute">
+<dt id="src.add_albums.Albums.loudness">
+<code class="sig-name descname"><span class="pre">loudness</span></code><a class="headerlink" href="#src.add_albums.Albums.loudness" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py attribute">
+<dt id="src.add_albums.Albums.recordlabel">
+<code class="sig-name descname"><span class="pre">recordlabel</span></code><a class="headerlink" href="#src.add_albums.Albums.recordlabel" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py attribute">
+<dt id="src.add_albums.Albums.releaseyear">
+<code class="sig-name descname"><span class="pre">releaseyear</span></code><a class="headerlink" href="#src.add_albums.Albums.releaseyear" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py attribute">
+<dt id="src.add_albums.Albums.reviewauthor">
+<code class="sig-name descname"><span class="pre">reviewauthor</span></code><a class="headerlink" href="#src.add_albums.Albums.reviewauthor" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py attribute">
+<dt id="src.add_albums.Albums.reviewdate">
+<code class="sig-name descname"><span class="pre">reviewdate</span></code><a class="headerlink" href="#src.add_albums.Albums.reviewdate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py attribute">
+<dt id="src.add_albums.Albums.score">
+<code class="sig-name descname"><span class="pre">score</span></code><a class="headerlink" href="#src.add_albums.Albums.score" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py attribute">
+<dt id="src.add_albums.Albums.speechiness">
+<code class="sig-name descname"><span class="pre">speechiness</span></code><a class="headerlink" href="#src.add_albums.Albums.speechiness" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py attribute">
+<dt id="src.add_albums.Albums.tempo">
+<code class="sig-name descname"><span class="pre">tempo</span></code><a class="headerlink" href="#src.add_albums.Albums.tempo" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py attribute">
+<dt id="src.add_albums.Albums.valence">
+<code class="sig-name descname"><span class="pre">valence</span></code><a class="headerlink" href="#src.add_albums.Albums.valence" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+</dd></dl>
+<dl class="py function">
+<dt id="src.add_albums.create_db">
+<code class="sig-prename descclassname"><span class="pre">src.add_albums.</span></code><code class="sig-name descname"><span class="pre">create_db</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">engine_string</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> → <span class="pre">None</span><a class="reference internal" href="_modules/src/add_albums.html#create_db"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.add_albums.create_db" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create database from provided engine string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>engine_string</strong> (<em>str</em>) – Engine string</p>
+</dd>
+</dl>
+</dd></dl>
+</div>
+<div class="section" id="src-download-data-module">
+<h2>src.download_data module<a class="headerlink" href="#src-download-data-module" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-src.load_data">
+<span id="src-load-data-module"></span><h2>src.load_data module<a class="headerlink" href="#module-src.load_data" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-src">
 <span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-src" title="Permalink to this headline">¶</a></h2>
-</section>
-</section>
+</div>
+</div>
 
       </article>
       <footer>
@@ -195,7 +349,9 @@
             <ul>
 <li><a class="reference internal" href="#">src package</a><ul>
 <li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#src-add-songs-module">src.add_songs module</a></li>
+<li><a class="reference internal" href="#module-src.add_albums">src.add_albums module</a></li>
+<li><a class="reference internal" href="#src-download-data-module">src.download_data module</a></li>
+<li><a class="reference internal" href="#module-src.load_data">src.load_data module</a></li>
 <li><a class="reference internal" href="#module-src">Module contents</a></li>
 </ul>
 </li>
@@ -213,6 +369,5 @@
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
-    <script src="_static/language_data.js"></script>
     <script src="_static/scripts/main.js?digest=e931d09b2a40c1bb82b542effe772014573baf67"></script></body>
 </html>
