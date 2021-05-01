@@ -34,6 +34,8 @@ Quality Assurance: Cheng Hao Ke
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
+--
+
 ## Project charter
 
 ### Background
@@ -157,7 +159,7 @@ A SQLAlchemy database connection is defined by a string with the following forma
 
 `dialect+driver://username:password@host:port/database`
 
-The `+dialect` is optional and if not provided, a default is used. For a more detailed description of what `dialect` and `driver` are and how a connection is made, you can see the documentation [here](https://docs.sqlalchemy.org/en/13/core/engines.html). We will cover SQLAlchemy and connection strings in the SQLAlchemy lab session on 
+The `+dialect` is optional and if not provided, a default is used. For a more detailed description of what `dialect` and `driver` are and how a connection is made, you can see the documentation [here](https://docs.sqlalchemy.org/en/13/core/engines.html).
 
 ##### Local SQLite database
 
@@ -205,7 +207,7 @@ You should now be able to access the app at http://0.0.0.0:5000/ in your browser
 
 ### 1. Build the image
 
-The Dockerfile for running the flask app is in the `app/` folder. To build the image, run from this directory (the root of the repo): 
+The Dockerfile for running the flask app is in the `app/` folder. To build the image, run from this directory (the root of the repo):
 
 ```bash
  docker build -f app/Dockerfile -t pitchfork .
@@ -223,7 +225,7 @@ docker run -p 5000:5000 --name test pitchfork
 
 You should now be able to access the app at http://0.0.0.0:5000/ in your browser.
 
-This command runs the `pitchfork` image as a container named `test` and forwards the port 5000 from container to your laptop so that you can access the flask app exposed through that port.
+This command runs the `pitchfork` image as a container named `test` and forwards the port 5000 from container to your laptop so that you can access the Flask app exposed through that port.
 
 If `PORT` in `config/flaskconfig.py` is changed, this port should be changed accordingly (as should the `EXPOSE 5000` line in `app/Dockerfile`)
 
@@ -239,7 +241,7 @@ where `test` is the name given in the `docker run` command.
 
 ### Example using `python3` as an entry point
 
-We have included another example of a Dockerfile, `app/Dockerfile_python` that has `python3` as the entry point such that when you run the image as a container, the command `python3` is run, followed by the arguments given in the `docker run` command after the image name.
+We have included another example of a Dockerfile, `app/Dockerfile_python`, that has `python3` as the entry point such that when you run the image as a container, the command `python3` is run followed by the arguments given in the `docker run` command after the image name.
 
 To build this image:
 
@@ -263,7 +265,7 @@ From within the Docker container, the following command should work to run unit 
 python -m pytest
 ```
 
-Using Docker, run the following, if the image has not been built yet:
+Using Docker, run the following if the image has not been built yet:
 
 ```bash
  docker build -f app/Dockerfile_python -t pitchfork .
