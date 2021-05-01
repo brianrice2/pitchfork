@@ -1,6 +1,7 @@
 import logging.config
 
 import sqlalchemy
+import pandas as pd
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, DateTime, Float, Integer, String, MetaData
 from sqlalchemy.orm import sessionmaker
@@ -20,24 +21,24 @@ class Albums(Base):
     album = Column(String(100), primary_key=True)
     artist = Column(String(100))
     reviewauthor = Column(String(100))
-    score = Column(Float(100))
-    releaseyear = Column(Integer(100))
-    reviewdate = Column(DateTime(100))
+    score = Column(Float())
+    releaseyear = Column(Integer())
+    reviewdate = Column(String(100))
     recordlabel = Column(String(100))
     genre = Column(String(100))
-    danceability = Column(Float(100))
-    energy = Column(Float(100))
-    key = Column(Float(100))
-    loudness = Column(Float(100))
-    speechiness = Column(Float(100))
-    acousticness = Column(Float(100))
-    instramentalness = Column(Float(100))
-    liveness = Column(Float(100))
-    valence = Column(Float(100))
-    tempo = Column(Float(100))
+    danceability = Column(Float())
+    energy = Column(Float())
+    key = Column(Float())
+    loudness = Column(Float())
+    speechiness = Column(Float())
+    acousticness = Column(Float())
+    instrumentalness = Column(Float())
+    liveness = Column(Float())
+    valence = Column(Float())
+    tempo = Column(Float())
 
     def __repr__(self):
-        return "<Album %r>" % self.album
+        return "Album(%r, %r)" % album, artist
 
 
 def create_db(engine_string: str) -> None:
@@ -54,6 +55,8 @@ def create_db(engine_string: str) -> None:
 
 
 class AlbumManager:
+    """Manages Flask <-> SQLAlchemy connection and adds data to database."""
+
     def __init__(self, app=None, engine_string=None):
         """
         Args:
@@ -75,6 +78,9 @@ class AlbumManager:
                 "Need either an engine string or a Flask app to initialize."
             )
 
+    def __repr__(self):
+        return "AlbumManager({self.session!r})"
+
     def close(self) -> None:
         """
         Closes the current SQLAlchemy session.
@@ -91,7 +97,7 @@ class AlbumManager:
         reviewauthor: str,
         score: float,
         releaseyear: int,
-        reviewdate: datetime,
+        reviewdate: str,
         recordlabel: str,
         genre: str,
         danceability: float,
@@ -114,7 +120,7 @@ class AlbumManager:
             reviewauthor (str): Name of reviewing author
             score (float): Pitchfork rating
             releaseyear (int): Album release year
-            reviewdate (datetime): Album review date
+            reviewdate (str): Album review date (%B %d %Y)
             recordlabel (str): Album's record label(s)
             genre (str): Album genre
             danceability (float): Spotify danceability score
@@ -131,7 +137,6 @@ class AlbumManager:
         Returns:
             None
         """
-
         session = self.session
         album = Albums(
             album=album,
@@ -155,4 +160,21 @@ class AlbumManager:
         )
         session.add(album)
         session.commit()
-        logger.info("%s by %s added to database", album, artist)
+        logger.info("%s added to database", album)
+
+    def add_dataset(self, file_or_path: str, sql_table_name: str = "albums") -> None:
+        """
+        Seeds an existing database with entries from a CSV file.
+
+        Args:
+            file_or_path (str): Location of dataset to load into database
+
+        Returns:
+            None
+        """
+
+        session = self.session
+        data = pd.read_csv(file_or_path)
+        data.to_sql(name=sql_table_name, con=session, index=False, if_exists="replace")
+        session.commit()
+        logger.info("Contents of %s added to database", file_or_path)
