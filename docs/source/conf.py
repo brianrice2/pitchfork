@@ -57,7 +57,7 @@ templates_path = ["_templates"]
 exclude_patterns = []
 
 # Specify master document for Sphinx / Read the Docs
-master_doc = "index"
+master_doc = "source/index"
 
 
 # -- Options for HTML output -------------------------------------------------
