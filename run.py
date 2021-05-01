@@ -9,7 +9,7 @@ from src.add_albums import AlbumManager, create_db
 from config.flaskconfig import SQLALCHEMY_DATABASE_URI
 
 if __name__ == "__main__":
-    # Add parsers for both creating a database and adding songs to it
+    # Add parsers for both creating a database and adding albums to it
     parser = argparse.ArgumentParser(description="Create and/or add data to database")
     subparsers = parser.add_subparsers(dest="subparser_name")
 
@@ -28,21 +28,12 @@ if __name__ == "__main__":
         default="sqlite:///data/albums.db",
         help="SQLAlchemy connection URI for database",
     )
+    sb_ingest.add_argument("--album", default="Run the Jewels 2", help="Album title")
+    sb_ingest.add_argument("--artist", default="Run the Jewels", help="Artist of album")
     sb_ingest.add_argument(
-        "--album", default="Run the Jewels 2", help="Album title", required=True
+        "--reviewauthor", default="Ian Cohen", help="Album reviewer's name"
     )
-    sb_ingest.add_argument(
-        "--artist", default="Run the Jewels", help="Artist of album", required=True
-    )
-    sb_ingest.add_argument(
-        "--reviewauthor",
-        default="Ian Cohen",
-        help="Album reviewer's name",
-        required=True,
-    )
-    sb_ingest.add_argument(
-        "--score", default="9", help="Pitchfork rating", required=True
-    )
+    sb_ingest.add_argument("--score", default="9", help="Pitchfork rating")
     sb_ingest.add_argument("--releaseyear", default="2014", help="Album release year")
     sb_ingest.add_argument(
         "--reviewdate", default="October 29 2014", help="Pitchfork review date"
