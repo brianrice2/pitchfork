@@ -11,7 +11,7 @@ __pycache__/
 venv/
 
 data/*
-!data/sample/
-!data/external/
+!data/raw/
+!data/cleaned/
 config/local
 !.gitkeep
