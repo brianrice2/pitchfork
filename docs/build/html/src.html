@@ -170,8 +170,18 @@
 </dl>
 </dd></dl>
 <dl class="py method">
-<dt id="src.add_albums.AlbumManager.add_dataset">
-<code class="sig-name descname"><span class="pre">add_dataset</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_or_path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sql_table_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'albums'</span></span></em><span class="sig-paren">)</span> → <span class="pre">None</span><a class="reference internal" href="_modules/src/add_albums.html#AlbumManager.add_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.add_albums.AlbumManager.add_dataset" title="Permalink to this definition">¶</a></dt>
+<dt id="src.add_albums.AlbumManager.close">
+<code class="sig-name descname"><span class="pre">close</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> → <span class="pre">None</span><a class="reference internal" href="_modules/src/add_albums.html#AlbumManager.close"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.add_albums.AlbumManager.close" title="Permalink to this definition">¶</a></dt>
+<dd><p>Closes the current SQLAlchemy session.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="src.add_albums.AlbumManager.load_dataset">
+<code class="sig-name descname"><span class="pre">load_dataset</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_or_path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> → <span class="pre">None</span><a class="reference internal" href="_modules/src/add_albums.html#AlbumManager.load_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.add_albums.AlbumManager.load_dataset" title="Permalink to this definition">¶</a></dt>
 <dd><p>Seeds an existing database with entries from a CSV file.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -179,16 +189,6 @@
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>None</p>
-</dd>
-</dl>
-</dd></dl>
-<dl class="py method">
-<dt id="src.add_albums.AlbumManager.close">
-<code class="sig-name descname"><span class="pre">close</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> → <span class="pre">None</span><a class="reference internal" href="_modules/src/add_albums.html#AlbumManager.close"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.add_albums.AlbumManager.close" title="Permalink to this definition">¶</a></dt>
-<dd><p>Closes the current SQLAlchemy session.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>None</p>
 </dd>
 </dl>
 </dd></dl>
@@ -221,6 +221,10 @@
 <dl class="py attribute">
 <dt id="src.add_albums.Albums.genre">
 <code class="sig-name descname"><span class="pre">genre</span></code><a class="headerlink" href="#src.add_albums.Albums.genre" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py attribute">
+<dt id="src.add_albums.Albums.id">
+<code class="sig-name descname"><span class="pre">id</span></code><a class="headerlink" href="#src.add_albums.Albums.id" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 <dl class="py attribute">
 <dt id="src.add_albums.Albums.instrumentalness">
@@ -281,12 +285,104 @@
 </dd>
 </dl>
 </dd></dl>
-</div>
-<div class="section" id="src-download-data-module">
-<h2>src.download_data module<a class="headerlink" href="#src-download-data-module" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="src.add_albums.delete_db">
+<code class="sig-prename descclassname"><span class="pre">src.add_albums.</span></code><code class="sig-name descname"><span class="pre">delete_db</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">engine_string</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> → <span class="pre">None</span><a class="reference internal" href="_modules/src/add_albums.html#delete_db"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.add_albums.delete_db" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create database from provided engine string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>engine_string</strong> (<em>str</em>) – Engine string</p>
+</dd>
+</dl>
+</dd></dl>
 </div>
 <div class="section" id="module-src.load_data">
 <span id="src-load-data-module"></span><h2>src.load_data module<a class="headerlink" href="#module-src.load_data" title="Permalink to this headline">¶</a></h2>
+<p>Load and read data to/from a local filesystem and S3 bucket.</p>
+<p>Default behavior uploads the raw dataset from the local filesystem to my
+(Brian’s) S3 bucket. Additional options allow configuration for downloading
+instead or using different source/destination filepaths.</p>
+<p>Copyright 2020, Chloe Mawer</p>
+<dl class="py function">
+<dt id="src.load_data.download_file_from_s3">
+<code class="sig-prename descclassname"><span class="pre">src.load_data.</span></code><code class="sig-name descname"><span class="pre">download_file_from_s3</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">local_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s3path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/load_data.html#download_file_from_s3"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.load_data.download_file_from_s3" title="Permalink to this definition">¶</a></dt>
+<dd><p>Download a file from S3.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>local_path</strong> (<em>str</em>) – Destination file or path on local machine</p></li>
+<li><p><strong>s3path</strong> (<em>str</em>) – File or path to download from S3</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py function">
+<dt id="src.load_data.download_from_s3_pandas">
+<code class="sig-prename descclassname"><span class="pre">src.load_data.</span></code><code class="sig-name descname"><span class="pre">download_from_s3_pandas</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">local_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s3path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sep</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">','</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/load_data.html#download_from_s3_pandas"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.load_data.download_from_s3_pandas" title="Permalink to this definition">¶</a></dt>
+<dd><p>Download a pandas.DataFrame from S3.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>local_path</strong> (<em>str</em>) – Destination file or path on local machine</p></li>
+<li><p><strong>s3path</strong> (<em>str</em>) – File or path to download from S3</p></li>
+<li><p><strong>sep</strong> (<em>str</em><em>, </em><em>optional</em>) – Field separator in S3 file. Defaults to “;”.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py function">
+<dt id="src.load_data.download_raw_data">
+<code class="sig-prename descclassname"><span class="pre">src.load_data.</span></code><code class="sig-name descname"><span class="pre">download_raw_data</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">local_destination</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/load_data.html#download_raw_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.load_data.download_raw_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Download the original dataset from source.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>local_destination</strong> (<em>str</em>) – Destination file or path on local machine</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py function">
+<dt id="src.load_data.parse_s3">
+<code class="sig-prename descclassname"><span class="pre">src.load_data.</span></code><code class="sig-name descname"><span class="pre">parse_s3</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s3path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/load_data.html#parse_s3"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.load_data.parse_s3" title="Permalink to this definition">¶</a></dt>
+<dd><p>Split an S3 filepath into the primary bucket and subsequent path.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>s3path</strong> (<em>str</em>) – File path in S3</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Tuple containing S3 bucket name and S3 path.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>tuple(str, str)</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py function">
+<dt id="src.load_data.upload_file_to_s3">
+<code class="sig-prename descclassname"><span class="pre">src.load_data.</span></code><code class="sig-name descname"><span class="pre">upload_file_to_s3</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">local_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s3path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/load_data.html#upload_file_to_s3"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.load_data.upload_file_to_s3" title="Permalink to this definition">¶</a></dt>
+<dd><p>Upload a local file to S3.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>local_path</strong> (<em>str</em>) – File name or path to local file to upload.</p></li>
+<li><p><strong>s3path</strong> (<em>str</em>) – Destination path in S3.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py function">
+<dt id="src.load_data.upload_to_s3_pandas">
+<code class="sig-prename descclassname"><span class="pre">src.load_data.</span></code><code class="sig-name descname"><span class="pre">upload_to_s3_pandas</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">local_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s3path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sep</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">','</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/load_data.html#upload_to_s3_pandas"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.load_data.upload_to_s3_pandas" title="Permalink to this definition">¶</a></dt>
+<dd><p>Upload a pandas.DataFrame to S3.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>local_path</strong> (<em>[</em><em>type</em><em>]</em>) – [description]</p></li>
+<li><p><strong>s3path</strong> (<em>[</em><em>type</em><em>]</em>) – [description]</p></li>
+<li><p><strong>sep</strong> (<em>str</em><em>, </em><em>optional</em>) – [description]. Defaults to “;”.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 </div>
 <div class="section" id="module-src">
 <span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-src" title="Permalink to this headline">¶</a></h2>
@@ -350,7 +446,6 @@
 <li><a class="reference internal" href="#">src package</a><ul>
 <li><a class="reference internal" href="#submodules">Submodules</a></li>
 <li><a class="reference internal" href="#module-src.add_albums">src.add_albums module</a></li>
-<li><a class="reference internal" href="#src-download-data-module">src.download_data module</a></li>
 <li><a class="reference internal" href="#module-src.load_data">src.load_data module</a></li>
 <li><a class="reference internal" href="#module-src">Module contents</a></li>
 </ul>

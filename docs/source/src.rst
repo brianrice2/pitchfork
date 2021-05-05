@@ -12,14 +12,6 @@ src.add\_albums module
    :undoc-members:
    :show-inheritance:
 
-src.download\_data module
--------------------------
-
-.. automodule:: src.download_data
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 src.load\_data module
 ---------------------
 

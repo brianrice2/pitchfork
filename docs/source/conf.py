@@ -19,7 +19,8 @@ import furo
 
 sys.path.insert(0, os.path.abspath("../.."))
 sys.path.insert(0, os.path.abspath("../"))
-sys.path.insert(0, os.path.abspath("../src"))
+sys.path.insert(0, os.path.abspath("../../app"))
+sys.path.insert(0, os.path.abspath("../../src"))
 
 
 # -- Project information -----------------------------------------------------
@@ -57,7 +58,7 @@ templates_path = ["_templates"]
 exclude_patterns = []
 
 # Specify master document for Sphinx / Read the Docs
-master_doc = "source/index"
+master_doc = "index"
 
 
 # -- Options for HTML output -------------------------------------------------

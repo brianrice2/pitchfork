@@ -126,7 +126,8 @@
           <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
         </label>
         <h1>Source code for src.add_albums</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">logging.config</span>
+<span></span><span class="kn">import</span> <span class="nn">csv</span>
+<span class="kn">import</span> <span class="nn">logging.config</span>
 
 <span class="kn">import</span> <span class="nn">sqlalchemy</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
@@ -146,14 +147,15 @@
 
     <span class="n">__tablename__</span> <span class="o">=</span> <span class="s2">"albums"</span>
 
-    <span class="n">album</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="mi">100</span><span class="p">),</span> <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">(),</span> <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">album</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="mi">100</span><span class="p">),</span> <span class="n">nullable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="n">artist</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="mi">100</span><span class="p">))</span>
-    <span class="n">reviewauthor</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="mi">100</span><span class="p">))</span>
-    <span class="n">score</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Float</span><span class="p">())</span>
+    <span class="n">reviewauthor</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="mi">50</span><span class="p">),</span> <span class="n">nullable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">score</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Float</span><span class="p">(),</span> <span class="n">nullable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="n">releaseyear</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">())</span>
-    <span class="n">reviewdate</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="mi">100</span><span class="p">))</span>
+    <span class="n">reviewdate</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="mi">25</span><span class="p">))</span>
     <span class="n">recordlabel</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="mi">100</span><span class="p">))</span>
-    <span class="n">genre</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="mi">100</span><span class="p">))</span>
+    <span class="n">genre</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="mi">50</span><span class="p">))</span>
     <span class="n">danceability</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Float</span><span class="p">())</span>
     <span class="n">energy</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Float</span><span class="p">())</span>
     <span class="n">key</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Float</span><span class="p">())</span>
@@ -179,7 +181,20 @@
     <span class="n">engine</span> <span class="o">=</span> <span class="n">sqlalchemy</span><span class="o">.</span><span class="n">create_engine</span><span class="p">(</span><span class="n">engine_string</span><span class="p">)</span>
 
     <span class="n">Base</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">create_all</span><span class="p">(</span><span class="n">engine</span><span class="p">)</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Database created."</span><span class="p">)</span></div>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Database created"</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="delete_db"><a class="viewcode-back" href="../../src.html#src.add_albums.delete_db">[docs]</a><span class="k">def</span> <span class="nf">delete_db</span><span class="p">(</span><span class="n">engine_string</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="sd">"""</span>
+<span class="sd">    Create database from provided engine string.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        engine_string (str): Engine string</span>
+<span class="sd">    """</span>
+    <span class="n">engine</span> <span class="o">=</span> <span class="n">sqlalchemy</span><span class="o">.</span><span class="n">create_engine</span><span class="p">(</span><span class="n">engine_string</span><span class="p">)</span>
+
+    <span class="n">Base</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">drop_all</span><span class="p">(</span><span class="n">engine</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Database deleted"</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="AlbumManager"><a class="viewcode-back" href="../../src.html#src.add_albums.AlbumManager">[docs]</a><span class="k">class</span> <span class="nc">AlbumManager</span><span class="p">:</span>
@@ -203,7 +218,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="n">Session</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">"Need either an engine string or a Flask app to initialize."</span>
+                <span class="s2">"Need either an engine string or a Flask app to initialize"</span>
             <span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -266,7 +281,7 @@
 <span class="sd">            None</span>
 <span class="sd">        """</span>
         <span class="n">session</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span>
-        <span class="n">album</span> <span class="o">=</span> <span class="n">Albums</span><span class="p">(</span>
+        <span class="n">new_album</span> <span class="o">=</span> <span class="n">Albums</span><span class="p">(</span>
             <span class="n">album</span><span class="o">=</span><span class="n">album</span><span class="p">,</span>
             <span class="n">artist</span><span class="o">=</span><span class="n">artist</span><span class="p">,</span>
             <span class="n">reviewauthor</span><span class="o">=</span><span class="n">reviewauthor</span><span class="p">,</span>
@@ -286,11 +301,11 @@
             <span class="n">valence</span><span class="o">=</span><span class="n">valence</span><span class="p">,</span>
             <span class="n">tempo</span><span class="o">=</span><span class="n">tempo</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="n">session</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">album</span><span class="p">)</span>
+        <span class="n">session</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">new_album</span><span class="p">)</span>
         <span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"</span><span class="si">%s</span><span class="s2"> added to database"</span><span class="p">,</span> <span class="n">album</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="AlbumManager.add_dataset"><a class="viewcode-back" href="../../src.html#src.add_albums.AlbumManager.add_dataset">[docs]</a>    <span class="k">def</span> <span class="nf">add_dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_or_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">sql_table_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"albums"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="AlbumManager.load_dataset"><a class="viewcode-back" href="../../src.html#src.add_albums.AlbumManager.load_dataset">[docs]</a>    <span class="k">def</span> <span class="nf">load_dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_or_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">"""</span>
 <span class="sd">        Seeds an existing database with entries from a CSV file.</span>
 
@@ -300,10 +315,15 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            None</span>
 <span class="sd">        """</span>
-
         <span class="n">session</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">file_or_path</span><span class="p">)</span>
-        <span class="n">data</span><span class="o">.</span><span class="n">to_sql</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">sql_table_name</span><span class="p">,</span> <span class="n">con</span><span class="o">=</span><span class="n">session</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">if_exists</span><span class="o">=</span><span class="s2">"replace"</span><span class="p">)</span>
+
+        <span class="n">new_albums</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_or_path</span><span class="p">,</span> <span class="s2">"r"</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="n">reader</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">DictReader</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">reader</span><span class="p">:</span>
+                <span class="n">new_albums</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Albums</span><span class="p">(</span><span class="o">**</span><span class="n">row</span><span class="p">))</span>
+        <span class="n">session</span><span class="o">.</span><span class="n">add_all</span><span class="p">(</span><span class="n">new_albums</span><span class="p">)</span>
+
         <span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Contents of </span><span class="si">%s</span><span class="s2"> added to database"</span><span class="p">,</span> <span class="n">file_or_path</span><span class="p">)</span></div></div>
 </pre></div>
