@@ -66,35 +66,35 @@ The dataset is released under the [Creative Commons Attribution 4.0 Internationa
 
 ## Directory structure
 
-```
+```bash
 ├── README.md                         <- You are here
 ├── app
 │   ├── static/                       <- CSS, JS files that remain static
 │   ├── templates/                    <- HTML (or other code) that is templated and changes based on a set of inputs
-│   ├── boot.sh                       <- Start up script for launching app in Docker container.
+│   ├── boot.sh                       <- Start up script for launching app in Docker container
 │   ├── Dockerfile                    <- Dockerfile for building image to run app  
 │
-├── config                            <- Directory for configuration files 
+├── config                            <- Configuration files 
 │   ├── local/                        <- Directory for keeping environment variables and other local configurations that *do not sync** to Github 
 │   ├── logging/                      <- Configuration of python loggers
 │   ├── flaskconfig.py                <- Configurations for Flask API 
 │
-├── data                              <- Folder that contains data used or generated. Only the external/ and sample/ subdirectories are tracked by git. 
-│   ├── external/                     <- External data sources, usually reference data,  will be synced with git
-│   ├── sample/                       <- Sample data used for code development and testing, will be synced with git
+├── data                              <- Data files used for analysis or by the app itself
+│   ├── cleaned/                      <- Processed data
+│   ├── raw/                          <- Raw datafile
 │
 ├── deliverables/                     <- Any white papers, presentations, final work products that are presented or delivered to a stakeholder 
 │
-├── docs/                             <- Sphinx documentation based on Python docstrings. Optional for this project. 
+├── docs/                             <- Sphinx documentation based on Python docstrings
 │
 ├── figures/                          <- Generated graphics and figures to be used in reporting, documentation, etc
 │
 ├── models/                           <- Trained model objects (TMOs), model predictions, and/or model summaries
 │
 ├── notebooks/
-│   ├── archive/                      <- Develop notebooks no longer being used.
+│   ├── archive/                      <- Develop notebooks no longer being used
 │   ├── deliver/                      <- Notebooks shared with others / in final state
-│   ├── develop/                      <- Current notebooks being used in development.
+│   ├── develop/                      <- Current notebooks being used in development
 │   ├── template.ipynb                <- Template notebook for analysis with useful imports, helper functions, and SQLAlchemy setup. 
 │
 ├── references/                       <- Any reference material relevant to the project
@@ -110,7 +110,47 @@ The dataset is released under the [Creative Commons Attribution 4.0 Internationa
 
 ## Running the app
 
-### 1. Initialize the database
+### 1. Download the dataset
+
+#### Configure S3 credentials
+
+Interacting with S3 requires your credentials to be loaded as environment variables:
+
+```bash
+export AWS_ACCESS_KEY_ID="MY_ACCESS_KEY_ID"
+export AWS_SECRET_ACCESS_KEY="MY_SECRET_ACCESS_KEY"
+```
+
+#### Usage
+
+##### Download the dataset from source
+
+```bash
+python src/load.py -r
+python src/load.py --raw_data
+```
+
+##### Upload to S3
+
+```bash
+python src/load.py
+```
+
+##### Download from S3
+
+```bash
+python src/load.py -d
+python src/load.py --download
+```
+
+##### Download (custom S3 source, custom local destination)
+
+```bash
+python src/load.py -d -s s3://source_path -l destination_path
+python src/load.py --download --s3path s3://source_path --local_path destination_path
+```
+
+### 2. Initialize the database
 
 #### Create the database
 
@@ -122,7 +162,7 @@ By default, `python run.py create_db` creates a database at `sqlite:///data/albu
 
 #### Adding songs
 
-To add songs to the database:
+To add songs manually to the database:
 
 ```bash
 python run.py ingest \
