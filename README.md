@@ -25,7 +25,7 @@ Quality Assurance: Cheng Hao Ke
       - [Download (custom S3 source, custom local destination)](#download-custom-s3-source-custom-local-destination)
   - [2. Initialize the database](#2-initialize-the-database)
     - [Create the database](#create-the-database)
-    - [Adding songs](#adding-songs)
+    - [Adding albums](#adding-albums)
     - [Defining your engine string](#defining-your-engine-string)
       - [Local SQLite database](#local-sqlite-database)
   - [2. Configure Flask app](#2-configure-flask-app)
