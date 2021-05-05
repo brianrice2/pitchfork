@@ -117,7 +117,7 @@ The dataset is released under the [Creative Commons Attribution 4.0 Internationa
 
 ## Running the app
 
-### 1. Download the dataset
+### 1. Load data into S3
 
 #### Configure S3 credentials
 
@@ -128,34 +128,19 @@ export AWS_ACCESS_KEY_ID="MY_ACCESS_KEY_ID"
 export AWS_SECRET_ACCESS_KEY="MY_SECRET_ACCESS_KEY"
 ```
 
-#### Usage
-
-##### Download the dataset from source
+#### Build the Docker image
 
 ```bash
-python src/load.py -r
-python src/load.py --raw_data
+docker build -t pitchfork .
 ```
 
-##### Upload to S3
+#### Load to S3
 
 ```bash
-python src/load.py
+docker run -e AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY pitchfork src/load_data.py
 ```
 
-##### Download from S3
-
-```bash
-python src/load.py -d
-python src/load.py --download
-```
-
-##### Download (custom S3 source, custom local destination)
-
-```bash
-python src/load.py -d -s s3://source_path -l destination_path
-python src/load.py --download --s3path s3://source_path --local_path destination_path
-```
+By default, this will load the raw data from `data/raw/P4KxSpotify.csv` into the S3 bucket `s3://2021-msia423-rice-brian/raw/P4KxSpotify.csv`. Alternative paths can be configured with `--local_path` or `--s3path`. Instead of uploading to S3, you may download from S3 by including the flag `--download`. Finally, `pandas` may be used to read the data by including `--pandas` (and optionally `--sep <VALUE>`).
 
 ### 2. Initialize the database
 
