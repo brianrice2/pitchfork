@@ -201,14 +201,18 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    if args.raw_data:
-        download_raw_data(args.local_path)
-    elif args.download:
+    # Assume data exists already in S3
+    if args.download:
         if args.pandas:
             download_from_s3_pandas(args.local_path, args.s3path, args.sep)
         else:
             download_file_from_s3(args.local_path, args.s3path)
+    # Assume data does _not_ exist already in S3
     else:
+        # Download data from internet
+        download_raw_data(args.local_path)
+
+        # Upload to S3
         if args.pandas:
             upload_to_s3_pandas(args.local_path, args.s3path, args.sep)
         else:
