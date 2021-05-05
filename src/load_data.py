@@ -10,10 +10,11 @@ Copyright 2020, Chloe Mawer
 import argparse
 import logging
 import re
+import requests
 
-import pandas as pd
 import boto3
 import botocore
+import pandas as pd
 
 logging.basicConfig(
     format="%(asctime)s %(name)-12s %(levelname)-8s %(message)s", level=logging.DEBUG
@@ -30,6 +31,10 @@ logging.getLogger("s3transfer").setLevel(logging.ERROR)
 logging.getLogger("urllib3").setLevel(logging.ERROR)
 
 logger = logging.getLogger("s3")
+
+RAW_DATA_SOURCE_URL = (
+    "https://zenodo.org/record/3603330/files/output-data.csv?download=1"
+)
 
 DEFAULT_RAW_DATA_PATH = "data/raw/P4KxSpotify.csv"
 DEFAULT_S3_BUCKET = "s3://2021-msia423-rice-brian/"
@@ -137,34 +142,62 @@ def download_from_s3_pandas(local_path, s3path, sep=";"):
         logger.info("Data downloaded from %s to %s", s3path, local_path)
 
 
+def download_raw_data(local_destination=DEFAULT_RAW_DATA_PATH):
+    response = requests.get(RAW_DATA_SOURCE_URL)
+    if response.status_code == 200:
+        with open(local_destination, "wb") as file:
+            for chunk in response:
+                file.write(chunk)
+        logger.info("Downloaded raw data to %s", local_destination)
+    elif response.status_code < 200:
+        logger.warning("Request received but not immediately processed (unusual)")
+    else:
+        logger.warning(
+            "Unsuccesful status code received when trying to download raw datafile"
+        )
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--sep", default=";", help="CSV separator if using pandas")
     parser.add_argument(
+        "-p",
         "--pandas",
         default=False,
         action="store_true",
         help="If used, will load data via pandas",
     )
     parser.add_argument(
+        "-d",
         "--download",
         default=False,
         action="store_true",
         help="If used, will download from the source insteading of uploading",
     )
     parser.add_argument(
+        "-s",
         "--s3path",
         default=DEFAULT_S3_LOCATION,
         help="Location in S3 for source/destination file",
     )
     parser.add_argument(
+        "-l",
         "--local_path",
         default=DEFAULT_RAW_DATA_PATH,
         help="Location in local filesystem for source/destination file",
     )
+    parser.add_argument(
+        "-r",
+        "--raw_data",
+        default=False,
+        action="store_true",
+        help="If used, will download the raw dataset from the internet",
+    )
     args = parser.parse_args()
 
-    if args.download:
+    if args.raw_data:
+        download_raw_data(args.local_path)
+    elif args.download:
         if args.pandas:
             download_from_s3_pandas(args.local_path, args.s3path, args.sep)
         else:
