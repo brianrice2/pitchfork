@@ -5,7 +5,7 @@ import logging.config
 logging.config.fileConfig("config/logging/local.conf")
 logger = logging.getLogger("pitchfork-pipeline")
 
-from src.add_albums import AlbumManager, create_db
+from src.add_albums import AlbumManager, create_db, delete_db
 from config.flaskconfig import SQLALCHEMY_DATABASE_URI
 
 if __name__ == "__main__":
@@ -21,11 +21,19 @@ if __name__ == "__main__":
         help="SQLAlchemy connection URI for database",
     )
 
+    # Sub-parser for deleting a database
+    sb_delete = subparsers.add_parser("delete_db", description="Delete database")
+    sb_delete.add_argument(
+        "--engine_string",
+        default=SQLALCHEMY_DATABASE_URI,
+        help="SQLAlchemy connection URI for database",
+    )
+
     # Sub-parser for ingesting new data
     sb_ingest = subparsers.add_parser("ingest", description="Add data to database")
     sb_ingest.add_argument(
         "--engine_string",
-        default="sqlite:///data/albums.db",
+        default="sqlite:///data/msia423_db.db",
         help="SQLAlchemy connection URI for database",
     )
     sb_ingest.add_argument("--album", default="Run the Jewels 2", help="Album title")
@@ -79,10 +87,32 @@ if __name__ == "__main__":
         "--tempo", default="123.1539167", help="Album's Spotify tempo score"
     )
 
+    # Sub-parser for loading a dataset
+    sb_load = subparsers.add_parser(
+        "load_dataset", description="Load dataset to database"
+    )
+    sb_load.add_argument(
+        "--engine_string",
+        default="sqlite:///data/msia423_db.db",
+        help="SQLAlchemy connection URI for database",
+    )
+    sb_load.add_argument(
+        "-f",
+        "--file",
+        default="data/raw/P4KxSpotify.csv",
+        help="Filename or path to file containing CSV dataset of albums to load",
+    )
+
     args = parser.parse_args()
     sp_used = args.subparser_name
     if sp_used == "create_db":
         create_db(args.engine_string)
+    elif sp_used == "delete_db":
+        delete_db(args.engine_string)
+    elif sp_used == "load_dataset":
+        album_manager = AlbumManager(engine_string=args.engine_string)
+        album_manager.load_dataset(args.file)
+        album_manager.close()
     elif sp_used == "ingest":
         album_manager = AlbumManager(engine_string=args.engine_string)
         album_manager.add_album(
