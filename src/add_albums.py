@@ -1,3 +1,4 @@
+import csv
 import logging.config
 
 import sqlalchemy
@@ -18,14 +19,15 @@ class Albums(Base):
 
     __tablename__ = "albums"
 
-    album = Column(String(100), primary_key=True)
+    id = Column(Integer(), primary_key=True)
+    album = Column(String(100), nullable=False)
     artist = Column(String(100))
-    reviewauthor = Column(String(100))
-    score = Column(Float())
+    reviewauthor = Column(String(50), nullable=False)
+    score = Column(Float(), nullable=False)
     releaseyear = Column(Integer())
-    reviewdate = Column(String(100))
+    reviewdate = Column(String(25))
     recordlabel = Column(String(100))
-    genre = Column(String(100))
+    genre = Column(String(50))
     danceability = Column(Float())
     energy = Column(Float())
     key = Column(Float())
@@ -51,7 +53,20 @@ def create_db(engine_string: str) -> None:
     engine = sqlalchemy.create_engine(engine_string)
 
     Base.metadata.create_all(engine)
-    logger.info("Database created.")
+    logger.info("Database created")
+
+
+def delete_db(engine_string: str) -> None:
+    """
+    Create database from provided engine string.
+
+    Args:
+        engine_string (str): Engine string
+    """
+    engine = sqlalchemy.create_engine(engine_string)
+
+    Base.metadata.drop_all(engine)
+    logger.info("Database deleted")
 
 
 class AlbumManager:
@@ -75,7 +90,7 @@ class AlbumManager:
             self.session = Session()
         else:
             raise ValueError(
-                "Need either an engine string or a Flask app to initialize."
+                "Need either an engine string or a Flask app to initialize"
             )
 
     def __repr__(self):
@@ -138,7 +153,7 @@ class AlbumManager:
             None
         """
         session = self.session
-        album = Albums(
+        new_album = Albums(
             album=album,
             artist=artist,
             reviewauthor=reviewauthor,
@@ -158,11 +173,11 @@ class AlbumManager:
             valence=valence,
             tempo=tempo,
         )
-        session.add(album)
+        session.add(new_album)
         session.commit()
         logger.info("%s added to database", album)
 
-    def add_dataset(self, file_or_path: str, sql_table_name: str = "albums") -> None:
+    def load_dataset(self, file_or_path: str) -> None:
         """
         Seeds an existing database with entries from a CSV file.
 
@@ -172,9 +187,14 @@ class AlbumManager:
         Returns:
             None
         """
-
         session = self.session
-        data = pd.read_csv(file_or_path)
-        data.to_sql(name=sql_table_name, con=session, index=False, if_exists="replace")
+
+        new_albums = []
+        with open(file_or_path, "r") as file:
+            reader = csv.DictReader(file)
+            for row in reader:
+                new_albums.append(Albums(**row))
+        session.add_all(new_albums)
+
         session.commit()
         logger.info("Contents of %s added to database", file_or_path)

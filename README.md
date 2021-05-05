@@ -150,7 +150,7 @@ To create the database in the location configured in `config.py` run:
 
 `python run.py create_db --engine_string=<engine_string>`
 
-By default, `python run.py create_db` creates a database at `sqlite:///data/albums.db`.
+By default, `python run.py create_db` creates a database at `sqlite:///data/msia423_db.db`.
 
 #### Adding albums
 
@@ -179,7 +179,7 @@ python run.py ingest \
   --tempo=<TEMPO>
 ```
 
-By default, `python run.py ingest` adds *Run the Jewels 2* by Run the Jewels to the SQLite database located in `sqlite:///data/albums.db`.
+By default, `python run.py ingest` adds *Run the Jewels 2* by Run the Jewels to the SQLite database located in `sqlite:///data/msia423_db.db`.
 
 #### Defining your engine string
 
@@ -194,7 +194,7 @@ The `+dialect` is optional and if not provided, a default is used. For a more de
 A local SQLite database can be created for development and local testing. It does not require a username or password and replaces the host and port with the path to the database file:
 
 ```python
-engine_string = 'sqlite:///data/albums.db'
+engine_string = 'sqlite:///data/msia423_db.db'
 ```
 
 The three `///` denote that it is a relative path to where the code is being run (which is from the root of this directory).
@@ -202,7 +202,7 @@ The three `///` denote that it is a relative path to where the code is being run
 You can also define the absolute path with four `////`, for example:
 
 ```python
-engine_string = 'sqlite://///Users/brianrice/dev/2021-msia423-rice-brian-project/data/albums.db'
+engine_string = 'sqlite://///Users/brianrice/dev/2021-msia423-rice-brian-project/data/msia423_db.db'
 ```
 
 ### 2. Configure Flask app
@@ -214,7 +214,7 @@ DEBUG = True  # Keep True for debugging, change to False when moving to producti
 LOGGING_CONFIG = 'config/logging/local.conf'  # Path to file that configures Python logger
 HOST = '0.0.0.0' # the host that is running the app. 0.0.0.0 when running locally 
 PORT = 5000  # What port to expose app on. Must be the same as the port exposed in app/Dockerfile 
-SQLALCHEMY_DATABASE_URI = 'sqlite:///data/albums.db'  # URI (engine string) for database that contains albums
+SQLALCHEMY_DATABASE_URI = 'sqlite:///data/msia423_db.db'  # URI (engine string) for database that contains albums
 APP_NAME = 'pitchfork'
 SQLALCHEMY_TRACK_MODIFICATIONS = True 
 SQLALCHEMY_ECHO = False  # If true, SQL for queries made will be printed

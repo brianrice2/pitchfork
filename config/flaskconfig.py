@@ -20,7 +20,7 @@ SQLALCHEMY_DATABASE_URI = os.environ.get("SQLALCHEMY_DATABASE_URI")
 if SQLALCHEMY_DATABASE_URI is not None:
     pass
 elif DB_HOST is None:
-    SQLALCHEMY_DATABASE_URI = "sqlite:///data/albums.db"
+    SQLALCHEMY_DATABASE_URI = "sqlite:///data/msia423_db.db"
 else:
     SQLALCHEMY_DATABASE_URI = "{dialect}://{user}:{pw}@{host}:{port}/{db}".format(
         dialect=DB_DIALECT,
