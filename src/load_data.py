@@ -142,7 +142,13 @@ def download_from_s3_pandas(local_path, s3path, sep=","):
         logger.info("Data downloaded from %s to %s", s3path, local_path)
 
 
-def download_raw_data(local_destination=DEFAULT_RAW_DATA_PATH):
+def download_raw_data(local_destination):
+    """
+    Download the original dataset from source.
+
+    Args:
+        local_destination (str): Destination file or path on local machine
+    """
     response = requests.get(RAW_DATA_SOURCE_URL)
     if response.status_code == 200:
         with open(local_destination, "wb") as file:
