@@ -130,11 +130,9 @@ export AWS_SECRET_ACCESS_KEY="MY_SECRET_ACCESS_KEY"
 
 #### Build the Docker image
 
-```bash
-docker build -t pitchfork .
-```
+`docker build -t pitchfork .`
 
-#### Load to S3
+#### Download raw data and upload to S3
 
 ```bash
 docker run -e AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY pitchfork src/load_data.py
@@ -144,163 +142,30 @@ By default, this will download the original data to `data/raw/P4KxSpotify.csv` a
 
 ### 2. Initialize the database
 
+#### Configure environment variables
+
+```bash
+export MYSQL_USER="MY_USERNAME"
+export MYSQL_PASSWORD="MY_PASSWORD"
+export MYSQL_HOST="MY_HOST"
+export MYSQL_PORT="MY_PORT"
+export MYSQL_DATABASE="MY_DATABASE"
+```
+
 #### Create the database
 
 To create the database in the location configured in `config.py` run:
 
-`python run.py create_db --engine_string=<engine_string>`
+`docker run -e MYSQL_HOST -e MYSQL_PORT -e MYSQL_USER -e MYSQL_PASSWORD -e MYSQL_DATABSE pitchfork run.py create_db`
 
 By default, `python run.py create_db` creates a database at `sqlite:///data/msia423_db.db`.
-
-#### Adding albums
-
-To add albums manually to the database:
-
-```bash
-python run.py ingest \
-  --engine_string=<engine_string> \
-  --album=<ALBUM> \
-  --artist=<ARTIST> \
-  --reviewauthor=<REVIEWAUTHOR> \
-  --score=<SCORE> \
-  --releaseyear=<RELEASEYEAR> \
-  --reviewdate=<REVIEWDATE> \
-  --recordlabel=<RECORDLABEL> \
-  --genre=<GENRE> \
-  --danceability=<DANCEABILITY> \
-  --energy=<ENERGY> \
-  --key=<KEY> \
-  --loudness=<LOUDNESS> \
-  --speechiness=<SPEECHINESS> \
-  --acousticness=<ACOUSTICNESS> \
-  --instrumentalness=<INSTRUMENTALNESS> \
-  --liveness=<LIVENESS> \
-  --valence=<VALENCE> \
-  --tempo=<TEMPO>
-```
-
-By default, `python run.py ingest` adds *Run the Jewels 2* by Run the Jewels to the SQLite database located in `sqlite:///data/msia423_db.db`.
-
-#### Defining your engine string
-
-A SQLAlchemy database connection is defined by a string with the following format:
-
-`dialect+driver://username:password@host:port/database`
-
-The `+dialect` is optional and if not provided, a default is used. For a more detailed description of what `dialect` and `driver` are and how a connection is made, you can see the documentation [here](https://docs.sqlalchemy.org/en/13/core/engines.html).
 
 ##### Local SQLite database
 
 A local SQLite database can be created for development and local testing. It does not require a username or password and replaces the host and port with the path to the database file:
 
-```python
-engine_string = 'sqlite:///data/msia423_db.db'
-```
+`engine_string = 'sqlite:///data/msia423_db.db'`
 
-The three `///` denote that it is a relative path to where the code is being run (which is from the root of this directory).
+##### RDS instance
 
-You can also define the absolute path with four `////`, for example:
-
-```python
-engine_string = 'sqlite://///Users/brianrice/dev/2021-msia423-rice-brian-project/data/msia423_db.db'
-```
-
-### 2. Configure Flask app
-
-`config/flaskconfig.py` holds the configurations for the Flask app. It includes the following configurations:
-
-```python
-DEBUG = True  # Keep True for debugging, change to False when moving to production 
-LOGGING_CONFIG = 'config/logging/local.conf'  # Path to file that configures Python logger
-HOST = '0.0.0.0' # the host that is running the app. 0.0.0.0 when running locally 
-PORT = 5000  # What port to expose app on. Must be the same as the port exposed in app/Dockerfile 
-SQLALCHEMY_DATABASE_URI = 'sqlite:///data/msia423_db.db'  # URI (engine string) for database that contains albums
-APP_NAME = 'pitchfork'
-SQLALCHEMY_TRACK_MODIFICATIONS = True 
-SQLALCHEMY_ECHO = False  # If true, SQL for queries made will be printed
-MAX_ROWS_SHOW = 100 # Limits the number of rows returned from the database 
-```
-
-### 3. Run the Flask app
-
-To run the Flask app, run:
-
-```bash
-python app.py
-```
-
-You should now be able to access the app at http://0.0.0.0:5000/ in your browser.
-
-## Running the app in Docker
-
-### 1. Build the image
-
-The Dockerfile for running the flask app is in the `app/` folder. To build the image, run from this directory (the root of the repo):
-
-```bash
- docker build -f app/Dockerfile -t pitchfork .
-```
-
-This command builds the Docker image, with the tag `pitchfork`, based on the instructions in `app/Dockerfile` and the files existing in this directory.
-
-### 2. Run the container
-
-To run the app, run from this directory:
-
-```bash
-docker run -p 5000:5000 --name test pitchfork
-```
-
-You should now be able to access the app at http://0.0.0.0:5000/ in your browser.
-
-This command runs the `pitchfork` image as a container named `test` and forwards the port 5000 from container to your laptop so that you can access the Flask app exposed through that port.
-
-If `PORT` in `config/flaskconfig.py` is changed, this port should be changed accordingly (as should the `EXPOSE 5000` line in `app/Dockerfile`)
-
-### 3. Kill the container
-
-Once finished with the app, you will need to kill the container. To do so:
-
-```bash
-docker kill test 
-```
-
-where `test` is the name given in the `docker run` command.
-
-### Example using `python3` as an entry point
-
-We have included another example of a Dockerfile, `app/Dockerfile_python`, that has `python3` as the entry point such that when you run the image as a container, the command `python3` is run followed by the arguments given in the `docker run` command after the image name.
-
-To build this image:
-
-```bash
- docker build -f app/Dockerfile_python -t pitchfork .
-```
-
-then run the `docker run` command:
-
-```bash
-docker run -p 5000:5000 --name test pitchfork app.py
-```
-
-The new image defines the entry point command as `python3`. Building the sample pitchfork image this way will require initializing the database prior to building the image so that it is copied over, rather than created when the container is run. Therefore, please **do the step [Create the database](#create-the-database) above before building the image**.
-
-## Testing
-
-From within the Docker container, the following command should work to run unit tests when run from the root of the repository:
-
-```bash
-python -m pytest
-```
-
-Using Docker, run the following if the image has not been built yet:
-
-```bash
- docker build -f app/Dockerfile_python -t pitchfork .
-```
-
-To run the tests, run:
-
-```bash
- docker run pitchfork -m pytest
-```
+Specify your environment variables according to your own RDS instance username and password, host (endpoint), port, and database name.
