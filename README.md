@@ -167,9 +167,9 @@ To create the database in the location configured in `config.py` run:
 
 By default, `python run.py create_db` creates a database at `sqlite:///data/albums.db`.
 
-#### Adding songs
+#### Adding albums
 
-To add songs manually to the database:
+To add albums manually to the database:
 
 ```bash
 python run.py ingest \
