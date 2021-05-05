@@ -84,7 +84,7 @@ def upload_file_to_s3(local_path, s3path):
         logger.info("Data uploaded from %s to %s", local_path, s3path)
 
 
-def upload_to_s3_pandas(local_path, s3path, sep=";"):
+def upload_to_s3_pandas(local_path, s3path, sep=","):
     """
     Upload a pandas.DataFrame to S3.
 
@@ -124,7 +124,7 @@ def download_file_from_s3(local_path, s3path):
         logger.info("Data downloaded from %s to %s", s3path, local_path)
 
 
-def download_from_s3_pandas(local_path, s3path, sep=";"):
+def download_from_s3_pandas(local_path, s3path, sep=","):
     """
     Download a pandas.DataFrame from S3.
 
@@ -159,7 +159,7 @@ def download_raw_data(local_destination=DEFAULT_RAW_DATA_PATH):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--sep", default=";", help="CSV separator if using pandas")
+    parser.add_argument("--sep", default=",", help="CSV separator if using pandas")
     parser.add_argument(
         "-p",
         "--pandas",
