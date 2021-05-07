@@ -96,7 +96,7 @@ The dataset is released under the [Creative Commons Attribution 4.0 Internationa
 
 #### Configure S3 credentials
 
-Interacting with S3 requires your credentials to be loaded as environment variables:
+Interacting with S3 requires your credentials to be loaded as environment variables. You may find it convenient to put a file with the following information in `config/local/` (where it will not sync with git) and then `source` this file to set these fields.
 
 ```bash
 export AWS_ACCESS_KEY_ID="MY_ACCESS_KEY_ID"
@@ -110,7 +110,7 @@ export AWS_SECRET_ACCESS_KEY="MY_SECRET_ACCESS_KEY"
 #### Download raw data and upload to S3
 
 ```bash
-docker run -e AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY pitchfork src/load_data.py
+docker run -e AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY pitchfork run.py load_data
 ```
 
 By default, this will download the original data to `data/raw/P4KxSpotify.csv` and then upload into the S3 bucket `s3://2021-msia423-rice-brian/raw/P4KxSpotify.csv`. Alternative paths can be configured with `--local_path` or `--s3path`. Instead of uploading to S3, you may download from S3 by including the flag `--download`. Finally, `pandas` may be used to read the data by including `--pandas` (and optionally `--sep <VALUE>`).
@@ -119,7 +119,7 @@ By default, this will download the original data to `data/raw/P4KxSpotify.csv` a
 
 #### Configure environment variables
 
-The database can be created and configured differently depending on the values of a few environment variables:
+The database can be created and configured differently depending on the values of a few environment variables. Again, I recommend sourcing from a secret config file in `config/local/`
 
 ```bash
 export MYSQL_USER="MY_USERNAME"
@@ -129,6 +129,8 @@ export MYSQL_PORT="MY_PORT"
 export MYSQL_DATABASE="MY_DATABASE"
 ```
 
+These variables are interpreted to create a SQLAlchemy database URI (an "engine string"). So instead of specifying all these variables, you can also pass this engine string directly as a command-line argument.
+
 #### Create the database
 
 To create the database in the location configured in `config/flaskconfig.py` run:
@@ -137,12 +139,26 @@ To create the database in the location configured in `config/flaskconfig.py` run
 
 By default, `python run.py create_db` creates a local SQLite database at `sqlite:///data/msia423_db.db`.
 
+If you know the engine string already, you can simply run:
+
+`docker run pitchfork run.py create_db --engine_string <MY_ENGINE_STRING>`
+
 ##### Local SQLite database
 
 A local SQLite database can be created for development and local testing. It does not require a username or password and replaces the host and port with the path to the database file:
 
 `engine_string = 'sqlite:///data/msia423_db.db'`
 
+Keep in mind that if the local database is created inside of Docker, it will remain in the writable layer unless a persistent storage drive is mounted. Assuming the current working directory is the root level of this repository:
+
+`docker run -v "$(pwd)"/data/:/app/data/ pitchfork run.py create_db`
+
 ##### RDS instance
 
 Specify your environment variables according to your own RDS instance username and password, host (endpoint), port, and database name.
+
+### Testing
+
+To run `pytest` unit tests in a Docker container, first build the image as described above and then run:
+
+`docker run pitchfork -m pytest`
