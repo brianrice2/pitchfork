@@ -1,56 +1,10 @@
 import os
 
 import botocore
-import numpy as np
 import pytest
 import pandas as pd
 
 from src import load_data
-
-
-# Manually-checked characteristics of raw dataset
-RAW_DATA_NROWS = 18403
-RAW_DATA_NCOLS = 18
-RAW_DATA_COLNAMES = [
-    "artist",
-    "album",
-    "reviewauthor",
-    "score",
-    "releaseyear",
-    "reviewdate",
-    "recordlabel",
-    "genre",
-    "danceability",
-    "energy",
-    "key",
-    "loudness",
-    "speechiness",
-    "acousticness",
-    "instrumentalness",
-    "liveness",
-    "valence",
-    "tempo",
-]
-RAW_DATA_DTYPES = [
-    np.dtype("O"),
-    np.dtype("O"),
-    np.dtype("O"),
-    np.dtype("float64"),
-    np.dtype("float64"),
-    np.dtype("O"),
-    np.dtype("O"),
-    np.dtype("O"),
-    np.dtype("float64"),
-    np.dtype("float64"),
-    np.dtype("float64"),
-    np.dtype("float64"),
-    np.dtype("float64"),
-    np.dtype("float64"),
-    np.dtype("float64"),
-    np.dtype("float64"),
-    np.dtype("float64"),
-    np.dtype("float64")
-]
 
 
 @pytest.fixture
@@ -66,17 +20,17 @@ def raw_data_as_df(local_destination=load_data.DEFAULT_RAW_DATA_PATH):
 
 def test_raw_data_dimensions(raw_data_as_df):
     """Raw data has the expected dimensions."""
-    assert raw_data_as_df.shape == (RAW_DATA_NROWS, RAW_DATA_NCOLS)
+    assert raw_data_as_df.shape == (pytest.RAW_DATA_NROWS, pytest.RAW_DATA_NCOLS)
 
 
 def test_raw_data_columns(raw_data_as_df):
     """Raw data has the expected columns."""
-    assert raw_data_as_df.columns.to_list() == RAW_DATA_COLNAMES
+    assert raw_data_as_df.columns.to_list() == pytest.RAW_DATA_COLNAMES
 
 
 def test_raw_data_dtypes(raw_data_as_df):
     """Raw data has the expected column data types."""
-    assert raw_data_as_df.dtypes.to_list() == RAW_DATA_DTYPES
+    assert raw_data_as_df.dtypes.to_list() == pytest.RAW_DATA_DTYPES
 
 
 def test_parse_s3():

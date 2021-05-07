@@ -85,8 +85,7 @@ The dataset is released under the [Creative Commons Attribution 4.0 Internationa
 ├── src/                              <- Source data for the project 
 │
 ├── test/                             <- Files necessary for running model tests (see documentation below) 
-│
-├── app.py                            <- Flask wrapper for running the model 
+│ 
 ├── run.py                            <- Simplifies the execution of one or more of the src scripts  
 ├── requirements.txt                  <- Python package dependencies 
 ```
