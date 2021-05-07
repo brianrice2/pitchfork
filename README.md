@@ -132,7 +132,7 @@ export MYSQL_DATABASE="MY_DATABASE"
 
 To create the database in the location configured in `config.py` run:
 
-`docker run -e MYSQL_HOST -e MYSQL_PORT -e MYSQL_USER -e MYSQL_PASSWORD -e MYSQL_DATABSE pitchfork run.py create_db`
+`docker run -e MYSQL_HOST -e MYSQL_PORT -e MYSQL_USER -e MYSQL_PASSWORD -e MYSQL_DATABASE pitchfork run.py create_db`
 
 By default, `python run.py create_db` creates a database at `sqlite:///data/msia423_db.db`.
 
