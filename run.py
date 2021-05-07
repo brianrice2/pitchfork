@@ -33,7 +33,7 @@ if __name__ == "__main__":
     sb_ingest = subparsers.add_parser("ingest", description="Add data to database")
     sb_ingest.add_argument(
         "--engine_string",
-        default="sqlite:///data/msia423_db.db",
+        default=SQLALCHEMY_DATABASE_URI,
         help="SQLAlchemy connection URI for database",
     )
     sb_ingest.add_argument("--album", default="Run the Jewels 2", help="Album title")
@@ -109,10 +109,6 @@ if __name__ == "__main__":
         create_db(args.engine_string)
     elif sp_used == "delete_db":
         delete_db(args.engine_string)
-    elif sp_used == "load_dataset":
-        album_manager = AlbumManager(engine_string=args.engine_string)
-        album_manager.load_dataset(args.file)
-        album_manager.close()
     elif sp_used == "ingest":
         album_manager = AlbumManager(engine_string=args.engine_string)
         album_manager.add_album(
@@ -135,6 +131,10 @@ if __name__ == "__main__":
             args.valence,
             args.tempo,
         )
+        album_manager.close()
+    elif sp_used == "load_dataset":
+        album_manager = AlbumManager(engine_string=args.engine_string)
+        album_manager.load_dataset(args.file)
         album_manager.close()
     else:
         parser.print_help()
