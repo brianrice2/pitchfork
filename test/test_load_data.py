@@ -1,6 +1,7 @@
 import os
 
 import botocore
+import numpy as np
 import pytest
 import pandas as pd
 
@@ -30,6 +31,26 @@ RAW_DATA_COLNAMES = [
     "valence",
     "tempo",
 ]
+RAW_DATA_DTYPES = [
+    np.dtype("O"),
+    np.dtype("O"),
+    np.dtype("O"),
+    np.dtype("float64"),
+    np.dtype("float64"),
+    np.dtype("O"),
+    np.dtype("O"),
+    np.dtype("O"),
+    np.dtype("float64"),
+    np.dtype("float64"),
+    np.dtype("float64"),
+    np.dtype("float64"),
+    np.dtype("float64"),
+    np.dtype("float64"),
+    np.dtype("float64"),
+    np.dtype("float64"),
+    np.dtype("float64"),
+    np.dtype("float64")
+]
 
 
 @pytest.fixture
@@ -51,6 +72,11 @@ def test_raw_data_dimensions(raw_data_as_df):
 def test_raw_data_columns(raw_data_as_df):
     """Raw data has the expected columns."""
     assert raw_data_as_df.columns.to_list() == RAW_DATA_COLNAMES
+
+
+def test_raw_data_dtypes(raw_data_as_df):
+    """Raw data has the expected column data types."""
+    assert raw_data_as_df.dtypes.to_list() == RAW_DATA_DTYPES
 
 
 def test_parse_s3():
