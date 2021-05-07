@@ -8,6 +8,7 @@ SQLALCHEMY_TRACK_MODIFICATIONS = True
 HOST = "0.0.0.0"
 SQLALCHEMY_ECHO = False  # If True, SQL queries will be echoed/printed
 MAX_ROWS_SHOW = 100
+DEFAULT_LOCAL_DATABASE = "sqlite:///data/msia423_db.db"
 
 # Connection string
 DB_HOST = os.environ.get("MYSQL_HOST")
@@ -20,7 +21,7 @@ SQLALCHEMY_DATABASE_URI = os.environ.get("SQLALCHEMY_DATABASE_URI")
 if SQLALCHEMY_DATABASE_URI is not None:
     pass
 elif DB_HOST is None:
-    SQLALCHEMY_DATABASE_URI = "sqlite:///data/msia423_db.db"
+    SQLALCHEMY_DATABASE_URI = DEFAULT_LOCAL_DATABASE
 else:
     SQLALCHEMY_DATABASE_URI = "{dialect}://{user}:{pw}@{host}:{port}/{db}".format(
         dialect=DB_DIALECT,
