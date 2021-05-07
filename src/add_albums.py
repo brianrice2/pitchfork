@@ -180,8 +180,12 @@ class AlbumManager:
                 tempo=tempo,
             )
             session.add(new_album)
-            session.commit()
-            logger.info("%s added to database", album)
+            try:
+                session.commit()
+            except sqlalchemy.exc.OperationalError:
+                logger.error("Could not find table. One possible reason: are you connected to the Northwestern VPN?")
+            else:
+                logger.info("%s added to database", album)
 
     def ingest_dataset(self, file_or_path: str) -> None:
         """
@@ -201,5 +205,9 @@ class AlbumManager:
                 row["reviewdate"] = datetime.strptime(row["reviewdate"], "%B %d %Y").date()
                 session.add(Albums(**row))
 
-        session.commit()
-        logger.info("Contents of %s added to database", file_or_path)
+        try:
+            session.commit()
+        except sqlalchemy.exc.OperationalError:
+            logger.error("Could not find table. One possible reason: are you connected to the Northwestern VPN?")
+        else:
+            logger.info("Contents of %s added to database", file_or_path)
