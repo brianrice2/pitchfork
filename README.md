@@ -120,6 +120,8 @@ By default, this will download the original data to `data/raw/P4KxSpotify.csv` a
 
 #### Configure environment variables
 
+The database can be created and configured differently depending on the values of a few environment variables:
+
 ```bash
 export MYSQL_USER="MY_USERNAME"
 export MYSQL_PASSWORD="MY_PASSWORD"
@@ -130,11 +132,11 @@ export MYSQL_DATABASE="MY_DATABASE"
 
 #### Create the database
 
-To create the database in the location configured in `config.py` run:
+To create the database in the location configured in `config/flaskconfig.py` run:
 
 `docker run -e MYSQL_HOST -e MYSQL_PORT -e MYSQL_USER -e MYSQL_PASSWORD -e MYSQL_DATABASE pitchfork run.py create_db`
 
-By default, `python run.py create_db` creates a database at `sqlite:///data/msia423_db.db`.
+By default, `python run.py create_db` creates a local SQLite database at `sqlite:///data/msia423_db.db`.
 
 ##### Local SQLite database
 
