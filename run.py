@@ -139,7 +139,7 @@ if __name__ == "__main__":
         "--download",
         default=False,
         action="store_true",
-        help="If used, will download from the source insteading of uploading",
+        help="If used, will download from the source instead of uploading",
     )
     parser.add_argument(
         "-s",
