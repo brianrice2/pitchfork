@@ -25,6 +25,8 @@ Quality Assurance: Cheng Hao Ke
     - [Create the database](#create-the-database)
       - [Local SQLite database](#local-sqlite-database)
       - [RDS instance](#rds-instance)
+    - [Ingest the data](#ingest-the-data)
+  - [Testing](#testing)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
