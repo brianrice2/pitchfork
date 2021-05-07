@@ -10,8 +10,8 @@ Welcome to pitchfork's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   modules
    src
-   app
 
 Indices and tables
 ==================

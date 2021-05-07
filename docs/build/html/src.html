@@ -2,7 +2,7 @@
 <html class="no-js">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="app module" href="app.html" /><link rel="prev" title="Welcome to pennylane’s documentation!" href="index.html" />
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="prev" title="run module" href="run.html" />
 
     <meta name="generator" content="sphinx-3.5.4, furo 2021.04.11.beta34"/>
         <title>src package - pitchfork 0.1 documentation</title>
@@ -109,8 +109,12 @@
 </form><div class="sidebar-scroll"><div class="sidebar-tree">
   <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
+<li class="toctree-l1 current has-children"><a class="reference internal" href="modules.html">2021-msia423-rice-brian-project</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="run.html">run module</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">src package</a></li>
+</ul>
+</li>
 <li class="toctree-l1 current current-page"><a class="current reference internal" href="#">src package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="app.html">app module</a></li>
 </ul>
 
 </div>
@@ -139,7 +143,7 @@
 <p>Manages Flask &lt;-&gt; SQLAlchemy connection and adds data to database.</p>
 <dl class="py method">
 <dt id="src.add_albums.AlbumManager.add_album">
-<code class="sig-name descname"><span class="pre">add_album</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">album</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">artist</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reviewauthor</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">score</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">releaseyear</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reviewdate</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recordlabel</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">genre</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">danceability</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">energy</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loudness</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">speechiness</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">acousticness</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instrumentalness</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">liveness</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">valence</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tempo</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> → <span class="pre">None</span><a class="reference internal" href="_modules/src/add_albums.html#AlbumManager.add_album"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.add_albums.AlbumManager.add_album" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">add_album</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">album</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">artist</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reviewauthor</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">score</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">releaseyear</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reviewdate</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">datetime.datetime</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recordlabel</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">genre</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">danceability</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">energy</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loudness</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">speechiness</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">acousticness</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instrumentalness</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">liveness</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">valence</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tempo</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> → <span class="pre">None</span><a class="reference internal" href="_modules/src/add_albums.html#AlbumManager.add_album"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.add_albums.AlbumManager.add_album" title="Permalink to this definition">¶</a></dt>
 <dd><p>Seeds an existing database with additional albums.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -180,8 +184,8 @@
 </dl>
 </dd></dl>
 <dl class="py method">
-<dt id="src.add_albums.AlbumManager.load_dataset">
-<code class="sig-name descname"><span class="pre">load_dataset</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_or_path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> → <span class="pre">None</span><a class="reference internal" href="_modules/src/add_albums.html#AlbumManager.load_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.add_albums.AlbumManager.load_dataset" title="Permalink to this definition">¶</a></dt>
+<dt id="src.add_albums.AlbumManager.ingest_dataset">
+<code class="sig-name descname"><span class="pre">ingest_dataset</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_or_path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> → <span class="pre">None</span><a class="reference internal" href="_modules/src/add_albums.html#AlbumManager.ingest_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.add_albums.AlbumManager.ingest_dataset" title="Permalink to this definition">¶</a></dt>
 <dd><p>Seeds an existing database with entries from a CSV file.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -298,10 +302,7 @@
 </div>
 <div class="section" id="module-src.load_data">
 <span id="src-load-data-module"></span><h2>src.load_data module<a class="headerlink" href="#module-src.load_data" title="Permalink to this headline">¶</a></h2>
-<p>Load and read data to/from a local filesystem and S3 bucket.</p>
-<p>Default behavior uploads the raw dataset from the local filesystem to my
-(Brian’s) S3 bucket. Additional options allow configuration for downloading
-instead or using different source/destination filepaths.</p>
+<p>Move data between a local filesystem and S3 bucket.</p>
 <p>Copyright 2020, Chloe Mawer</p>
 <dl class="py function">
 <dt id="src.load_data.download_file_from_s3">
@@ -325,7 +326,7 @@ instead or using different source/destination filepaths.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>local_path</strong> (<em>str</em>) – Destination file or path on local machine</p></li>
 <li><p><strong>s3path</strong> (<em>str</em>) – File or path to download from S3</p></li>
-<li><p><strong>sep</strong> (<em>str</em><em>, </em><em>optional</em>) – Field separator in S3 file. Defaults to “;”.</p></li>
+<li><p><strong>sep</strong> (<em>str</em><em>, </em><em>optional</em>) – Field separator in S3 file. Defaults to “,”.</p></li>
 </ul>
 </dd>
 </dl>
@@ -378,7 +379,7 @@ instead or using different source/destination filepaths.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>local_path</strong> (<em>[</em><em>type</em><em>]</em>) – [description]</p></li>
 <li><p><strong>s3path</strong> (<em>[</em><em>type</em><em>]</em>) – [description]</p></li>
-<li><p><strong>sep</strong> (<em>str</em><em>, </em><em>optional</em>) – [description]. Defaults to “;”.</p></li>
+<li><p><strong>sep</strong> (<em>str</em><em>, </em><em>optional</em>) – [description]. Defaults to “,”.</p></li>
 </ul>
 </dd>
 </dl>
@@ -393,23 +394,15 @@ instead or using different source/destination filepaths.</p>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="app.html">
-              <div class="page-info">
-                <div class="context">
-                  <span>Next</span>
-                </div>
-                <div class="title">app module</div>
-              </div>
-              <svg><use href="#svg-arrow-right"></use></svg>
-            </a>
-          <a class="prev-page" href="index.html">
+          
+          <a class="prev-page" href="run.html">
               <svg><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Home</div>
+                <div class="title">run module</div>
                 
               </div>
             </a>
