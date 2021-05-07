@@ -98,7 +98,7 @@ def upload_to_s3_pandas(local_path, s3path, sep=","):
     Args:
         local_path ([type]): [description]
         s3path ([type]): [description]
-        sep (str, optional): [description]. Defaults to ";".
+        sep (str, optional): [description]. Defaults to ",".
     """
     df = pd.read_csv(local_path, sep=sep)
 
@@ -138,7 +138,7 @@ def download_from_s3_pandas(local_path, s3path, sep=","):
     Args:
         local_path (str): Destination file or path on local machine
         s3path (str): File or path to download from S3
-        sep (str, optional): Field separator in S3 file. Defaults to ";".
+        sep (str, optional): Field separator in S3 file. Defaults to ",".
     """
     try:
         df = pd.read_csv(s3path, sep=sep)
