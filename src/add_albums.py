@@ -2,7 +2,6 @@ import csv
 import logging.config
 
 import sqlalchemy
-import pandas as pd
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, DateTime, Float, Integer, String, MetaData
 from sqlalchemy.orm import sessionmaker

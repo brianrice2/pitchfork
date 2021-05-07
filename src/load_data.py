@@ -1,13 +1,8 @@
 """
 Move data between a local filesystem and S3 bucket.
 
-Default behavior uploads the raw dataset from the local filesystem to my
-(Brian's) S3 bucket. Additional options allow configuration for downloading
-instead or using different source/destination filepaths.
-
 Copyright 2020, Chloe Mawer
 """
-import argparse
 import logging
 import re
 import requests
