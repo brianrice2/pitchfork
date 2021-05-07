@@ -3,7 +3,7 @@ Move data between a local filesystem and S3 bucket.
 
 Copyright 2020, Chloe Mawer
 """
-import logging
+import logging.config
 import re
 import requests
 
@@ -11,9 +11,7 @@ import boto3
 import botocore
 import pandas as pd
 
-logging.basicConfig(
-    format="%(asctime)s %(name)-12s %(levelname)-8s %(message)s", level=logging.DEBUG
-)
+logger = logging.getLogger(__name__)
 
 # Limit unnecessary logs from dependencies
 logging.getLogger("aiobotocore").setLevel(logging.ERROR)
@@ -25,12 +23,8 @@ logging.getLogger("s3fs").setLevel(logging.ERROR)
 logging.getLogger("s3transfer").setLevel(logging.ERROR)
 logging.getLogger("urllib3").setLevel(logging.ERROR)
 
-logger = logging.getLogger("s3")
-
 MISSING_AWS_CREDENTIALS_MSG = "Please provide AWS credentials via AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY environment variables."
-RAW_DATA_SOURCE_URL = (
-    "https://zenodo.org/record/3603330/files/output-data.csv?download=1"
-)
+RAW_DATA_SOURCE_URL = "https://zenodo.org/record/3603330/files/output-data.csv?download=1"
 
 
 def parse_s3(s3path):

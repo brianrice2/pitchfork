@@ -18,7 +18,7 @@ from src.load_data import (
 )
 from config.flaskconfig import SQLALCHEMY_DATABASE_URI
 
-logging.config.fileConfig("config/logging/local.conf")
+logging.config.fileConfig("config/logging/local.conf", disable_existing_loggers=False)
 logger = logging.getLogger("pitchfork-pipeline")
 
 DEFAULT_RAW_DATA_PATH = "data/raw/P4KxSpotify.csv"

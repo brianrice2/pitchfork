@@ -1,14 +1,14 @@
 import csv
 import logging.config
+from datetime import date, datetime
 
 import sqlalchemy
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, DateTime, Float, Integer, String, MetaData
+from sqlalchemy import Column, Date, Float, Integer, String
 from sqlalchemy.orm import sessionmaker
 from flask_sqlalchemy import SQLAlchemy
 
 logger = logging.getLogger(__name__)
-logger.setLevel("INFO")
 
 Base = declarative_base()
 
@@ -24,7 +24,7 @@ class Albums(Base):
     reviewauthor = Column(String(50), nullable=False)
     score = Column(Float(), nullable=False)
     releaseyear = Column(Integer())
-    reviewdate = Column(String(25))
+    reviewdate = Column(Date())
     recordlabel = Column(String(100))
     genre = Column(String(50))
     danceability = Column(Float())
@@ -111,7 +111,7 @@ class AlbumManager:
         reviewauthor: str,
         score: float,
         releaseyear: int,
-        reviewdate: str,
+        reviewdate: datetime,
         recordlabel: str,
         genre: str,
         danceability: float,
@@ -151,30 +151,37 @@ class AlbumManager:
         Returns:
             None
         """
-        session = self.session
-        new_album = Albums(
-            album=album,
-            artist=artist,
-            reviewauthor=reviewauthor,
-            score=score,
-            releaseyear=releaseyear,
-            reviewdate=reviewdate,
-            recordlabel=recordlabel,
-            genre=genre,
-            danceability=danceability,
-            energy=energy,
-            key=key,
-            loudness=loudness,
-            speechiness=speechiness,
-            acousticness=acousticness,
-            instrumentalness=instrumentalness,
-            liveness=liveness,
-            valence=valence,
-            tempo=tempo,
-        )
-        session.add(new_album)
-        session.commit()
-        logger.info("%s added to database", album)
+        try:
+            # Parse datetime
+            reviewdate = datetime.strptime(reviewdate, "%B %d %Y").date()
+        except ValueError:
+            logger.error("Failed to parse the given reviewdate %s. Aborting.", reviewdate)
+        else:
+            # Add to database
+            session = self.session
+            new_album = Albums(
+                album=album,
+                artist=artist,
+                reviewauthor=reviewauthor,
+                score=score,
+                releaseyear=releaseyear,
+                reviewdate=reviewdate,
+                recordlabel=recordlabel,
+                genre=genre,
+                danceability=danceability,
+                energy=energy,
+                key=key,
+                loudness=loudness,
+                speechiness=speechiness,
+                acousticness=acousticness,
+                instrumentalness=instrumentalness,
+                liveness=liveness,
+                valence=valence,
+                tempo=tempo,
+            )
+            session.add(new_album)
+            session.commit()
+            logger.info("%s added to database", album)
 
     def ingest_dataset(self, file_or_path: str) -> None:
         """
@@ -188,12 +195,11 @@ class AlbumManager:
         """
         session = self.session
 
-        new_albums = []
         with open(file_or_path, "r") as file:
             reader = csv.DictReader(file)
             for row in reader:
-                new_albums.append(Albums(**row))
-        session.add_all(new_albums)
+                row["reviewdate"] = datetime.strptime(row["reviewdate"], "%B %d %Y").date()
+                session.add(Albums(**row))
 
         session.commit()
         logger.info("Contents of %s added to database", file_or_path)
