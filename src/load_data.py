@@ -61,13 +61,14 @@ def parse_s3(s3path):
         s3bucket = m.group(1)
         s3path = m.group(2)
     except AttributeError:
-        # If no matches are found, `m` is None
+        # If no match is found, `m` is None
         logger.error(
             "The provided S3 location could not be parsed. Please confirm your" +
             "path follows the structure \"s3://bucket/path\""
         )
-
-    return s3bucket, s3path
+        raise
+    else:
+        return s3bucket, s3path
 
 
 def upload_file_to_s3(local_path, s3path):
