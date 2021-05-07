@@ -32,16 +32,10 @@ logging.getLogger("urllib3").setLevel(logging.ERROR)
 
 logger = logging.getLogger("s3")
 
+MISSING_AWS_CREDENTIALS_MSG = "Please provide AWS credentials via AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY environment variables."
 RAW_DATA_SOURCE_URL = (
     "https://zenodo.org/record/3603330/files/output-data.csv?download=1"
 )
-
-DEFAULT_RAW_DATA_PATH = "data/raw/P4KxSpotify.csv"
-DEFAULT_S3_BUCKET = "s3://2021-msia423-rice-brian/"
-DEFAULT_S3_PATH = "raw/P4KxSpotify.csv"
-DEFAULT_S3_LOCATION = DEFAULT_S3_BUCKET + DEFAULT_S3_PATH
-
-MISSING_AWS_CREDENTIALS_MSG = "Please provide AWS credentials via AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY environment variables."
 
 
 def parse_s3(s3path):
@@ -169,59 +163,3 @@ def download_raw_data(local_destination):
         logger.warning(
             "Unsuccesful status code received when trying to download raw datafile"
         )
-
-
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--sep", default=",", help="CSV separator if using pandas")
-    parser.add_argument(
-        "-p",
-        "--pandas",
-        default=False,
-        action="store_true",
-        help="If used, will load data via pandas",
-    )
-    parser.add_argument(
-        "-d",
-        "--download",
-        default=False,
-        action="store_true",
-        help="If used, will download from the source insteading of uploading",
-    )
-    parser.add_argument(
-        "-s",
-        "--s3path",
-        default=DEFAULT_S3_LOCATION,
-        help="Location in S3 for source/destination file",
-    )
-    parser.add_argument(
-        "-l",
-        "--local_path",
-        default=DEFAULT_RAW_DATA_PATH,
-        help="Location in local filesystem for source/destination file",
-    )
-    parser.add_argument(
-        "-r",
-        "--raw_data",
-        default=False,
-        action="store_true",
-        help="If used, will download the raw dataset from the internet",
-    )
-    args = parser.parse_args()
-
-    # Assume data exists already in S3
-    if args.download:
-        if args.pandas:
-            download_from_s3_pandas(args.local_path, args.s3path, args.sep)
-        else:
-            download_file_from_s3(args.local_path, args.s3path)
-    # Assume data does _not_ exist already in S3
-    else:
-        # Download data from internet
-        download_raw_data(args.local_path)
-
-        # Upload to S3
-        if args.pandas:
-            upload_to_s3_pandas(args.local_path, args.s3path, args.sep)
-        else:
-            upload_file_to_s3(args.local_path, args.s3path)
