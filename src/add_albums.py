@@ -177,7 +177,7 @@ class AlbumManager:
         session.commit()
         logger.info("%s added to database", album)
 
-    def load_dataset(self, file_or_path: str) -> None:
+    def ingest_dataset(self, file_or_path: str) -> None:
         """
         Seeds an existing database with entries from a CSV file.
 
