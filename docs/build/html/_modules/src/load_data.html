@@ -212,9 +212,9 @@
 <span class="sd">    Upload a pandas.DataFrame to S3.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        local_path ([type]): [description]</span>
-<span class="sd">        s3path ([type]): [description]</span>
-<span class="sd">        sep (str, optional): [description]. Defaults to ",".</span>
+<span class="sd">        local_path (str): File name or path to local file to upload.</span>
+<span class="sd">        s3path (str): Destination path in S3.</span>
+<span class="sd">        sep (str, optional): Field separator. Defaults to ",".</span>
 <span class="sd">    """</span>
     <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">local_path</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="n">sep</span><span class="p">)</span>
 

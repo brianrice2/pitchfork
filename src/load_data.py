@@ -80,9 +80,9 @@ def upload_to_s3_pandas(local_path, s3path, sep=","):
     Upload a pandas.DataFrame to S3.
 
     Args:
-        local_path ([type]): [description]
-        s3path ([type]): [description]
-        sep (str, optional): [description]. Defaults to ",".
+        local_path (str): File name or path to local file to upload.
+        s3path (str): Destination path in S3.
+        sep (str, optional): Field separator. Defaults to ",".
     """
     df = pd.read_csv(local_path, sep=sep)
 
