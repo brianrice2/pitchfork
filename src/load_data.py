@@ -61,6 +61,9 @@ def upload_file_to_s3(local_path, s3path):
     Args:
         local_path (str): File name or path to local file to upload.
         s3path (str): Destination path in S3.
+
+    Returns:
+        None
     """
     s3bucket, s3_just_path = parse_s3(s3path)
 
@@ -83,6 +86,9 @@ def upload_to_s3_pandas(local_path, s3path, sep=","):
         local_path (str): File name or path to local file to upload.
         s3path (str): Destination path in S3.
         sep (str, optional): Field separator. Defaults to ",".
+
+    Returns:
+        None
     """
     df = pd.read_csv(local_path, sep=sep)
 
@@ -101,6 +107,9 @@ def download_file_from_s3(local_path, s3path):
     Args:
         local_path (str): Destination file or path on local machine
         s3path (str): File or path to download from S3
+
+    Returns:
+        None
     """
     s3bucket, s3_just_path = parse_s3(s3path)
 
@@ -123,6 +132,9 @@ def download_from_s3_pandas(local_path, s3path, sep=","):
         local_path (str): Destination file or path on local machine
         s3path (str): File or path to download from S3
         sep (str, optional): Field separator in S3 file. Defaults to ",".
+
+    Returns:
+        None
     """
     try:
         df = pd.read_csv(s3path, sep=sep)
@@ -139,6 +151,9 @@ def download_raw_data(local_destination):
 
     Args:
         local_destination (str): Destination file or path on local machine
+
+    Returns:
+        None
     """
     response = requests.get(RAW_DATA_SOURCE_URL)
     if response.status_code == 200:

@@ -1,6 +1,6 @@
 import csv
 import logging.config
-from datetime import date, datetime
+from datetime import datetime
 
 import sqlalchemy
 from sqlalchemy.ext.declarative import declarative_base
@@ -39,7 +39,7 @@ class Albums(Base):
     tempo = Column(Float())
 
     def __repr__(self):
-        return "Album(%r, %r)" % album, artist
+        return "Album(%r, %r)" % self.album, self.artist
 
 
 def create_db(engine_string: str) -> None:
@@ -48,6 +48,9 @@ def create_db(engine_string: str) -> None:
 
     Args:
         engine_string (str): Engine string
+
+    Returns:
+        None
     """
     engine = sqlalchemy.create_engine(engine_string)
 
@@ -61,6 +64,9 @@ def delete_db(engine_string: str) -> None:
 
     Args:
         engine_string (str): Engine string
+
+    Returns:
+        None
     """
     engine = sqlalchemy.create_engine(engine_string)
 
@@ -93,7 +99,7 @@ class AlbumManager:
             )
 
     def __repr__(self):
-        return "AlbumManager({self.session!r})"
+        return "AlbumManager(%r)" % self.session
 
     def close(self) -> None:
         """
