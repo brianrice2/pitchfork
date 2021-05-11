@@ -156,13 +156,11 @@ def download_raw_data(local_destination):
         None
     """
     response = requests.get(RAW_DATA_SOURCE_URL)
-    if response.status_code == 200:
+    if response.ok:
         with open(local_destination, "wb") as file:
             for chunk in response:
                 file.write(chunk)
         logger.info("Downloaded raw data to %s", local_destination)
-    elif response.status_code < 200:
-        logger.warning("Request received but not immediately processed (unusual)")
     else:
         logger.warning(
             "Unsuccesful status code received when trying to download raw datafile"
