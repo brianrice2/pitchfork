@@ -193,6 +193,9 @@
 <span class="sd">    Args:</span>
 <span class="sd">        local_path (str): File name or path to local file to upload.</span>
 <span class="sd">        s3path (str): Destination path in S3.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        None</span>
 <span class="sd">    """</span>
     <span class="n">s3bucket</span><span class="p">,</span> <span class="n">s3_just_path</span> <span class="o">=</span> <span class="n">parse_s3</span><span class="p">(</span><span class="n">s3path</span><span class="p">)</span>
 
@@ -215,6 +218,9 @@
 <span class="sd">        local_path (str): File name or path to local file to upload.</span>
 <span class="sd">        s3path (str): Destination path in S3.</span>
 <span class="sd">        sep (str, optional): Field separator. Defaults to ",".</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        None</span>
 <span class="sd">    """</span>
     <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">local_path</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="n">sep</span><span class="p">)</span>
 
@@ -233,6 +239,9 @@
 <span class="sd">    Args:</span>
 <span class="sd">        local_path (str): Destination file or path on local machine</span>
 <span class="sd">        s3path (str): File or path to download from S3</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        None</span>
 <span class="sd">    """</span>
     <span class="n">s3bucket</span><span class="p">,</span> <span class="n">s3_just_path</span> <span class="o">=</span> <span class="n">parse_s3</span><span class="p">(</span><span class="n">s3path</span><span class="p">)</span>
 
@@ -255,6 +264,9 @@
 <span class="sd">        local_path (str): Destination file or path on local machine</span>
 <span class="sd">        s3path (str): File or path to download from S3</span>
 <span class="sd">        sep (str, optional): Field separator in S3 file. Defaults to ",".</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        None</span>
 <span class="sd">    """</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">s3path</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="n">sep</span><span class="p">)</span>
@@ -271,6 +283,9 @@
 
 <span class="sd">    Args:</span>
 <span class="sd">        local_destination (str): Destination file or path on local machine</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        None</span>
 <span class="sd">    """</span>
     <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">RAW_DATA_SOURCE_URL</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span><span class="p">:</span>
