@@ -39,7 +39,7 @@ class Albums(Base):
     tempo = Column(Float())
 
     def __repr__(self):
-        return "Album(%r, %r)" % self.album, self.artist
+        return "Album(%r, %r)" % (self.album, self.artist)
 
 
 def create_db(engine_string: str) -> None:
