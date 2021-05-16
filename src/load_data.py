@@ -23,7 +23,8 @@ logging.getLogger("s3fs").setLevel(logging.ERROR)
 logging.getLogger("s3transfer").setLevel(logging.ERROR)
 logging.getLogger("urllib3").setLevel(logging.ERROR)
 
-MISSING_AWS_CREDENTIALS_MSG = "Please provide AWS credentials via AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY environment variables."
+MISSING_AWS_CREDENTIALS_MSG = """Please provide AWS credentials via AWS_ACCESS_KEY_ID
+and AWS_SECRET_ACCESS_KEY environment variables."""
 RAW_DATA_SOURCE_URL = "https://zenodo.org/record/3603330/files/output-data.csv?download=1"
 
 
