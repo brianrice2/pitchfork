@@ -6,10 +6,17 @@ __pycache__/
 .idea/
 .log
 .ipynb_checkpoints/
+.vscode/
+*.egg-info/
 
+.env
+.venv
+env/
+venv/
+.mypy_cache/
 
 data/*
-!data/sample/
-!data/external/
+!data/raw/
+!data/cleaned/
 config/local
 !.gitkeep

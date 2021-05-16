@@ -4,27 +4,31 @@ Developer: Brian Rice
 
 Quality Assurance: Cheng Hao Ke
 
----
-
-<!-- toc -->
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**
 
 - [Project charter](#project-charter)
+  - [Background](#background)
+  - [Vision](#vision)
+  - [Mission](#mission)
+  - [Data source](#data-source)
+  - [Success criteria](#success-criteria)
 - [Directory structure](#directory-structure)
 - [Running the app](#running-the-app)
-  * [1. Initialize the database](#1-initialize-the-database)
-    + [Create the database with a single song](#create-the-database)
-    + [Adding additional songs](#adding-songs)
-    + [Defining your engine string](#defining-your-engine-string)
+  - [1. Load data into S3](#1-load-data-into-s3)
+    - [Configure S3 credentials](#configure-s3-credentials)
+    - [Build the Docker image](#build-the-docker-image)
+    - [Download raw data and upload to S3](#download-raw-data-and-upload-to-s3)
+  - [2. Initialize the database](#2-initialize-the-database)
+    - [Configure environment variables](#configure-environment-variables)
+    - [Create the database](#create-the-database)
       - [Local SQLite database](#local-sqlite-database)
-  * [2. Configure Flask app](#2-configure-flask-app)
-  * [3. Run the Flask app](#3-run-the-flask-app)
-- [Running the app in Docker](#running-the-app-in-docker)
-  * [1. Build the image](#1-build-the-image)
-  * [2. Run the container](#2-run-the-container)
-  * [3. Kill the container](#3-kill-the-container)
-- [Testing](#testing)
+      - [RDS instance](#rds-instance)
+    - [Ingest the data](#ingest-the-data)
+  - [Testing](#testing)
 
-<!-- tocstop -->
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 ## Project charter
 
@@ -51,196 +55,169 @@ The dataset is released under the [Creative Commons Attribution 4.0 Internationa
 ### Success criteria
 
 1. Model performance metric
-    + Target RMSE of 1.0. The predicted rating should be, on average, within 1.0 of the actual rating so that users have a somewhat accurate estimate of the Pitchfork rating. It's important for readers and musicians to have some confidence in the output, so they can better contextualize Pitchfork's rating or create music (respectively). Given that lyrics are a key part of a musical composition but are not included in this dataset, this may need to be negotiated later on.
-2. Business metrics
-    + Average actual Pitchfork rating. Results will be compared via (randomized) A/B testing between musicians who did use the app versus those who did not. 
-    + Average change in Pitchfork reader sentiment. A random selection of Pitchfork readers will be surveyed on their feeling of understanding the Pitchfork review process, exposed to the app, and then surveyed again. Given sufficiently quick turnaround between the first and second surveys, the impact of other variables besides the app should be negligible.
 
-## Directory structure 
+  - Target RMSE of 1.0. The predicted rating should be, on average, within 1.0 of the actual rating so that users have a somewhat accurate estimate of the Pitchfork rating. It's important for readers and musicians to have some confidence in the output, so they can better contextualize Pitchfork's rating or create music (respectively). Given that lyrics are a key part of a musical composition but are not included in this dataset, this may need to be negotiated later on.
+
+2. Business metrics
+
+  - Average change in Pitchfork reader sentiment. A random selection of Pitchfork readers will be surveyed on their feeling of understanding the Pitchfork review process, exposed to the app, and then surveyed again. Given sufficiently quick turnaround between the first and second surveys, the impact of other variables besides the app should be negligible.
+
+## Directory structure
 
 ```
 ├── README.md                         <- You are here
-├── app
-│   ├── static/                       <- CSS, JS files that remain static
-│   ├── templates/                    <- HTML (or other code) that is templated and changes based on a set of inputs
-│   ├── boot.sh                       <- Start up script for launching app in Docker container.
-│   ├── Dockerfile                    <- Dockerfile for building image to run app  
 │
-├── config                            <- Directory for configuration files 
-│   ├── local/                        <- Directory for keeping environment variables and other local configurations that *do not sync** to Github 
+├── config                            <- Configuration files 
+│   ├── local/                        <- Private configuration files and environment variable settings (not tracked)
 │   ├── logging/                      <- Configuration of python loggers
-│   ├── flaskconfig.py                <- Configurations for Flask API 
+│   ├── flaskconfig.py                <- Configurations for Flask API
 │
-├── data                              <- Folder that contains data used or generated. Only the external/ and sample/ subdirectories are tracked by git. 
-│   ├── external/                     <- External data sources, usually reference data,  will be synced with git
-│   ├── sample/                       <- Sample data used for code development and testing, will be synced with git
+├── data                              <- Data files used for analysis or by the app itself
+│   ├── cleaned/                      <- Processed data
+│   ├── raw/                          <- Raw datafile
 │
-├── deliverables/                     <- Any white papers, presentations, final work products that are presented or delivered to a stakeholder 
-│
-├── docs/                             <- Sphinx documentation based on Python docstrings. Optional for this project. 
-│
-├── figures/                          <- Generated graphics and figures to be used in reporting, documentation, etc
-│
-├── models/                           <- Trained model objects (TMOs), model predictions, and/or model summaries
+├── docs/                             <- Sphinx documentation based on Python docstrings
 │
 ├── notebooks/
-│   ├── archive/                      <- Develop notebooks no longer being used.
+│   ├── archive/                      <- Develop notebooks no longer being used
 │   ├── deliver/                      <- Notebooks shared with others / in final state
-│   ├── develop/                      <- Current notebooks being used in development.
-│   ├── template.ipynb                <- Template notebook for analysis with useful imports, helper functions, and SQLAlchemy setup. 
-│
-├── references/                       <- Any reference material relevant to the project
+│   ├── develop/                      <- Current notebooks being used in development
 │
 ├── src/                              <- Source data for the project 
 │
-├── test/                             <- Files necessary for running model tests (see documentation below) 
-│
-├── app.py                            <- Flask wrapper for running the model 
+├── tests/                            <- Files necessary for running model tests (see documentation below) 
+│ 
+├── Dockerfile                        <- Builds the Docker image for running commands in a container
 ├── run.py                            <- Simplifies the execution of one or more of the src scripts  
 ├── requirements.txt                  <- Python package dependencies 
 ```
 
 ## Running the app
 
-### 1. Initialize the database
+### 1. Load data into S3
+
+#### Configure S3 credentials
+
+Interacting with S3 requires your credentials to be loaded as environment variables. You may find it convenient to put a file with the following information in `config/local/` (where it will not sync with git) and then `source` this file to set these fields.
+
+```bash
+export AWS_ACCESS_KEY_ID="MY_ACCESS_KEY_ID"
+export AWS_SECRET_ACCESS_KEY="MY_SECRET_ACCESS_KEY"
+```
+
+#### Build the Docker image
+
+```bash
+docker build -t pitchfork .
+````
+
+#### Download raw data and upload to S3
+
+```bash
+docker run -e AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY pitchfork run.py load_data
+```
+
+By default, this will download the original data to `data/raw/P4KxSpotify.csv` and then upload into the S3 bucket `s3://2021-msia423-rice-brian/raw/P4KxSpotify.csv`.
+
+Optional arguments:
+
+- `--local_path` and `--s3path` for configuring alternative paths
+- `--download` flag for downloading instead of uploading
+- `--pandas` flag for uploading or downloading using `pandas`
+  - `--sep` for specifying a different separator (default "," as the dataset is CSV-formatted)
+
+### 2. Initialize the database
+
+#### Configure environment variables
+
+The database can be created and configured differently depending on the values of a few environment variables. Again, I recommend sourcing from a secret config file in `config/local/`.
+
+```bash
+export MYSQL_USER="MY_USERNAME"
+export MYSQL_PASSWORD="MY_PASSWORD"
+export MYSQL_HOST="MY_HOST"
+export MYSQL_PORT="MY_PORT"
+export MYSQL_DATABASE="MY_DATABASE"
+```
+
+These variables are interpreted to create a SQLAlchemy database URI (an "engine string"). So instead of specifying all these variables, you can also pass this engine string directly as a command-line argument (see below).
 
 #### Create the database
 
-To create the database in the location configured in `config.py` run: 
-
-`python run.py create_db --engine_string=<engine_string>`
-
-By default, `python run.py create_db` creates a database at `sqlite:///data/tracks.db`.
-
-#### Adding songs
-
-To add songs to the database:
-
-`python run.py ingest --engine_string=<engine_string> --artist=<ARTIST> --title=<TITLE> --album=<ALBUM>`
-
-By default, `python run.py ingest` adds *Minor Cause* by Emancipator to the SQLite database located in `sqlite:///data/tracks.db`.
-
-#### Defining your engine string
-
-A SQLAlchemy database connection is defined by a string with the following format:
-
-`dialect+driver://username:password@host:port/database`
-
-The `+dialect` is optional and if not provided, a default is used. For a more detailed description of what `dialect` and `driver` are and how a connection is made, you can see the documentation [here](https://docs.sqlalchemy.org/en/13/core/engines.html). We will cover SQLAlchemy and connection strings in the SQLAlchemy lab session on 
-
-##### Local SQLite database 
-
-A local SQLite database can be created for development and local testing. It does not require a username or password and replaces the host and port with the path to the database file: 
-
-```python
-engine_string = 'sqlite:///data/tracks.db'
-```
-
-The three `///` denote that it is a relative path to where the code is being run (which is from the root of this directory).
-
-You can also define the absolute path with four `////`, for example:
-
-```python
-engine_string = 'sqlite://///Users/cmawer/Repos/2020-MSIA423-template-repository/data/tracks.db'
-```
-
-
-### 2. Configure Flask app 
-
-`config/flaskconfig.py` holds the configurations for the Flask app. It includes the following configurations:
-
-```python
-DEBUG = True  # Keep True for debugging, change to False when moving to production 
-LOGGING_CONFIG = 'config/logging/local.conf'  # Path to file that configures Python logger
-HOST = '0.0.0.0' # the host that is running the app. 0.0.0.0 when running locally 
-PORT = 5000  # What port to expose app on. Must be the same as the port exposed in app/Dockerfile 
-SQLALCHEMY_DATABASE_URI = 'sqlite:///data/tracks.db'  # URI (engine string) for database that contains tracks
-APP_NAME = 'penny-lane'
-SQLALCHEMY_TRACK_MODIFICATIONS = True 
-SQLALCHEMY_ECHO = False  # If true, SQL for queries made will be printed
-MAX_ROWS_SHOW = 100 # Limits the number of rows returned from the database 
-```
-
-### 3. Run the Flask app 
-
-To run the Flask app, run: 
+To create the database in the location configured in `config/flaskconfig.py` run:
 
 ```bash
-python app.py
+docker run \
+  -e MYSQL_HOST \
+  -e MYSQL_PORT \
+  -e MYSQL_USER \
+  -e MYSQL_PASSWORD \
+  -e MYSQL_DATABASE \
+  pitchfork run.py create_db
 ```
 
-You should now be able to access the app at http://0.0.0.0:5000/ in your browser.
+By default, `python run.py create_db` creates a local SQLite database at `sqlite:///data/msia423_db.db`.
 
-## Running the app in Docker 
-
-### 1. Build the image 
-
-The Dockerfile for running the flask app is in the `app/` folder. To build the image, run from this directory (the root of the repo): 
+If you know the engine string already, you can simply run:
 
 ```bash
- docker build -f app/Dockerfile -t pennylane .
+docker run pitchfork run.py create_db --engine_string <MY_ENGINE_STRING>
 ```
 
-This command builds the Docker image, with the tag `pennylane`, based on the instructions in `app/Dockerfile` and the files existing in this directory.
- 
-### 2. Run the container 
+##### Local SQLite database
 
-To run the app, run from this directory: 
+A local SQLite database can be created for development and local testing. It does not require a username or password and replaces the host and port with the path to the database file:
 
-```bash
-docker run -p 5000:5000 --name test pennylane
-```
-You should now be able to access the app at http://0.0.0.0:5000/ in your browser.
+`engine_string = 'sqlite:///data/msia423_db.db'`
 
-This command runs the `pennylane` image as a container named `test` and forwards the port 5000 from container to your laptop so that you can access the flask app exposed through that port. 
-
-If `PORT` in `config/flaskconfig.py` is changed, this port should be changed accordingly (as should the `EXPOSE 5000` line in `app/Dockerfile`)
-
-### 3. Kill the container 
-
-Once finished with the app, you will need to kill the container. To do so: 
+Keep in mind that if the local database is created inside of Docker, it will remain in the writable layer unless a persistent storage drive is mounted. Assuming the current working directory is the root level of this repository:
 
 ```bash
-docker kill test 
+docker run -v "$(pwd)"/data/:/app/data/ pitchfork run.py create_db
 ```
 
-where `test` is the name given in the `docker run` command.
+##### RDS instance
 
-### Example using `python3` as an entry point
+Specify your environment variables according to your own RDS instance username and password, host (endpoint), port, and database name.
 
-We have included another example of a Dockerfile, `app/Dockerfile_python` that has `python3` as the entry point such that when you run the image as a container, the command `python3` is run, followed by the arguments given in the `docker run` command after the image name. 
-
-To build this image: 
+You can inspect the database from a MySQL client via Docker:
 
 ```bash
- docker build -f app/Dockerfile_python -t pennylane .
+docker run -it --rm \
+    mysql:5.7.33 \
+    mysql \
+    -h$MYSQL_HOST \
+    -u$MYSQL_USER \
+    -p$MYSQL_PASSWORD
 ```
 
-then run the `docker run` command: 
+And then inside MySQL:
 
-```bash
-docker run -p 5000:5000 --name test pennylane app.py
+```MySQL
+SHOW DATABASES;
+USE msia423_db;
+SHOW TABLES;
+SELECT * FROM albums;
 ```
 
-The new image defines the entry point command as `python3`. Building the sample PennyLane image this way will require initializing the database prior to building the image so that it is copied over, rather than created when the container is run. Therefore, please **do the step [Create the database](#create-the-database) above before building the image**.
+#### Ingest the data
 
-# Testing
-
-From within the Docker container, the following command should work to run unit tests when run from the root of the repository: 
+To load a sample album into the database after it has been created, use:
 
 ```bash
-python -m pytest
-``` 
-
-Using Docker, run the following, if the image has not been built yet:
-
-```bash
- docker build -f app/Dockerfile_python -t pennylane .
+docker run \
+  -e MYSQL_HOST \
+  -e MYSQL_PORT \
+  -e MYSQL_USER \
+  -e MYSQL_PASSWORD \
+  -e MYSQL_DATABASE \
+  pitchfork run.py ingest_album
 ```
 
-To run the tests, run: 
+### Testing
+
+To run the unit tests in a Docker container, first build the image as described above and then run:
 
 ```bash
- docker run penny -m pytest
+docker run pitchfork -m pytest
 ```
- 

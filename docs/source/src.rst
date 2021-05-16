@@ -4,14 +4,21 @@ src package
 Submodules
 ----------
 
-src.add\_songs module
----------------------
+src.add\_albums module
+----------------------
 
-.. automodule:: src.add_songs
+.. automodule:: src.add_albums
    :members:
    :undoc-members:
    :show-inheritance:
 
+src.load\_data module
+---------------------
+
+.. automodule:: src.load_data
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
 Module contents
 ---------------
