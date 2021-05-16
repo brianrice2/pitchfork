@@ -132,34 +132,34 @@ if __name__ == "__main__":
     sp_load_data = subparsers.add_parser(
         "load_data", description="Download data and move between S3"
     )
-    parser.add_argument("--sep", default=",", help="CSV separator if using pandas")
-    parser.add_argument(
+    sp_load_data.add_argument("--sep", default=",", help="CSV separator if using pandas")
+    sp_load_data.add_argument(
         "-p",
         "--pandas",
         default=False,
         action="store_true",
         help="If used, will load data via pandas",
     )
-    parser.add_argument(
+    sp_load_data.add_argument(
         "-d",
         "--download",
         default=False,
         action="store_true",
         help="If used, will download from the source instead of uploading",
     )
-    parser.add_argument(
+    sp_load_data.add_argument(
         "-s",
         "--s3path",
         default=DEFAULT_S3_LOCATION,
         help="Location in S3 for source/destination file",
     )
-    parser.add_argument(
+    sp_load_data.add_argument(
         "-l",
         "--local_path",
         default=DEFAULT_RAW_DATA_PATH,
         help="Location in local filesystem for source/destination file",
     )
-    parser.add_argument(
+    sp_load_data.add_argument(
         "-r",
         "--raw_data",
         default=False,
