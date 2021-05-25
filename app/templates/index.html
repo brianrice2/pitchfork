@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link href="static/basic.css" rel="stylesheet">
+    <title>p4k.ai</title>
+</head>
+
+<body onload="document.getElementById('browseButton').click();">
+    <h2>
+         <a href="{{ url_for('index') }}">p4k.ai: Pitchfork Rating Prediction</a>
+    </h2>
+
+    <!-- Tab links -->
+    <div class="tab">
+        <button class="tablinks" onclick="openTab(event, 'Browse')" id="browseButton">Browse</button>
+        <button class="tablinks" onclick="openTab(event, 'Predict')" id="predictButton">Predict</button>
+    </div>
+
+    <!-- Browse albums -->
+    <div id="Browse" class="tabcontent">
+        <!-- Display album data -->
+        <table className="tablePadding" id="browseAlbums">
+             <thead>
+                <tr class="header">
+                    <th style="width:15%;">Artist</th>
+                    <th style="width:25%;">Album</th>
+                    <th style="width:15%;">Review Author</th>
+                    <th style="width:5%;">Score</th>
+                    <th style="width:5%;">Release Year</th>
+                    <th style="width:10%;">Review Date</th>
+                    <th style="width:15%;">Record Label</th>
+                    <th style="width:10%;">Genre</th>
+                </tr>
+             </thead>
+
+             <tbody>
+                {% for album in albums %}
+                   <tr>
+                       <td style="text-align:left">{{ album.artist }}</td>
+                       <td style="text-align:left">{{ album.album }}</td>
+                       <td style="text-align:left">{{ album.reviewauthor }}</td>
+                       <td style="text-align:center">{{ album.score }}</td>
+                       <td style="text-align:center">{{ album.releaseyear }}</td>
+                       <td style="text-align:center">{{ album.reviewdate }}</td>
+                       <td style="text-align:left">{{ album.recordlabel }}</td>
+                       <td style="text-align:center">{{ album.genre }}</td>
+                   </tr>
+                {% endfor %}
+             </tbody>
+        </table>
+
+        <hr/> <!-- Horizontal line -->
+
+        <h3>Add a new album</h3>
+
+        <!-- Users may submit new albums -->
+        <form action="{{ url_for('add_entry') }}" method=post class=add-entry>
+            <dl>
+                <input type=text size=15 name=artist placeholder="Artist">
+                <input type=text size=15 name=album placeholder="Album">
+                <input type=text size=15 name=score placeholder="Score">
+                <input type=text size=15 name=releaseyear placeholder="Release Year">
+                <input type=text size=15 name=reviewdate placeholder="Review Date">
+                <input type=text size=15 name=recordlabel placeholder="Record Label">
+                <input type=text size=15 name=genre placeholder="Genre">
+                <input type=text size=15 name=danceability placeholder="Danceability">
+                <input type=text size=15 name=energy placeholder="Energy">
+                <input type=text size=15 name=key placeholder="Key">
+                <input type=text size=15 name=loudness placeholder="Loudness">
+                <input type=text size=15 name=speechiness placeholder="Speechiness">
+                <input type=text size=15 name=acousticness placeholder="Acousticness">
+                <input type=text size=15 name=instrumentalness placeholder="Instrumentalness">
+                <input type=text size=15 name=liveness placeholder="Liveness">
+                <input type=text size=15 name=valence placeholder="Valence">
+                <input type=text size=15 name=tempo placeholder="Tempo">
+                <input type=submit value=Add>
+            </dl>
+        </form>
+    </div>
+
+    <!-- Predict rating for new albums -->
+    <div id="Predict" class="tabcontent">
+        <p>Enter album information below to predict its rating.</p>
+
+        <form action="{{ url_for('predict_rating') }}" method=post class=predict>
+            <!-- Organize form data with a table -->
+            <table className="tablePadding" id="inputAlbums">
+                <thead>
+                    <tr class="header">
+                        <th style="width:30%;">Feature</th>
+                        <th style="width:40%;">Input</th>
+                        <th style="width:30%;">Value</th>
+                    </tr>
+                </thead>
+
+                <!-- Input fields -->
+                <tbody>
+                    <tr>
+                        <td>Release Year</td>
+                        <td><input type=text size=25 name=releaseyear placeholder="Release Year"></td>
+                    </tr>
+                    <tr>
+                        <td>Genre</td>
+                        <td><input type=text size=25 name=genre placeholder="Genre"></td>
+                    </tr>
+                    <tr>
+                        <td>Danceability</td>
+                        <td><input type="range" min="0" max="1" value="0.5" step="0.01" class="slider" id="rangeDanceability" name=danceability></td>
+                        <td style="text-align:center;"><span id="valueDanceability"></span></td>
+                    </tr>
+                    <tr>
+                        <td>Energy</td>
+                        <td><input type="range" min="0" max="1" value="0.5" step="0.01" class="slider" id="rangeEnergy" name=energy></td>
+                        <td style="text-align:center;"><span id="valueEnergy"></span></td>
+                    </tr>
+                    <tr>
+                        <td>Key</td>
+                        <td><input type="range" min="0" max="7" value="3.5" step="0.1" class="slider" id="rangeKey" name=key></td>
+                        <td style="text-align:center;"><span id="valueKey"></span></td>
+                    </tr>
+                    <tr>
+                        <td>Loudness</td>
+                        <td><input type="range" min="-60" max="5" value="-3" step="1" class="slider" id="rangeLoudness" name=loudness></td>
+                        <td style="text-align:center;"><span id="valueLoudness"></span></td>
+                    </tr>
+                    <tr>
+                        <td>Speechiness</td>
+                        <td><input type="range" min="0" max="1" value="0.5" step="0.01" class="slider" id="rangeSpeechiness" name=speechiness></td>
+                        <td style="text-align:center;"><span id="valueSpeechiness"></span></td>
+                    </tr>
+                    <tr>
+                        <td>Acousticness</td>
+                        <td><input type="range" min="0" max="1" value="0.5" step="0.01" class="slider" id="rangeAcousticness" name=acousticness></td>
+                        <td style="text-align:center;"><span id="valueAcousticness"></span></td>
+                    </tr>
+                    <tr>
+                        <td>Instrumentalness</td>
+                        <td><input type="range" min="0" max="1" value="0.5" step="0.01" class="slider" id="rangeInstrumentalness" name=instrumentalness></td>
+                        <td style="text-align:center;"><span id="valueInstrumentalness"></span></td>
+                    </tr>
+                    <tr>
+                        <td>Liveness</td>
+                        <td><input type="range" min="0" max="1" value="0.5" step="0.01" class="slider" id="rangeLiveness" name=liveness></td>
+                        <td style="text-align:center;"><span id="valueLiveness"></span></td>
+                    </tr>
+                    <tr>
+                        <td>Valence</td>
+                        <td><input type="range" min="0" max="1" value="0.5" step="0.01" class="slider" id="rangeValence" name=valence></td>
+                        <td style="text-align:center;"><span id="valueValence"></span></td>
+                    </tr>
+                    <tr>
+                        <td>Tempo</td>
+                        <td><input type="range" min="60" max="220" value="120" class="slider" id="rangeTempo" name=tempo></td>
+                        <td style="text-align:center;"><span id="valueTempo"></span></td>
+                    </tr>
+                 </tbody>
+            </table>
+
+            <br><input type=submit id="submitPrediction" value=Predict>
+        </form>
+    </div>
+
+    <script>
+        // Input sliders
+        var sliderDanceability = document.getElementById("rangeDanceability");
+        var outputDanceability = document.getElementById("valueDanceability");
+        outputDanceability.innerHTML = sliderDanceability.value; // Display the default slider value
+        // Update the current slider value each time you drag the slider handle
+        sliderDanceability.oninput = function() { outputDanceability.innerHTML = this.value; }
+
+        var sliderEnergy = document.getElementById("rangeEnergy");
+        var outputEnergy = document.getElementById("valueEnergy");
+        outputEnergy.innerHTML = sliderEnergy.value;
+        sliderEnergy.oninput = function() { outputEnergy.innerHTML = this.value; }
+
+        var sliderKey = document.getElementById("rangeKey");
+        var outputKey = document.getElementById("valueKey");
+        outputKey.innerHTML = sliderKey.value;
+        sliderKey.oninput = function() { outputKey.innerHTML = this.value; }
+        
+        var sliderLoudness = document.getElementById("rangeLoudness");
+        var outputLoudness = document.getElementById("valueLoudness");
+        outputLoudness.innerHTML = sliderLoudness.value;
+        sliderLoudness.oninput = function() { outputLoudness.innerHTML = this.value; }
+
+        var sliderSpeechiness = document.getElementById("rangeSpeechiness");
+        var outputSpeechiness = document.getElementById("valueSpeechiness");
+        outputSpeechiness.innerHTML = sliderSpeechiness.value;
+        sliderSpeechiness.oninput = function() { outputSpeechiness.innerHTML = this.value; }
+
+        var sliderAcousticness = document.getElementById("rangeAcousticness");
+        var outputAcousticness = document.getElementById("valueAcousticness");
+        outputAcousticness.innerHTML = sliderAcousticness.value;
+        sliderAcousticness.oninput = function() { outputAcousticness.innerHTML = this.value; }
+
+        var sliderInstrumentalness = document.getElementById("rangeInstrumentalness");
+        var outputInstrumentalness = document.getElementById("valueInstrumentalness");
+        outputInstrumentalness.innerHTML = sliderInstrumentalness.value;
+        sliderInstrumentalness.oninput = function() { outputInstrumentalness.innerHTML = this.value; }
+
+        var sliderLiveness = document.getElementById("rangeLiveness");
+        var outputLiveness = document.getElementById("valueLiveness");
+        outputLiveness.innerHTML = sliderLiveness.value;
+        sliderLiveness.oninput = function() { outputLiveness.innerHTML = this.value; }
+
+        var sliderValence = document.getElementById("rangeValence");
+        var outputValence = document.getElementById("valueValence");
+        outputValence.innerHTML = sliderValence.value;
+        sliderValence.oninput = function() { outputValence.innerHTML = this.value; }
+
+        var sliderTempo = document.getElementById("rangeTempo");
+        var outputTempo = document.getElementById("valueTempo");
+        outputTempo.innerHTML = sliderTempo.value;
+        sliderTempo.oninput = function() { outputTempo.innerHTML = this.value; }
+    </script>
+
+</body>
+</html>
+
+<!-- Toggle between tabs -->
+<script>
+    function openTab(evt, tabName) {
+        // Declare all variables
+        var i, tabcontent, tablinks;
+
+        // Get all elements with class="tabcontent" and hide them
+        tabcontent = document.getElementsByClassName("tabcontent");
+        for (i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = "none";
+        }
+
+        // Get all elements with class="tablinks" and remove the class "active"
+        tablinks = document.getElementsByClassName("tablinks");
+        for (i = 0; i < tablinks.length; i++) {
+            tablinks[i].className = tablinks[i].className.replace(" active", "");
+        }
+
+        // Show the current tab and add an "active" class to the button that opened the tab
+        document.getElementById(tabName).style.display = "block";
+        evt.currentTarget.className += " active";
+    }
+</script>
