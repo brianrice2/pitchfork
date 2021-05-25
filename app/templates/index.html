@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link href="static/basic.css" rel="stylesheet">
+    <title>p4k.ai</title>
+</head>
+
+<body onload="openTab(event, 'Browse')">
+    <h2>
+         <a href="{{ url_for('index') }}">p4k.ai: Pitchfork Rating Prediction</a>
+    </h2>
+
+    <!-- Tab links -->
+    <div class="tab">
+        <button class="tablinks" onclick="openTab(event, 'Browse')">Browse</button>
+        <button class="tablinks" onclick="openTab(event, 'Predict')">Predict</button>
+    </div>
+
+    <!-- Browse albums -->
+    <div id="Browse" class="tabcontent">
+        <!-- Display album data -->
+        <table className="tablePadding" id="browseAlbums">
+             <thead>
+                <tr class="header">
+                    <th style="width:15%;">Artist</th>
+                    <th style="width:25%;">Album</th>
+                    <th style="width:15%;">Review Author</th>
+                    <th style="width:5%;">Score</th>
+                    <th style="width:5%;">Release Year</th>
+                    <th style="width:10%;">Review Date</th>
+                    <th style="width:15%;">Record Label</th>
+                    <th style="width:10%;">Genre</th>
+                </tr>
+             </thead>
+
+             <tbody>
+                {% for album in albums %}
+                   <tr>
+                       <td style="text-align:left">{{ album.artist }}</td>
+                       <td style="text-align:left">{{ album.album }}</td>
+                       <td style="text-align:left">{{ album.reviewauthor }}</td>
+                       <td style="text-align:center">{{ album.score }}</td>
+                       <td style="text-align:center">{{ album.releaseyear }}</td>
+                       <td style="text-align:center">{{ album.reviewdate }}</td>
+                       <td style="text-align:left">{{ album.recordlabel }}</td>
+                       <td style="text-align:center">{{ album.genre }}</td>
+                   </tr>
+                {% endfor %}
+             </tbody>
+        </table>
+
+        <hr/> <!-- Horizontal line -->
+
+        <h3>Add a new album</h3>
+
+        <!-- Users may submit new albums -->
+        <form action="{{ url_for('add_entry') }}" method=post class=add-entry>
+            <dl>
+                <input type=text size=15 name=artist placeholder="Artist">
+                <input type=text size=15 name=album placeholder="Album">
+                <input type=text size=15 name=album placeholder="Score">
+                <input type=text size=15 name=album placeholder="Release Year">
+                <input type=text size=15 name=album placeholder="Review Date">
+                <input type=text size=15 name=album placeholder="Record Label">
+                <input type=text size=15 name=album placeholder="Genre">
+                <input type=text size=15 name=album placeholder="Danceability">
+                <input type=text size=15 name=album placeholder="Energy">
+                <input type=text size=15 name=album placeholder="Key">
+                <input type=text size=15 name=album placeholder="Loudness">
+                <input type=text size=15 name=album placeholder="Speechiness">
+                <input type=text size=15 name=album placeholder="Acousticness">
+                <input type=text size=15 name=album placeholder="Instrumentalness">
+                <input type=text size=15 name=album placeholder="Liveness">
+                <input type=text size=15 name=album placeholder="Valence">
+                <input type=text size=15 name=album placeholder="Tempo">
+                <input type=submit value=Add>
+            </dl>
+        </form>
+    </div>
+
+    <!-- Predict rating for new albums -->
+    <div id="Predict" class="tabcontent">
+        <p>Predict scores for an album.</p>
+
+        <form action="{{ url_for('predict_rating') }}" method=post class=add-entry>
+            <dl>
+                <input type=text size=15 name=artist placeholder="Artist">
+                <input type=text size=15 name=album placeholder="Album">
+                <input type=text size=15 name=album placeholder="Score">
+                <input type=text size=15 name=album placeholder="Release Year">
+                <input type=text size=15 name=album placeholder="Review Date">
+                <input type=text size=15 name=album placeholder="Record Label">
+                <input type=text size=15 name=album placeholder="Genre">
+                <input type=text size=15 name=album placeholder="Danceability">
+                <input type=text size=15 name=album placeholder="Energy">
+                <input type=text size=15 name=album placeholder="Key">
+                <input type=text size=15 name=album placeholder="Loudness">
+                <input type=text size=15 name=album placeholder="Speechiness">
+                <input type=text size=15 name=album placeholder="Acousticness">
+                <input type=text size=15 name=album placeholder="Instrumentalness">
+                <input type=text size=15 name=album placeholder="Liveness">
+                <input type=text size=15 name=album placeholder="Valence">
+                <input type=text size=15 name=album placeholder="Tempo">
+                <input type=submit value=Add>
+            </dl>
+        </form>
+    </div>
+
+</body>
+</html>
+
+<!-- Toggle between tabs -->
+<script>
+    function openTab(evt, tabName) {
+        // Declare all variables
+        var i, tabcontent, tablinks;
+
+        // Get all elements with class="tabcontent" and hide them
+        tabcontent = document.getElementsByClassName("tabcontent");
+        for (i = 0; i < tabcontent.length; i++) {
+        tabcontent[i].style.display = "none";
+        }
+
+        // Get all elements with class="tablinks" and remove the class "active"
+        tablinks = document.getElementsByClassName("tablinks");
+        for (i = 0; i < tablinks.length; i++) {
+        tablinks[i].className = tablinks[i].className.replace(" active", "");
+        }
+
+        // Show the current tab and add an "active" class to the button that opened the tab
+        document.getElementById(tabName).style.display = "block";
+        evt.currentTarget.className += " active";
+    }
+</script>

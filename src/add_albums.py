@@ -183,7 +183,7 @@ class AlbumManager:
                 instrumentalness=instrumentalness,
                 liveness=liveness,
                 valence=valence,
-                tempo=tempo,
+                tempo=tempo
             )
             session.add(new_album)
             try:
