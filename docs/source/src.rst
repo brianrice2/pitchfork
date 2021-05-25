@@ -12,10 +12,34 @@ src.add\_albums module
    :undoc-members:
    :show-inheritance:
 
+src.clean module
+----------------
+
+.. automodule:: src.clean
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 src.load\_data module
 ---------------------
 
 .. automodule:: src.load_data
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+src.model module
+----------------
+
+.. automodule:: src.model
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+src.serialize module
+--------------------
+
+.. automodule:: src.serialize
    :members:
    :undoc-members:
    :show-inheritance:

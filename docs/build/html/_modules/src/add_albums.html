@@ -110,6 +110,7 @@
   <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../modules.html">2021-msia423-rice-brian-project</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../app.html">app module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../run.html">run module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../src.html">src package</a></li>
 </ul>
@@ -171,7 +172,7 @@
     <span class="n">tempo</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Float</span><span class="p">())</span>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="s2">"Album(</span><span class="si">%r</span><span class="s2">, </span><span class="si">%r</span><span class="s2">)"</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">album</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">artist</span></div>
+        <span class="k">return</span> <span class="s2">"Album(</span><span class="si">%r</span><span class="s2">, </span><span class="si">%r</span><span class="s2">)"</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">album</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">artist</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="create_db"><a class="viewcode-back" href="../../src.html#src.add_albums.create_db">[docs]</a><span class="k">def</span> <span class="nf">create_db</span><span class="p">(</span><span class="n">engine_string</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -315,7 +316,7 @@
                 <span class="n">instrumentalness</span><span class="o">=</span><span class="n">instrumentalness</span><span class="p">,</span>
                 <span class="n">liveness</span><span class="o">=</span><span class="n">liveness</span><span class="p">,</span>
                 <span class="n">valence</span><span class="o">=</span><span class="n">valence</span><span class="p">,</span>
-                <span class="n">tempo</span><span class="o">=</span><span class="n">tempo</span><span class="p">,</span>
+                <span class="n">tempo</span><span class="o">=</span><span class="n">tempo</span>
             <span class="p">)</span>
             <span class="n">session</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">new_album</span><span class="p">)</span>
             <span class="k">try</span><span class="p">:</span>

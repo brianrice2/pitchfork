@@ -110,6 +110,7 @@
   <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1 current has-children"><a class="reference internal" href="modules.html">2021-msia423-rice-brian-project</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="app.html">app module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="run.html">run module</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">src package</a></li>
 </ul>
@@ -306,6 +307,151 @@
 </dl>
 </dd></dl>
 </div>
+<div class="section" id="module-src.clean">
+<span id="src-clean-module"></span><h2>src.clean module<a class="headerlink" href="#module-src.clean" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="src.clean.approximate_missing_year">
+<code class="sig-prename descclassname"><span class="pre">src.clean.</span></code><code class="sig-name descname"><span class="pre">approximate_missing_year</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fill_column</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'releaseyear'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">approximate_with</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'reviewdate'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/clean.html#approximate_missing_year"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.clean.approximate_missing_year" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fill missing values in one column with the year of another datetime column.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code>) – DataFrame to clean</p></li>
+<li><p><strong>fill_column</strong> – </p></li>
+<li><p><strong>approximate_with</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Cleaned <code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py function">
+<dt id="src.clean.bucket_values_together">
+<code class="sig-prename descclassname"><span class="pre">src.clean.</span></code><code class="sig-name descname"><span class="pre">bucket_values_together</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colname</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">replace_with</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/clean.html#bucket_values_together"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.clean.bucket_values_together" title="Permalink to this definition">¶</a></dt>
+<dd><p>Replace one or more values with a single value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code>) – DataFrame to clean</p></li>
+<li><p><strong>colname</strong> (<em>str</em>) – Name of column to apply transformation to</p></li>
+<li><p><strong>values</strong> (<em>iterable</em>) – Iterable of values to replace.</p></li>
+<li><p><strong>replace_with</strong> – Value to replace with.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Cleaned <code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py function">
+<dt id="src.clean.convert_datetime_to_date">
+<code class="sig-prename descclassname"><span class="pre">src.clean.</span></code><code class="sig-name descname"><span class="pre">convert_datetime_to_date</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'releaseyear'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/clean.html#convert_datetime_to_date"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.clean.convert_datetime_to_date" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove the time component of a datetime column.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code>) – DataFrame to clean</p></li>
+<li><p><strong>colname</strong> (<em>str</em><em>, </em><em>optional</em>) – Name of column to apply transformation to.
+Defaults to “releaseyear”.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Cleaned <code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py function">
+<dt id="src.clean.convert_nan_to_str">
+<code class="sig-prename descclassname"><span class="pre">src.clean.</span></code><code class="sig-name descname"><span class="pre">convert_nan_to_str</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'artist'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/clean.html#convert_nan_to_str"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.clean.convert_nan_to_str" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert an NA/missing value to the literal string “NA”.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code>) – DataFrame to clean</p></li>
+<li><p><strong>colname</strong> (<em>str</em><em>, </em><em>optional</em>) – Name of column to apply transformation to.
+Defaults to “artist”.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Cleaned <code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py function">
+<dt id="src.clean.convert_str_to_datetime">
+<code class="sig-prename descclassname"><span class="pre">src.clean.</span></code><code class="sig-name descname"><span class="pre">convert_str_to_datetime</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'releaseyear'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'%B</span> <span class="pre">%d</span> <span class="pre">%Y'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/clean.html#convert_str_to_datetime"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.clean.convert_str_to_datetime" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse a string column to datetime format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code>) – DataFrame to clean</p></li>
+<li><p><strong>colname</strong> (<em>str</em><em>, </em><em>optional</em>) – Name of column to apply transformation to.
+Defaults to “releaseyear”.</p></li>
+<li><p><strong>format</strong> (<em>str</em><em>, </em><em>optional</em>) – Datetime format of column. Defaults to “%B %d %Y”.
+For more info on these codes:
+<a class="reference external" href="https://docs.python.org/3/library/datetime.html#strftime-and-strptime-format-codes">https://docs.python.org/3/library/datetime.html#strftime-and-strptime-format-codes</a>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Cleaned <code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py function">
+<dt id="src.clean.fill_missing_manually">
+<code class="sig-prename descclassname"><span class="pre">src.clean.</span></code><code class="sig-name descname"><span class="pre">fill_missing_manually</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'recordlabel'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/clean.html#fill_missing_manually"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.clean.fill_missing_manually" title="Permalink to this definition">¶</a></dt>
+<dd><p>Manually fill missing values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code>) – DataFrame to clean</p></li>
+<li><p><strong>colname</strong> (<em>str</em><em>, </em><em>optional</em>) – Name of column to apply transformation to.
+Defaults to “recordlabel”.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Cleaned <code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py function">
+<dt id="src.clean.fill_na_with_str_missing">
+<code class="sig-prename descclassname"><span class="pre">src.clean.</span></code><code class="sig-name descname"><span class="pre">fill_na_with_str_missing</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'genre'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fill_string</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Missing'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/clean.html#fill_na_with_str_missing"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.clean.fill_na_with_str_missing" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fill NA values with a string value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code>) – DataFrame to clean</p></li>
+<li><p><strong>colname</strong> (<em>str</em><em>, </em><em>optional</em>) – Name of column to apply transformation to.
+Defaults to “genre”.</p></li>
+<li><p><strong>fill_string</strong> (<em>str</em><em>, </em><em>optional</em>) – String to replace missing values with.
+Defaults to “Missing”.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Cleaned <code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py function">
+<dt id="src.clean.strip_whitespace">
+<code class="sig-prename descclassname"><span class="pre">src.clean.</span></code><code class="sig-name descname"><span class="pre">strip_whitespace</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'recordlabel'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/clean.html#strip_whitespace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.clean.strip_whitespace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Trim extra whitespace from values in a column.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code>) – DataFrame to clean</p></li>
+<li><p><strong>colname</strong> (<em>str</em><em>, </em><em>optional</em>) – Name of column to apply transformation to.
+Defaults to “recordlabel”.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Cleaned <code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+</div>
 <div class="section" id="module-src.load_data">
 <span id="src-load-data-module"></span><h2>src.load_data module<a class="headerlink" href="#module-src.load_data" title="Permalink to this headline">¶</a></h2>
 <p>Move data between a local filesystem and S3 bucket.</p>
@@ -406,6 +552,134 @@
 </dl>
 </dd></dl>
 </div>
+<div class="section" id="module-src.model">
+<span id="src-model-module"></span><h2>src.model module<a class="headerlink" href="#module-src.model" title="Permalink to this headline">¶</a></h2>
+<p>Build, fit, evaluate, and (de)serialize predictive models.</p>
+<dl class="py function">
+<dt id="src.model.get_feature_importances">
+<code class="sig-prename descclassname"><span class="pre">src.model.</span></code><code class="sig-name descname"><span class="pre">get_feature_importances</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trained_pipeline</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">numeric_features</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/model.html#get_feature_importances"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.model.get_feature_importances" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get feature importance measures. Only applicable with tree-based models.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>trained_pipeline</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">sklearn.pipeline.Pipeline</span></code>) – Fitted model pipeline</p></li>
+<li><p><strong>numeric_features</strong> (<em>list</em><em>(</em><em>str</em><em>)</em>) – Names of numeric features</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.Series</span></code> containing each feature and its importance</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py function">
+<dt id="src.model.make_model">
+<code class="sig-prename descclassname"><span class="pre">src.model.</span></code><code class="sig-name descname"><span class="pre">make_model</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/model.html#make_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.model.make_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create an untrained GBT model for use in a <cite>sklearn.pipeline.Pipeline</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>**kwargs</strong> – Parameters to pass on to GBT constructor</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Untrained <code class="xref py py-obj docutils literal notranslate"><span class="pre">sklearn.ensemble.GradientBoostingRegressor</span></code> object</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py function">
+<dt id="src.model.make_preprocessor">
+<code class="sig-prename descclassname"><span class="pre">src.model.</span></code><code class="sig-name descname"><span class="pre">make_preprocessor</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">numeric_features</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">categorical_features</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handle_unknown</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/model.html#make_preprocessor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.model.make_preprocessor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Define preprocessing steps for input features.</p>
+<p>Performs standard scaling for numeric features and one-hot encoding for categorical
+features. All features specified for this function are processed, and _only_ these
+features are used when modeling.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>numeric_features</strong> (<em>list</em><em>(</em><em>str</em><em>)</em>) – Names of numeric features to scale</p></li>
+<li><p><strong>categorical_features</strong> (<em>list</em><em>(</em><em>str</em><em>)</em>) – Names of categorical features to one-hot encode</p></li>
+<li><p><strong>handle_unknown</strong> (<em>str</em>) – Policy for unknown categories in <cite>OneHotEncoder</cite>
+(either “handle_unknown” or “error”)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A <code class="xref py py-obj docutils literal notranslate"><span class="pre">sklearn.compose.ColumnTransformer</span></code> with the desired transformation steps</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py function">
+<dt id="src.model.parse_ratio">
+<code class="sig-prename descclassname"><span class="pre">src.model.</span></code><code class="sig-name descname"><span class="pre">parse_ratio</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ratio</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/model.html#parse_ratio"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.model.parse_ratio" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert a train-val-test ratio from X:Y:Z to list of proportions in [0, 1].</p>
+</dd></dl>
+<dl class="py function">
+<dt id="src.model.split_train_val_test">
+<code class="sig-prename descclassname"><span class="pre">src.model.</span></code><code class="sig-name descname"><span class="pre">split_train_val_test</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_col</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">train_val_test_ratio</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/model.html#split_train_val_test"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.model.split_train_val_test" title="Permalink to this definition">¶</a></dt>
+<dd><p>Partition dataset into training, validation, and testing splits.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code>) – DataFrame containing input features
+and response variable</p></li>
+<li><p><strong>target_col</strong> (<em>str</em>) – Name of column containing response variable</p></li>
+<li><p><strong>train_val_test_ratio</strong> (<em>str</em>) – Relative proportion of data for each of
+train, val, and test sets, in the form “X:Y:Z” (e.g., “6:2:2”)</p></li>
+<li><p><strong>**kwargs</strong> – Additional settings to pass on to <cite>train_test_split()</cite>
+(for example, random seed)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(X_train, X_val, X_test, y_train, y_val, y_test), each as DataFrames</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py function">
+<dt id="src.model.train_pipeline">
+<code class="sig-prename descclassname"><span class="pre">src.model.</span></code><code class="sig-name descname"><span class="pre">train_pipeline</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X_train</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_train</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/model.html#train_pipeline"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.model.train_pipeline" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create and fit a preprocessing –&gt; modeling pipeline.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X_train</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code>) – Training features</p></li>
+<li><p><strong>y_train</strong> (<em>array-like</em>) – Training targets</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A fitted <code class="xref py py-obj docutils literal notranslate"><span class="pre">sklearn.pipeline.Pipeline</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+</div>
+<div class="section" id="module-src.serialize">
+<span id="src-serialize-module"></span><h2>src.serialize module<a class="headerlink" href="#module-src.serialize" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="src.serialize.load_pipeline">
+<code class="sig-prename descclassname"><span class="pre">src.serialize.</span></code><code class="sig-name descname"><span class="pre">load_pipeline</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">load_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/serialize.html#load_pipeline"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.serialize.load_pipeline" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deserialize a fitted model pipeline.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>load_path</strong> (<em>str</em>) – Path to joblib-saved pipeline</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Fitted <code class="xref py py-obj docutils literal notranslate"><span class="pre">sklearn.pipeline.Pipeline</span></code> object</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py function">
+<dt id="src.serialize.save_pipeline">
+<code class="sig-prename descclassname"><span class="pre">src.serialize.</span></code><code class="sig-name descname"><span class="pre">save_pipeline</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pipeline</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/serialize.html#save_pipeline"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.serialize.save_pipeline" title="Permalink to this definition">¶</a></dt>
+<dd><p>Serialize a fitted model pipeline.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pipeline</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">sklearn.pipeline.Pipeline</span></code>) – Fitted model pipeline</p></li>
+<li><p><strong>save_path</strong> (<em>str</em>) – Where to save the pipeline</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+</div>
 <div class="section" id="module-src">
 <span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-src" title="Permalink to this headline">¶</a></h2>
 </div>
@@ -460,7 +734,10 @@
 <li><a class="reference internal" href="#">src package</a><ul>
 <li><a class="reference internal" href="#submodules">Submodules</a></li>
 <li><a class="reference internal" href="#module-src.add_albums">src.add_albums module</a></li>
+<li><a class="reference internal" href="#module-src.clean">src.clean module</a></li>
 <li><a class="reference internal" href="#module-src.load_data">src.load_data module</a></li>
+<li><a class="reference internal" href="#module-src.model">src.model module</a></li>
+<li><a class="reference internal" href="#module-src.serialize">src.serialize module</a></li>
 <li><a class="reference internal" href="#module-src">Module contents</a></li>
 </ul>
 </li>

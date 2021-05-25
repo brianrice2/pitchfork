@@ -1,0 +1,313 @@
+<!doctype html>
+<html class="no-js">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" />
+
+    <meta name="generator" content="sphinx-3.5.4, furo 2021.04.11.beta34"/>
+        <title>src.model - pitchfork 0.1 documentation</title>
+      <link rel="stylesheet" href="../../_static/styles/furo.css?digest=59ab60ac09ea94ccfe6deddff6d715cce948a6fc">
+    <link rel="stylesheet" href="../../_static/pygments.css">
+    <link media="(prefers-color-scheme: dark)" rel="stylesheet" href="../../_static/pygments_dark.css">
+    
+
+
+<style>
+  :root {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+  }
+
+  /* For allowing end-user-specific overrides */
+  .override-light {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  .override-dark {
+    --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+  }
+</style><link rel="stylesheet" href="../../_static/styles/furo-extensions.css?digest=d391b54134226e4196576da3bdb6dddb7e05ba2b"></head>
+  <body dir="">
+    
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+      stroke-width="1.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+      <path stroke="none" d="M0 0h24v24H0z"/>
+      <line x1="4" y1="6" x2="20" y2="6" />
+      <line x1="10" y1="12" x2="20" y2="12" />
+      <line x1="6" y1="18" x2="20" y2="18" />
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+      class="feather feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+      class="feather feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../../index.html"><div class="brand">pitchfork 0.1 documentation</div></a>
+    </div>
+    <div class="header-right">
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
+  
+  
+  <span class="sidebar-brand-text">pitchfork 0.1 documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../../search.html">
+  <input class="sidebar-search" placeholder=Search name="q">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../modules.html">2021-msia423-rice-brian-project</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../app.html">app module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../run.html">run module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../src.html">src package</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../src.html">src package</a></li>
+</ul>
+
+</div>
+</div>
+      </div>
+      
+    </div>
+  </aside>
+  <main class="main">
+    <div class="content">
+      <article role="main">
+        <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+        </label>
+        <h1>Source code for src.model</h1><div class="highlight"><pre>
+<span></span><span class="sd">"""</span>
+<span class="sd">Build, fit, evaluate, and (de)serialize predictive models.</span>
+<span class="sd">"""</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">sklearn.compose</span> <span class="kn">import</span> <span class="n">ColumnTransformer</span>
+<span class="kn">from</span> <span class="nn">sklearn.ensemble</span> <span class="kn">import</span> <span class="n">GradientBoostingRegressor</span>
+<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">mean_squared_error</span>
+<span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">train_test_split</span>
+<span class="kn">from</span> <span class="nn">sklearn.pipeline</span> <span class="kn">import</span> <span class="n">Pipeline</span>
+<span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">StandardScaler</span><span class="p">,</span> <span class="n">OneHotEncoder</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="split_train_val_test"><a class="viewcode-back" href="../../src.html#src.model.split_train_val_test">[docs]</a><span class="k">def</span> <span class="nf">split_train_val_test</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">target_col</span><span class="p">,</span> <span class="n">train_val_test_ratio</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">"""</span>
+<span class="sd">    Partition dataset into training, validation, and testing splits.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        df (:obj:`pandas.DataFrame`): DataFrame containing input features</span>
+<span class="sd">            and response variable</span>
+<span class="sd">        target_col (str): Name of column containing response variable</span>
+<span class="sd">        train_val_test_ratio (str): Relative proportion of data for each of</span>
+<span class="sd">            train, val, and test sets, in the form "X:Y:Z" (e.g., "6:2:2")</span>
+<span class="sd">        **kwargs: Additional settings to pass on to `train_test_split()`</span>
+<span class="sd">            (for example, random seed)</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        (X_train, X_val, X_test, y_train, y_val, y_test), each as DataFrames</span>
+<span class="sd">    """</span>
+    <span class="n">features</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">target_col</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">target</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">target_col</span><span class="p">]</span>
+
+    <span class="c1"># Compute sizes and split according to ratio</span>
+    <span class="n">train_size</span><span class="p">,</span> <span class="n">val_size</span><span class="p">,</span> <span class="n">test_size</span> <span class="o">=</span> <span class="n">parse_ratio</span><span class="p">(</span><span class="n">train_val_test_ratio</span><span class="p">)</span>
+    <span class="n">X_train_val</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_train_val</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span>
+        <span class="n">features</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="n">test_size</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">)</span>
+    <span class="n">X_train</span><span class="p">,</span> <span class="n">X_val</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_val</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span>
+        <span class="n">X_train_val</span><span class="p">,</span> <span class="n">y_train_val</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="p">(</span><span class="n">val_size</span> <span class="o">/</span> <span class="p">(</span><span class="n">val_size</span> <span class="o">+</span> <span class="n">train_size</span><span class="p">)),</span> <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">)</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+        <span class="s2">"Data split into train/test sets. "</span> <span class="o">+</span>
+        <span class="s2">"Shapes: X_train=</span><span class="si">%s</span><span class="s2">, X_val=</span><span class="si">%s</span><span class="s2">, X_test=</span><span class="si">%s</span><span class="s2">, y_train=</span><span class="si">%s</span><span class="s2">, y_val=</span><span class="si">%s</span><span class="s2">, y_test=</span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span>
+        <span class="p">(</span><span class="n">X_train</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="p">),</span>
+        <span class="p">(</span><span class="n">X_val</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="p">),</span>
+        <span class="p">(</span><span class="n">X_test</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="p">),</span>
+        <span class="p">(</span><span class="n">y_train</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="p">),</span>
+        <span class="p">(</span><span class="n">y_val</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="p">),</span>
+        <span class="p">(</span><span class="n">y_test</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="p">)</span>
+
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">X_train</span><span class="p">,</span> <span class="n">X_val</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_val</span><span class="p">,</span> <span class="n">y_test</span></div>
+
+
+<div class="viewcode-block" id="parse_ratio"><a class="viewcode-back" href="../../src.html#src.model.parse_ratio">[docs]</a><span class="k">def</span> <span class="nf">parse_ratio</span><span class="p">(</span><span class="n">ratio</span><span class="p">):</span>
+    <span class="sd">"""Convert a train-val-test ratio from X:Y:Z to list of proportions in [0, 1]."""</span>
+    <span class="n">sizes</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">ratio</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">":"</span><span class="p">)]</span>
+    <span class="n">sizes</span> <span class="o">=</span> <span class="p">[</span><span class="n">sizes</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mf">0.</span><span class="p">,</span> <span class="n">sizes</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sizes</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span> <span class="k">else</span> <span class="n">sizes</span>
+    <span class="n">_sum</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">sizes</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">size</span> <span class="o">/</span> <span class="n">_sum</span> <span class="k">for</span> <span class="n">size</span> <span class="ow">in</span> <span class="n">sizes</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="train_pipeline"><a class="viewcode-back" href="../../src.html#src.model.train_pipeline">[docs]</a><span class="k">def</span> <span class="nf">train_pipeline</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">):</span>
+    <span class="sd">"""</span>
+<span class="sd">    Create and fit a preprocessing --&gt; modeling pipeline.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        X_train (:obj:`pandas.DataFrame`): Training features</span>
+<span class="sd">        y_train (array-like): Training targets</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A fitted :obj:`sklearn.pipeline.Pipeline`</span>
+<span class="sd">    """</span>
+    <span class="n">preprocessor</span> <span class="o">=</span> <span class="n">make_preprocessor</span><span class="p">()</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">make_model</span><span class="p">()</span>
+    <span class="n">pipe</span> <span class="o">=</span> <span class="n">Pipeline</span><span class="p">(</span><span class="n">steps</span><span class="o">=</span><span class="p">[</span>
+        <span class="p">(</span><span class="s2">"preprocessor"</span><span class="p">,</span> <span class="n">preprocessor</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">"predictor"</span><span class="p">,</span> <span class="n">model</span><span class="p">)</span>
+    <span class="p">])</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Pipeline created successfully. Beginning training."</span><span class="p">)</span>
+
+    <span class="n">pipe</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Pipeline training complete"</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">pipe</span></div>
+
+
+<div class="viewcode-block" id="make_preprocessor"><a class="viewcode-back" href="../../src.html#src.model.make_preprocessor">[docs]</a><span class="k">def</span> <span class="nf">make_preprocessor</span><span class="p">(</span><span class="n">numeric_features</span><span class="p">,</span> <span class="n">categorical_features</span><span class="p">,</span> <span class="n">handle_unknown</span><span class="p">):</span>
+    <span class="sd">"""</span>
+<span class="sd">    Define preprocessing steps for input features.</span>
+
+<span class="sd">    Performs standard scaling for numeric features and one-hot encoding for categorical</span>
+<span class="sd">    features. All features specified for this function are processed, and _only_ these</span>
+<span class="sd">    features are used when modeling.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        numeric_features (list(str)): Names of numeric features to scale</span>
+<span class="sd">        categorical_features (list(str)): Names of categorical features to one-hot encode</span>
+<span class="sd">        handle_unknown (str): Policy for unknown categories in `OneHotEncoder`</span>
+<span class="sd">            (either "handle_unknown" or "error")</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A :obj:`sklearn.compose.ColumnTransformer` with the desired transformation steps</span>
+<span class="sd">    """</span>
+    <span class="n">numeric_transformer</span> <span class="o">=</span> <span class="n">StandardScaler</span><span class="p">()</span>
+    <span class="n">categorical_transformer</span> <span class="o">=</span> <span class="n">OneHotEncoder</span><span class="p">(</span><span class="n">handle_unknown</span><span class="o">=</span><span class="n">handle_unknown</span><span class="p">)</span>
+
+    <span class="n">preprocessor</span> <span class="o">=</span> <span class="n">ColumnTransformer</span><span class="p">(</span><span class="n">transformers</span><span class="o">=</span><span class="p">[</span>
+        <span class="p">(</span><span class="s2">"numeric"</span><span class="p">,</span> <span class="n">numeric_transformer</span><span class="p">,</span> <span class="n">numeric_features</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">"categorical"</span><span class="p">,</span> <span class="n">categorical_transformer</span><span class="p">,</span> <span class="n">categorical_features</span><span class="p">)</span>
+    <span class="p">])</span>
+    <span class="k">return</span> <span class="n">preprocessor</span></div>
+
+
+<div class="viewcode-block" id="make_model"><a class="viewcode-back" href="../../src.html#src.model.make_model">[docs]</a><span class="k">def</span> <span class="nf">make_model</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">"""</span>
+<span class="sd">    Create an untrained GBT model for use in a `sklearn.pipeline.Pipeline`.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        **kwargs: Parameters to pass on to GBT constructor</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Untrained :obj:`sklearn.ensemble.GradientBoostingRegressor` object</span>
+<span class="sd">    """</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">GradientBoostingRegressor</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">model</span></div>
+
+
+<div class="viewcode-block" id="get_feature_importances"><a class="viewcode-back" href="../../src.html#src.model.get_feature_importances">[docs]</a><span class="k">def</span> <span class="nf">get_feature_importances</span><span class="p">(</span><span class="n">trained_pipeline</span><span class="p">,</span> <span class="n">numeric_features</span><span class="p">):</span>
+    <span class="sd">"""</span>
+<span class="sd">    Get feature importance measures. Only applicable with tree-based models.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        trained_pipeline (:obj:`sklearn.pipeline.Pipeline`): Fitted model pipeline</span>
+<span class="sd">        numeric_features (list(str)): Names of numeric features</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        :obj:`pandas.Series` containing each feature and its importance</span>
+<span class="sd">    """</span>
+    <span class="n">features</span> <span class="o">=</span> <span class="n">numeric_features</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">trained_pipeline</span><span class="p">[</span><span class="s2">"preprocessor"</span><span class="p">]</span><span class="o">.</span><span class="n">transformers_</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">get_feature_names</span><span class="p">())</span>
+    <span class="n">importances</span> <span class="o">=</span> <span class="n">trained_pipeline</span><span class="p">[</span><span class="s2">"predictor"</span><span class="p">]</span><span class="o">.</span><span class="n">feature_importances_</span>
+
+    <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">importances</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">features</span><span class="p">)</span></div>
+</pre></div>
+      </article>
+      <footer>
+        
+        <div class="related-pages">
+          
+          
+        </div>
+
+        <div class="related-information">
+              Copyright &#169; 2020, Chloe Mawer
+            |
+            Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
+              and
+              <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+              <a href="https://github.com/pradyunsg/furo">Furo theme</a>.
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer no-toc">
+      
+      
+      
+    </aside>
+  </main>
+</div>
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/scripts/main.js?digest=e931d09b2a40c1bb82b542effe772014573baf67"></script></body>
+</html>

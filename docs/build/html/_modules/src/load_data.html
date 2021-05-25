@@ -110,6 +110,7 @@
   <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../modules.html">2021-msia423-rice-brian-project</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../app.html">app module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../run.html">run module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../src.html">src package</a></li>
 </ul>
@@ -155,7 +156,8 @@
 <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">"s3transfer"</span><span class="p">)</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span><span class="p">)</span>
 <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">"urllib3"</span><span class="p">)</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span><span class="p">)</span>
 
-<span class="n">MISSING_AWS_CREDENTIALS_MSG</span> <span class="o">=</span> <span class="s2">"Please provide AWS credentials via AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY environment variables."</span>
+<span class="n">MISSING_AWS_CREDENTIALS_MSG</span> <span class="o">=</span> <span class="s2">"""Please provide AWS credentials via AWS_ACCESS_KEY_ID</span>
+<span class="s2">and AWS_SECRET_ACCESS_KEY environment variables."""</span>
 <span class="n">RAW_DATA_SOURCE_URL</span> <span class="o">=</span> <span class="s2">"https://zenodo.org/record/3603330/files/output-data.csv?download=1"</span>
 
 
@@ -288,13 +290,11 @@
 <span class="sd">        None</span>
 <span class="sd">    """</span>
     <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">RAW_DATA_SOURCE_URL</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">ok</span><span class="p">:</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">local_destination</span><span class="p">,</span> <span class="s2">"wb"</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">response</span><span class="p">:</span>
                 <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">chunk</span><span class="p">)</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Downloaded raw data to </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="n">local_destination</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">&lt;</span> <span class="mi">200</span><span class="p">:</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">"Request received but not immediately processed (unusual)"</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
             <span class="s2">"Unsuccesful status code received when trying to download raw datafile"</span>
