@@ -50,7 +50,7 @@ def add_entry():
     View that processes a POST request with new album input.
 
     Returns:
-        Redirect to index page
+        Redirect to index page if successful; else error page
     """
     try:
         album_manager.add_album(
@@ -110,10 +110,10 @@ def predict_rating():
             tempo=request.form["tempo"]
         )
         logger.info("Making prediction for %s by %s", request.form["album"], request.form["artist"])
-        return redirect(url_for("index"))
+        return redirect(url_for("predict_rating"))
     except:
         logger.warning("Failed to predict rating for new album. Error page returned.")
-        return render_template("error.html")
+        return redirect(url_for("predict_rating"))
 
 
 @app.route("/favicon.ico")
