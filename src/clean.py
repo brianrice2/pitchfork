@@ -5,31 +5,70 @@ import pandas as pd
 logger = logging.getLogger(__name__)
 
 
-def convert_nan_to_str(data, colname="artist"):
+def clean_dataset(df, config):
+    """
+    Perform full data processing pipeline.
+
+    Args:
+        df (:obj:`pandas.DataFrame`): Raw data
+        config (dict): Config file as read in by PyYAML
+
+    Returns:
+        :obj:`pandas.DataFrame` of cleaned data
+    """
+    if "convert_nan_to_str" in config:
+        df = convert_nan_to_str(df, **config["convert_nan_to_str"])
+
+    if "convert_str_to_datetime" in config:
+        df = convert_str_to_datetime(df, **config["convert_str_to_datetime"])
+
+    if "approximate_missing_year" in config:
+        df = approximate_missing_year(df, **config["approximate_missing_year"])
+
+    if "convert_datetime_to_date" in config:
+        df = convert_datetime_to_date(df, **config["convert_datetime_to_date"])
+
+    if "fill_missing_manually" in config:
+        df = fill_missing_manually(df, **config["fill_missing_manually"])
+
+    if "strip_whitespace" in config:
+        df = strip_whitespace(df, **config["strip_whitespace"])
+
+    if "bucket_values_together" in config:
+        df = bucket_values_together(df, **config["bucket_values_together"]["iteration1"])
+        df = bucket_values_together(df, **config["bucket_values_together"]["iteration2"])
+
+    if "fill_na_with_str_missing" in config:
+        df = fill_na_with_str_missing(df, **config["fill_na_with_str_missing"])
+
+    return df
+
+
+def convert_nan_to_str(df, colname="artist"):
     """
     Convert an NA/missing value to the literal string "NA".
 
     Args:
-        data (:obj:`pandas.DataFrame`): DataFrame to clean
+        df (:obj:`pandas.DataFrame`): DataFrame to clean
         colname (str, optional): Name of column to apply transformation to.
             Defaults to "artist".
 
     Returns:
         Cleaned :obj:`pandas.DataFrame`
     """
-    nrows_affected = len(data.loc[pd.isna(data[colname])].index)
-    data[colname] = data[colname].where(data[colname].notna(), other="NA")
+    nrows_affected = len(df.loc[pd.isna(df[colname])].index)
+    df[colname] = df[colname].where(df[colname].notna(), other="NA")
     logger.info("Replaced missing values in %s with \"NA\"", colname)
     logger.info("Number of rows affected: %d", nrows_affected)
-    return data
+    return df
 
 
-def convert_str_to_datetime(data, colname="releaseyear", format="%B %d %Y"):
+def convert_str_to_datetime(df, colname="releaseyear", format="%B %d %Y"):
     """
     Parse a string column to datetime format.
 
     Args:
-        data (:obj:`pandas.DataFrame`): DataFrame to clean
+        df (:obj:`pandas.DataFrame`): DataFrame to clean
         colname (str, optional): Name of column to apply transformation to.
             Defaults to "releaseyear".
         format (str, optional): Datetime format of column. Defaults to "%B %d %Y".
@@ -39,54 +78,54 @@ def convert_str_to_datetime(data, colname="releaseyear", format="%B %d %Y"):
     Returns:
         Cleaned :obj:`pandas.DataFrame`
     """
-    data[colname] = pd.to_datetime(data[colname], format=format)
+    df[colname] = pd.to_datetime(df[colname], format=format)
     logger.info("Converted column %s to datetime format", colname)
-    return data
+    return df
 
 
-def convert_datetime_to_date(data, colname="releaseyear"):
+def convert_datetime_to_date(df, colname="releaseyear"):
     """
     Remove the time component of a datetime column.
 
     Args:
-        data (:obj:`pandas.DataFrame`): DataFrame to clean
+        df (:obj:`pandas.DataFrame`): DataFrame to clean
         colname (str, optional): Name of column to apply transformation to.
             Defaults to "releaseyear".
 
     Returns:
         Cleaned :obj:`pandas.DataFrame`
     """
-    data[colname] = data[colname].dt.date
+    df[colname] = df[colname].dt.date
     logger.info("Converted column %s to date format", colname)
-    return data
+    return df
 
 
-def approximate_missing_year(data, fill_column="releaseyear", approximate_with="reviewdate"):
+def approximate_missing_year(df, fill_column="releaseyear", approximate_with="reviewdate"):
     """
     Fill missing values in one column with the year of another datetime column.
 
     Args:
-        data (:obj:`pandas.DataFrame`): DataFrame to clean
+        df (:obj:`pandas.DataFrame`): DataFrame to clean
         fill_column:
         approximate_with:
 
     Returns:
         Cleaned :obj:`pandas.DataFrame`
     """
-    nrows_affected = len(data.loc[pd.isna(data[fill_column])].index)
-    data.loc[pd.isna(data[fill_column]), fill_column] = \
-        data[pd.isna(data[fill_column])].loc[:, approximate_with].dt.year
+    nrows_affected = len(df.loc[pd.isna(df[fill_column])].index)
+    df.loc[pd.isna(df[fill_column]), fill_column] = \
+        df[pd.isna(df[fill_column])].loc[:, approximate_with].dt.year
     logger.info("Filled missing values in %s with year from %s", fill_column, approximate_with)
     logger.info("Number of rows affected: %d", nrows_affected)
-    return data
+    return df
 
 
-def fill_missing_manually(data, colname="recordlabel"):
+def fill_missing_manually(df, colname="recordlabel"):
     """
     Manually fill missing values.
 
     Args:
-        data (:obj:`pandas.DataFrame`): DataFrame to clean
+        df (:obj:`pandas.DataFrame`): DataFrame to clean
         colname (str, optional): Name of column to apply transformation to.
             Defaults to "recordlabel".
 
@@ -122,41 +161,41 @@ def fill_missing_manually(data, colname="recordlabel"):
             "10.Deep",              # The Mixtape About Nothing
             "Self-released"         # Coloring Book
         ],
-        index=data[pd.isna(data[colname])].index
+        index=df[pd.isna(df[colname])].index
     )
-    data.loc[pd.isna(data[colname]), colname] = fill_missing
+    df.loc[pd.isna(df[colname]), colname] = fill_missing
     logger.info(
         "Manually filled in missing values for %d missing rows in column %s",
         len(fill_missing.index),
         colname
     )
 
-    return data
+    return df
 
 
-def strip_whitespace(data, colname="recordlabel"):
+def strip_whitespace(df, colname="recordlabel"):
     """
     Trim extra whitespace from values in a column.
 
     Args:
-        data (:obj:`pandas.DataFrame`): DataFrame to clean
+        df (:obj:`pandas.DataFrame`): DataFrame to clean
         colname (str, optional): Name of column to apply transformation to.
             Defaults to "recordlabel".
 
     Returns:
         Cleaned :obj:`pandas.DataFrame`
     """
-    data[colname] = data[colname].apply(str.strip)
+    df[colname] = df[colname].apply(str.strip)
     logger.info("Trimmed extra whitespace in column %s", colname)
-    return data
+    return df
 
 
-def bucket_values_together(data, colname, values, replace_with):
+def bucket_values_together(df, colname, values, replace_with):
     """
     Replace one or more values with a single value.
 
     Args:
-        data (:obj:`pandas.DataFrame`): DataFrame to clean
+        df (:obj:`pandas.DataFrame`): DataFrame to clean
         colname (str): Name of column to apply transformation to
         values (iterable): Iterable of values to replace.
         replace_with: Value to replace with.
@@ -166,8 +205,8 @@ def bucket_values_together(data, colname, values, replace_with):
     """
     nrows_affected = 0
     for value in values:
-        nrows_affected += len(data.loc[data[colname] == value, colname].index)
-        data.loc[data[colname] == value, colname] = replace_with
+        nrows_affected += len(df.loc[df[colname] == value, colname].index)
+        df.loc[df[colname] == value, colname] = replace_with
 
     logger.info(
         "Replaced values (%s) with %s in column %s",
@@ -177,15 +216,15 @@ def bucket_values_together(data, colname, values, replace_with):
     )
     logger.info("Number of rows affected: %d", nrows_affected)
 
-    return data
+    return df
 
 
-def fill_na_with_str_missing(data, colname="genre", fill_string="Missing"):
+def fill_na_with_str_missing(df, colname="genre", fill_string="Missing"):
     """
     Fill NA values with a string value.
 
     Args:
-        data (:obj:`pandas.DataFrame`): DataFrame to clean
+        df (:obj:`pandas.DataFrame`): DataFrame to clean
         colname (str, optional): Name of column to apply transformation to.
             Defaults to "genre".
         fill_string (str, optional): String to replace missing values with.
@@ -194,9 +233,9 @@ def fill_na_with_str_missing(data, colname="genre", fill_string="Missing"):
     Returns:
         Cleaned :obj:`pandas.DataFrame`
     """
-    nrows_affected = len(data.loc[pd.isna(data[colname])].index)
-    data[colname] = data[colname].fillna(fill_string)
+    nrows_affected = len(df.loc[pd.isna(df[colname])].index)
+    df[colname] = df[colname].fillna(fill_string)
     logger.info("Replaced missing values in %s with %s", colname, fill_string)
     logger.info("Number of rows affected: %d", nrows_affected)
     
-    return data
+    return df

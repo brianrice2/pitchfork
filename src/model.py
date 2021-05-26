@@ -74,7 +74,7 @@ def parse_ratio(ratio):
     return list(size / _sum for size in sizes)
 
 
-def train_pipeline(X_train, y_train):
+def train_pipeline(X_train, y_train, preprocessor, model):
     """
     Create and fit a preprocessing --> modeling pipeline.
 
@@ -85,8 +85,6 @@ def train_pipeline(X_train, y_train):
     Returns:
         A fitted :obj:`sklearn.pipeline.Pipeline`
     """
-    preprocessor = make_preprocessor()
-    model = make_model()
     pipe = Pipeline(steps=[
         ("preprocessor", preprocessor),
         ("predictor", model)
