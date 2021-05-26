@@ -9,6 +9,7 @@ HOST = "0.0.0.0"
 SQLALCHEMY_ECHO = False  # If True, SQL queries will be echoed/printed
 MAX_ROWS_SHOW = 100
 DEFAULT_LOCAL_DATABASE = "sqlite:///data/msia423_db.db"
+SAVED_MODEL_PATH = "models/gbt_pipeline.joblib"
 
 # Connection string
 DB_HOST = os.environ.get("MYSQL_HOST")

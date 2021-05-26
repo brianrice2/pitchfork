@@ -4,14 +4,23 @@ Build, fit, evaluate, and (de)serialize predictive models.
 import logging
 
 import pandas as pd
+from numpy import NaN
 from sklearn.compose import ColumnTransformer
 from sklearn.ensemble import GradientBoostingRegressor
-from sklearn.metrics import mean_squared_error
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
 
 logger = logging.getLogger(__name__)
+
+# The exact same columns must be present, and in the exact same order, as the
+# original training data for the pipeline to make predictions (even if the
+# columns aren't used at all by the preprocessor or model)
+PREDICTION_COLUMNS = [
+    "artist", "album", "reviewauthor", "releaseyear", "reviewdate",
+    "recordlabel", "genre", "danceability", "energy", "key", "loudness",
+    "speechiness", "acousticness", "instrumentalness", "liveness", "valence", "tempo"
+]
 
 
 def split_train_val_test(df, target_col, train_val_test_ratio, **kwargs):
@@ -145,3 +154,42 @@ def get_feature_importances(trained_pipeline, numeric_features):
     importances = trained_pipeline["predictor"].feature_importances_
 
     return pd.Series(data=importances, index=features)
+
+
+def parse_dict_to_dataframe(form_dict, output_cols=PREDICTION_COLUMNS):
+    """
+    Parse a dictionary to `pandas.DataFrame`.
+
+    Uses keys as column names, and creates the columns that don't exist (filling
+    with NA). Reorders columns to match the original training data, per the
+    pipeline's expectation.
+
+    Flask forms supply data via POST requests in MultiDict format, but the
+    model pipeline requires an input DataFrame with exactly the same columns
+    as seen during training. The MultiDict can be converted to a flat dict
+    using its `to_dict(flat=True)` method.
+
+    Args:
+        form_dict (dict): Flask form response as a flat
+        output_cols (list(str), optional): Required columns for output
+            DataFrame. Defaults to those seen during training. If not
+            provided (`None`), no adjustment to the DataFrame's columns is made.
+
+    Returns:
+        :obj:`pandas.DataFrame`
+    """
+    logger.info("Converting dictionary to pandas DataFrame")
+    df = pd.DataFrame([form_dict.values()], columns=form_dict.keys())
+
+    if output_cols:
+        # Create columns if they don't exist already
+        for colname in output_cols:
+            if colname not in df.columns:
+                logger.info("Column %s not found. Creating and filling with NA.", colname)
+                df[colname] = NaN
+
+        # Column order must match exactly
+        logger.info("Reordering input columns")
+        df = df[output_cols]
+
+    return df

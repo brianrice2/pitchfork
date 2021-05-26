@@ -2,19 +2,17 @@ import logging.config
 import os
 import traceback
 
-from flask import Flask
-from flask import redirect, render_template, request, send_from_directory, url_for
+from flask import Flask, redirect, render_template, request, send_from_directory, url_for
 
+from src import model
+from src import serialize
 from src.add_albums import Albums, AlbumManager
 
 # Initialize the Flask application
 app = Flask(__name__, template_folder="app/templates", static_folder="app/static")
-
-# Configure flask app from flask_config.py
 app.config.from_pyfile("config/flaskconfig.py")
 
-# Define LOGGING_CONFIG in flask_config.py - path to config file for setting
-# up the logger (e.g. config/logging/local.conf)
+# Define LOGGING_CONFIG in flask_config.py: path to config file
 logging.config.fileConfig(app.config["LOGGING_CONFIG"])
 logger = logging.getLogger(app.config["APP_NAME"])
 logger.debug("Web app log")
@@ -53,29 +51,12 @@ def add_entry():
         Redirect to index page if successful; else error page
     """
     try:
-        album_manager.add_album(
-            artist=request.form["artist"],
-            album=request.form["album"],
-            reviewauthor=request.form["reviewauthor"],
-            score=request.form["score"],
-            releaseyear=request.form["releaseyear"],
-            reviewdate=request.form["reviewdate"],
-            recordlabel=request.form["recordlabel"],
-            genre=request.form["genre"],
-            danceability=request.form["danceability"],
-            energy=request.form["energy"],
-            key=request.form["key"],
-            loudness=request.form["loudness"],
-            speechiness=request.form["speechiness"],
-            acousticness=request.form["acousticness"],
-            instrumentalness=request.form["instrumentalness"],
-            liveness=request.form["liveness"],
-            valence=request.form["valence"],
-            tempo=request.form["tempo"]
-        )
-        logger.info("New album added: %s by %s", request.form["album"], request.form["artist"])
+        form_data = request.form.to_dict()
+        album_manager.add_album(**form_data)
+        logger.info("New album added: %s by %s", form_data["album"], form_data["artist"])
         return redirect(url_for("index"))
     except:
+        traceback.print_exc()
         logger.warning("Failed to add new album. Error page returned.")
         return render_template("error.html")
 
@@ -83,37 +64,26 @@ def add_entry():
 @app.route("/predict", methods=["POST"])
 def predict_rating():
     """
-    View that processes a POST request to predict rating for an input album.
+    Predict the rating for an input album given a POST form of input data.
 
     Returns:
         Redirect to index page
     """
+    pipeline = serialize.load_pipeline(app.config["SAVED_MODEL_PATH"])
+    logger.info("Loaded saved model pipeline")
+
+    input_data = request.form.to_dict()
+    df = model.parse_dict_to_dataframe(input_data)
+    logger.debug("Parsed input data to DataFrame format")
+
     try:
-        model.predict(
-            artist=request.form["artist"],
-            album=request.form["album"],
-            reviewauthor=request.form["reviewauthor"],
-            score=request.form["score"],
-            releaseyear=request.form["releaseyear"],
-            reviewdate=request.form["reviewdate"],
-            recordlabel=request.form["recordlabel"],
-            genre=request.form["genre"],
-            danceability=request.form["danceability"],
-            energy=request.form["energy"],
-            key=request.form["key"],
-            loudness=request.form["loudness"],
-            speechiness=request.form["speechiness"],
-            acousticness=request.form["acousticness"],
-            instrumentalness=request.form["instrumentalness"],
-            liveness=request.form["liveness"],
-            valence=request.form["valence"],
-            tempo=request.form["tempo"]
-        )
-        logger.info("Making prediction for %s by %s", request.form["album"], request.form["artist"])
-        return redirect(url_for("predict_rating"))
+        score = round(pipeline.predict(df)[0], 2)
+        logger.info("Prediction: %s", score)
+        return str(score)
     except:
+        traceback.print_exc()
         logger.warning("Failed to predict rating for new album. Error page returned.")
-        return redirect(url_for("predict_rating"))
+        return render_template("error.html")
 
 
 @app.route("/favicon.ico")
