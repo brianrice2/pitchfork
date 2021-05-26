@@ -66,30 +66,36 @@ The dataset is released under the [Creative Commons Attribution 4.0 Internationa
 
 ```
 ├── README.md                         <- You are here
+|
+├── app/                              <- Configuration files 
+│   ├── static/                       <- Static CSS, JS, etc. files
+│   ├── templates/                    <- HTML (or other code) that is templated and changes based on a set of inputs
+│   └── boot.sh                       <- Start up script for launching app in Docker container
 │
-├── config                            <- Configuration files 
+├── config/                           <- Configuration files 
 │   ├── local/                        <- Private configuration files and environment variable settings (not tracked)
 │   ├── logging/                      <- Configuration of python loggers
-│   ├── flaskconfig.py                <- Configurations for Flask API
+│   └── flaskconfig.py                <- Configurations for Flask API
 │
-├── data                              <- Data files used for analysis or by the app itself
+├── data/                             <- Data files used for analysis or by the app itself
 │   ├── cleaned/                      <- Processed data
-│   ├── raw/                          <- Raw datafile
+│   └── raw/                          <- Raw datafile
 │
 ├── docs/                             <- Sphinx documentation based on Python docstrings
 │
 ├── notebooks/
 │   ├── archive/                      <- Develop notebooks no longer being used
 │   ├── deliver/                      <- Notebooks shared with others / in final state
-│   ├── develop/                      <- Current notebooks being used in development
+│   └── develop/                      <- Current notebooks being used in development
 │
 ├── src/                              <- Source data for the project 
 │
 ├── tests/                            <- Files necessary for running model tests (see documentation below) 
-│ 
-├── Dockerfile                        <- Builds the Docker image for running commands in a container
+│
+├── app.py                            <- Flask wrapper for running the model
+├── Dockerfile                        <- Builds the Docker image for ingesting data & creating database
 ├── run.py                            <- Simplifies the execution of one or more of the src scripts  
-├── requirements.txt                  <- Python package dependencies 
+└── requirements.txt                  <- Python package dependencies 
 ```
 
 ## Running the app
