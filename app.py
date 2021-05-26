@@ -1,5 +1,6 @@
 import logging.config
 import os
+import pkg_resources
 import traceback
 
 from flask import Flask, redirect, render_template, request, send_from_directory, url_for
@@ -13,7 +14,12 @@ app = Flask(__name__, template_folder="app/templates", static_folder="app/static
 app.config.from_pyfile("config/flaskconfig.py")
 
 # Define LOGGING_CONFIG in flask_config.py: path to config file
-logging.config.fileConfig(app.config["LOGGING_CONFIG"])
+# Using `pkg_resources` here allows Sphinx to find the logging config
+# file when building the documentation HTML pages
+logging.config.fileConfig(
+    pkg_resources.resource_filename(__name__, app.config["LOGGING_CONFIG"]),
+    disable_existing_loggers=False
+)
 logger = logging.getLogger(app.config["APP_NAME"])
 logger.debug("Web app log")
 
