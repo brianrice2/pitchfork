@@ -59,21 +59,22 @@
             <dl>
                 <input type=text size=15 name=artist placeholder="Artist">
                 <input type=text size=15 name=album placeholder="Album">
-                <input type=text size=15 name=score placeholder="Score">
-                <input type=text size=15 name=releaseyear placeholder="Release Year">
+                <input type=text size=15 name=reviewauthor placeholder="Review Author">
+                <input type=text size=5 name=score placeholder="Score">
+                <input type=text size=5 name=releaseyear placeholder="Year">
                 <input type=text size=15 name=reviewdate placeholder="Review Date">
                 <input type=text size=15 name=recordlabel placeholder="Record Label">
                 <input type=text size=15 name=genre placeholder="Genre">
-                <input type=text size=15 name=danceability placeholder="Danceability">
-                <input type=text size=15 name=energy placeholder="Energy">
-                <input type=text size=15 name=key placeholder="Key">
-                <input type=text size=15 name=loudness placeholder="Loudness">
-                <input type=text size=15 name=speechiness placeholder="Speechiness">
-                <input type=text size=15 name=acousticness placeholder="Acousticness">
-                <input type=text size=15 name=instrumentalness placeholder="Instrumentalness">
-                <input type=text size=15 name=liveness placeholder="Liveness">
-                <input type=text size=15 name=valence placeholder="Valence">
-                <input type=text size=15 name=tempo placeholder="Tempo">
+                <input type=text size=8 name=danceability placeholder="Danceability">
+                <input type=text size=8 name=energy placeholder="Energy">
+                <input type=text size=8 name=key placeholder="Key">
+                <input type=text size=8 name=loudness placeholder="Loudness">
+                <input type=text size=8 name=speechiness placeholder="Speechiness">
+                <input type=text size=8 name=acousticness placeholder="Acousticness">
+                <input type=text size=8 name=instrumentalness placeholder="Instrumentalness">
+                <input type=text size=8 name=liveness placeholder="Liveness">
+                <input type=text size=8 name=valence placeholder="Valence">
+                <input type=text size=8 name=tempo placeholder="Tempo">
                 <input type=submit value=Add>
             </dl>
         </form>
@@ -81,9 +82,11 @@
 
     <!-- Predict rating for new albums -->
     <div id="Predict" class="tabcontent">
-        <p>Enter album information below to predict its rating.</p>
+        <p>Enter album information below to predict its rating:</p>
 
-        <form action="{{ url_for('predict_rating') }}" method=post class=predict>
+        <br>
+
+        <form action="{{ url_for('predict_rating') }}" method=post class=predict id="predictForm">
             <!-- Organize form data with a table -->
             <table className="tablePadding" id="inputAlbums">
                 <thead>
@@ -98,11 +101,25 @@
                 <tbody>
                     <tr>
                         <td>Release Year</td>
-                        <td><input type=text size=25 name=releaseyear placeholder="Release Year"></td>
+                        <td><input type="range" min="1957" max="2019" value="1964" step="1" class="slider" id="rangeReleaseYear" name=releaseyear></td>
+                        <td style="text-align:center;"><span id="valueReleaseYear"></span></td>
                     </tr>
                     <tr>
                         <td>Genre</td>
-                        <td><input type=text size=25 name=genre placeholder="Genre"></td>
+                        <td>
+                            <select name="genre" id="genreSelector" class="dropdown" form="predictForm">
+                                <option value="Electronic">Electronic</option>
+                                <option value="Experimental">Experimental</option>
+                                <option value="Folk/Country">Folk/Country</option>
+                                <option value="Global">Global</option>
+                                <option value="Jazz">Jazz</option>
+                                <option value="Metal">Metal</option>
+                                <option value="Missing">none</option>
+                                <option value="Pop/R&B">Pop/R&B</option>
+                                <option value="Rap">Rap</option>
+                                <option value="Rock">Rock</option>
+                            </select>
+                        </td>
                     </tr>
                     <tr>
                         <td>Danceability</td>
@@ -163,10 +180,15 @@
 
     <script>
         // Input sliders
+        var sliderReleaseYear = document.getElementById("rangeReleaseYear");
+        var outputReleaseYear = document.getElementById("valueReleaseYear");
+        outputReleaseYear.innerHTML = sliderReleaseYear.value; // Display the default slider value
+        // Update the current slider value each time you drag the slider handle
+        sliderReleaseYear.oninput = function() { outputReleaseYear.innerHTML = this.value; }
+
         var sliderDanceability = document.getElementById("rangeDanceability");
         var outputDanceability = document.getElementById("valueDanceability");
-        outputDanceability.innerHTML = sliderDanceability.value; // Display the default slider value
-        // Update the current slider value each time you drag the slider handle
+        outputDanceability.innerHTML = sliderDanceability.value;
         sliderDanceability.oninput = function() { outputDanceability.innerHTML = this.value; }
 
         var sliderEnergy = document.getElementById("rangeEnergy");

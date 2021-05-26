@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" />
 
     <meta name="generator" content="sphinx-3.5.4, furo 2021.04.11.beta34"/>
-        <title>src.model - pitchfork 0.1 documentation</title>
+        <title>src.model - pitchfork 0.2 documentation</title>
       <link rel="stylesheet" href="../../_static/styles/furo.css?digest=59ab60ac09ea94ccfe6deddff6d715cce948a6fc">
     <link rel="stylesheet" href="../../_static/pygments.css">
     <link media="(prefers-color-scheme: dark)" rel="stylesheet" href="../../_static/pygments_dark.css">
@@ -86,7 +86,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">pitchfork 0.1 documentation</div></a>
+      <a href="../../index.html"><div class="brand">pitchfork 0.2 documentation</div></a>
     </div>
     <div class="header-right">
       <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
@@ -100,7 +100,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
   
   
-  <span class="sidebar-brand-text">pitchfork 0.1 documentation</span>
+  <span class="sidebar-brand-text">pitchfork 0.2 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html">
   <input class="sidebar-search" placeholder=Search name="q">
@@ -137,14 +137,23 @@
 <span class="kn">import</span> <span class="nn">logging</span>
 
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">NaN</span>
 <span class="kn">from</span> <span class="nn">sklearn.compose</span> <span class="kn">import</span> <span class="n">ColumnTransformer</span>
 <span class="kn">from</span> <span class="nn">sklearn.ensemble</span> <span class="kn">import</span> <span class="n">GradientBoostingRegressor</span>
-<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">mean_squared_error</span>
 <span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">train_test_split</span>
 <span class="kn">from</span> <span class="nn">sklearn.pipeline</span> <span class="kn">import</span> <span class="n">Pipeline</span>
 <span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">StandardScaler</span><span class="p">,</span> <span class="n">OneHotEncoder</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="c1"># The exact same columns must be present, and in the exact same order, as the</span>
+<span class="c1"># original training data for the pipeline to make predictions (even if the</span>
+<span class="c1"># columns aren't used at all by the preprocessor or model)</span>
+<span class="n">PREDICTION_COLUMNS</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">"artist"</span><span class="p">,</span> <span class="s2">"album"</span><span class="p">,</span> <span class="s2">"reviewauthor"</span><span class="p">,</span> <span class="s2">"releaseyear"</span><span class="p">,</span> <span class="s2">"reviewdate"</span><span class="p">,</span>
+    <span class="s2">"recordlabel"</span><span class="p">,</span> <span class="s2">"genre"</span><span class="p">,</span> <span class="s2">"danceability"</span><span class="p">,</span> <span class="s2">"energy"</span><span class="p">,</span> <span class="s2">"key"</span><span class="p">,</span> <span class="s2">"loudness"</span><span class="p">,</span>
+    <span class="s2">"speechiness"</span><span class="p">,</span> <span class="s2">"acousticness"</span><span class="p">,</span> <span class="s2">"instrumentalness"</span><span class="p">,</span> <span class="s2">"liveness"</span><span class="p">,</span> <span class="s2">"valence"</span><span class="p">,</span> <span class="s2">"tempo"</span>
+<span class="p">]</span>
 
 
 <div class="viewcode-block" id="split_train_val_test"><a class="viewcode-back" href="../../src.html#src.model.split_train_val_test">[docs]</a><span class="k">def</span> <span class="nf">split_train_val_test</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">target_col</span><span class="p">,</span> <span class="n">train_val_test_ratio</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -278,6 +287,45 @@
     <span class="n">importances</span> <span class="o">=</span> <span class="n">trained_pipeline</span><span class="p">[</span><span class="s2">"predictor"</span><span class="p">]</span><span class="o">.</span><span class="n">feature_importances_</span>
 
     <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">importances</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">features</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="parse_dict_to_dataframe"><a class="viewcode-back" href="../../src.html#src.model.parse_dict_to_dataframe">[docs]</a><span class="k">def</span> <span class="nf">parse_dict_to_dataframe</span><span class="p">(</span><span class="n">form_dict</span><span class="p">,</span> <span class="n">output_cols</span><span class="o">=</span><span class="n">PREDICTION_COLUMNS</span><span class="p">):</span>
+    <span class="sd">"""</span>
+<span class="sd">    Parse a dictionary to `pandas.DataFrame`.</span>
+
+<span class="sd">    Uses keys as column names, and creates the columns that don't exist (filling</span>
+<span class="sd">    with NA). Reorders columns to match the original training data, per the</span>
+<span class="sd">    pipeline's expectation.</span>
+
+<span class="sd">    Flask forms supply data via POST requests in MultiDict format, but the</span>
+<span class="sd">    model pipeline requires an input DataFrame with exactly the same columns</span>
+<span class="sd">    as seen during training. The MultiDict can be converted to a flat dict</span>
+<span class="sd">    using its `to_dict(flat=True)` method.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        form_dict (dict): Flask form response as a flat</span>
+<span class="sd">        output_cols (list(str), optional): Required columns for output</span>
+<span class="sd">            DataFrame. Defaults to those seen during training. If not</span>
+<span class="sd">            provided (`None`), no adjustment to the DataFrame's columns is made.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        :obj:`pandas.DataFrame`</span>
+<span class="sd">    """</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Converting dictionary to pandas DataFrame"</span><span class="p">)</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([</span><span class="n">form_dict</span><span class="o">.</span><span class="n">values</span><span class="p">()],</span> <span class="n">columns</span><span class="o">=</span><span class="n">form_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+
+    <span class="k">if</span> <span class="n">output_cols</span><span class="p">:</span>
+        <span class="c1"># Create columns if they don't exist already</span>
+        <span class="k">for</span> <span class="n">colname</span> <span class="ow">in</span> <span class="n">output_cols</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">colname</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Column </span><span class="si">%s</span><span class="s2"> not found. Creating and filling with NA."</span><span class="p">,</span> <span class="n">colname</span><span class="p">)</span>
+                <span class="n">df</span><span class="p">[</span><span class="n">colname</span><span class="p">]</span> <span class="o">=</span> <span class="n">NaN</span>
+
+        <span class="c1"># Column order must match exactly</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Reordering input columns"</span><span class="p">)</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">output_cols</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">df</span></div>
 </pre></div>
       </article>
       <footer>
