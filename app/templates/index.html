@@ -33,6 +33,16 @@
 
     <!-- Browse albums -->
     <div id="Browse" class="tabcontent">
+        <!-- Search for albums -->
+        <form action="{{ url_for('search') }}" method=get class=searchAlbums>
+            <dl>
+                <input type=text name=artist placeholder="Artist" style="width:15%">
+                <input type=text name=album placeholder="Album" style="width:25%">
+                <input type=text name=score placeholder="Score" style="width:5%">
+                <input type=submit value=Search>
+            </dl>
+        </form>
+
         <!-- Display album data -->
         <table className="tablePadding" id="browseAlbums">
              <thead>
@@ -198,6 +208,7 @@
 
     </div>
 
+    <!-- Prediction form: parse input & display result -->
     <script type=text/javascript>
         // Input sliders
         var sliderReleaseYear = document.getElementById("rangeReleaseYear");

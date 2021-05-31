@@ -48,36 +48,27 @@ def index():
         return render_template("error.html")
 
 
-@app.route("/search_albums")
-def search_albums():
-    album_name = request.args.get("album_name")
+@app.route("/search")
+def search():
+    album_name = request.args.get("album")
+    artist_name = request.args.get("artist")
+    score = request.args.get("score")
 
     albums = album_manager.session.query(Albums)
-    albums = albums.filter(Albums.album.like("%" + album_name + "%"))
-    logger.info("Found %s albums like \"%s\"", len(albums.all()), album_name)
-    albums = albums.limit(app.config["MAX_ROWS_SHOW"]).all()
+    if album_name:
+        albums = albums.filter(Albums.album.like("%" + album_name + "%"))
+    if artist_name:
+        albums = albums.filter(Albums.artist.like("%" + artist_name + "%"))
+    if score:
+        albums = albums.filter(Albums.score == score)
     logger.info(
-        "Limiting results to first %s (end result: %s albums)",
-        app.config["MAX_ROWS_SHOW"],
-        len(albums)
+        "Found %s albums like \"%s\" by \"%s\" (max displayed: %s)",
+        len(albums.all()),
+        album_name,
+        artist_name,
+        app.config["MAX_ROWS_SHOW"]
     )
-
-    return render_template("index.html", albums=albums)
-
-
-@app.route("/search_artists")
-def search_artists():
-    artist_name = request.args.get("artist_name")
-
-    albums = album_manager.session.query(Albums)
-    albums = albums.filter(Albums.artist.like("%" + artist_name + "%"))
-    logger.info("Found %s artists like \"%s\"", len(albums.all()), artist_name)
     albums = albums.limit(app.config["MAX_ROWS_SHOW"]).all()
-    logger.info(
-        "Limiting results to first %s (end result: %s albums)",
-        app.config["MAX_ROWS_SHOW"],
-        len(albums)
-    )
 
     return render_template("index.html", albums=albums)
 
