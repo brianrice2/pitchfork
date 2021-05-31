@@ -161,7 +161,7 @@ class AlbumManager:
             # Parse datetime
             reviewdate = datetime.strptime(reviewdate, "%B %d %Y").date()
         except ValueError:
-            logger.error("Failed to parse the given reviewdate %s. Aborting.", reviewdate)
+            logger.error("Failed to parse the given reviewdate \"%s\". Aborting.", reviewdate)
         else:
             # Add to database
             session = self.session

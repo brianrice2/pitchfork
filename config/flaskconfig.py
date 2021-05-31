@@ -7,7 +7,7 @@ APP_NAME = "pitchfork"
 SQLALCHEMY_TRACK_MODIFICATIONS = True
 HOST = "0.0.0.0"
 SQLALCHEMY_ECHO = False  # If True, SQL queries will be echoed/printed
-MAX_ROWS_SHOW = 100
+MAX_ROWS_SHOW = 1000
 DEFAULT_LOCAL_DATABASE = "sqlite:///data/msia423_db.db"
 SAVED_MODEL_PATH = "models/gbt_pipeline.joblib"
 

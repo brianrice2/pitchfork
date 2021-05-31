@@ -48,13 +48,38 @@ def index():
         return render_template("error.html")
 
 
+@app.route("/search")
+def search():
+    album_name = request.args.get("album")
+    artist_name = request.args.get("artist")
+    score = request.args.get("score")
+
+    albums = album_manager.session.query(Albums)
+    if album_name:
+        albums = albums.filter(Albums.album.like("%" + album_name + "%"))
+    if artist_name:
+        albums = albums.filter(Albums.artist.like("%" + artist_name + "%"))
+    if score:
+        albums = albums.filter(Albums.score == score)
+    logger.info(
+        "Found %s albums like \"%s\" by \"%s\" (max displayed: %s)",
+        len(albums.all()),
+        album_name,
+        artist_name,
+        app.config["MAX_ROWS_SHOW"]
+    )
+    albums = albums.limit(app.config["MAX_ROWS_SHOW"]).all()
+
+    return render_template("index.html", albums=albums)
+
+
 @app.route("/add", methods=["POST"])
 def add_entry():
     """
     View that processes a POST request with new album input.
 
     Returns:
-        Redirect to index page if successful; else error page
+        Redirect to index page if successful, else error page
     """
     try:
         form_data = request.form.to_dict()
