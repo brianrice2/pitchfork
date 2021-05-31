@@ -48,6 +48,40 @@ def index():
         return render_template("error.html")
 
 
+@app.route("/search_albums")
+def search_albums():
+    album_name = request.args.get("album_name")
+
+    albums = album_manager.session.query(Albums)
+    albums = albums.filter(Albums.album.like("%" + album_name + "%"))
+    logger.info("Found %s albums like \"%s\"", len(albums.all()), album_name)
+    albums = albums.limit(app.config["MAX_ROWS_SHOW"]).all()
+    logger.info(
+        "Limiting results to first %s (end result: %s albums)",
+        app.config["MAX_ROWS_SHOW"],
+        len(albums)
+    )
+
+    return render_template("index.html", albums=albums)
+
+
+@app.route("/search_artists")
+def search_artists():
+    artist_name = request.args.get("artist_name")
+
+    albums = album_manager.session.query(Albums)
+    albums = albums.filter(Albums.artist.like("%" + artist_name + "%"))
+    logger.info("Found %s artists like \"%s\"", len(albums.all()), artist_name)
+    albums = albums.limit(app.config["MAX_ROWS_SHOW"]).all()
+    logger.info(
+        "Limiting results to first %s (end result: %s albums)",
+        app.config["MAX_ROWS_SHOW"],
+        len(albums)
+    )
+
+    return render_template("index.html", albums=albums)
+
+
 @app.route("/add", methods=["POST"])
 def add_entry():
     """
