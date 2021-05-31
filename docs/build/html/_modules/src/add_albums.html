@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" />
 
     <meta name="generator" content="sphinx-3.5.4, furo 2021.04.11.beta34"/>
-        <title>src.add_albums - pitchfork 0.1 documentation</title>
+        <title>src.add_albums - pitchfork 0.2.1 documentation</title>
       <link rel="stylesheet" href="../../_static/styles/furo.css?digest=59ab60ac09ea94ccfe6deddff6d715cce948a6fc">
     <link rel="stylesheet" href="../../_static/pygments.css">
     <link media="(prefers-color-scheme: dark)" rel="stylesheet" href="../../_static/pygments_dark.css">
@@ -86,7 +86,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">pitchfork 0.1 documentation</div></a>
+      <a href="../../index.html"><div class="brand">pitchfork 0.2.1 documentation</div></a>
     </div>
     <div class="header-right">
       <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
@@ -100,7 +100,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
   
   
-  <span class="sidebar-brand-text">pitchfork 0.1 documentation</span>
+  <span class="sidebar-brand-text">pitchfork 0.2.1 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html">
   <input class="sidebar-search" placeholder=Search name="q">
@@ -294,7 +294,7 @@
             <span class="c1"># Parse datetime</span>
             <span class="n">reviewdate</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">reviewdate</span><span class="p">,</span> <span class="s2">"%B </span><span class="si">%d</span><span class="s2"> %Y"</span><span class="p">)</span><span class="o">.</span><span class="n">date</span><span class="p">()</span>
         <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">"Failed to parse the given reviewdate </span><span class="si">%s</span><span class="s2">. Aborting."</span><span class="p">,</span> <span class="n">reviewdate</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">"Failed to parse the given reviewdate </span><span class="se">\"</span><span class="si">%s</span><span class="se">\"</span><span class="s2">. Aborting."</span><span class="p">,</span> <span class="n">reviewdate</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># Add to database</span>
             <span class="n">session</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span>

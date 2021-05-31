@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" />
 
     <meta name="generator" content="sphinx-3.5.4, furo 2021.04.11.beta34"/>
-        <title>app - pitchfork 0.2 documentation</title>
+        <title>app - pitchfork 0.2.1 documentation</title>
       <link rel="stylesheet" href="../_static/styles/furo.css?digest=59ab60ac09ea94ccfe6deddff6d715cce948a6fc">
     <link rel="stylesheet" href="../_static/pygments.css">
     <link media="(prefers-color-scheme: dark)" rel="stylesheet" href="../_static/pygments_dark.css">
@@ -86,7 +86,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">pitchfork 0.2 documentation</div></a>
+      <a href="../index.html"><div class="brand">pitchfork 0.2.1 documentation</div></a>
     </div>
     <div class="header-right">
       <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
@@ -100,7 +100,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
   
   
-  <span class="sidebar-brand-text">pitchfork 0.2 documentation</span>
+  <span class="sidebar-brand-text">pitchfork 0.2.1 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search.html">
   <input class="sidebar-search" placeholder=Search name="q">
@@ -181,13 +181,38 @@
         <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s2">"error.html"</span><span class="p">)</span></div>
 
 
+<div class="viewcode-block" id="search"><a class="viewcode-back" href="../app.html#app.search">[docs]</a><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">"/search"</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">search</span><span class="p">():</span>
+    <span class="n">album_name</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"album"</span><span class="p">)</span>
+    <span class="n">artist_name</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"artist"</span><span class="p">)</span>
+    <span class="n">score</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"score"</span><span class="p">)</span>
+
+    <span class="n">albums</span> <span class="o">=</span> <span class="n">album_manager</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">Albums</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">album_name</span><span class="p">:</span>
+        <span class="n">albums</span> <span class="o">=</span> <span class="n">albums</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">Albums</span><span class="o">.</span><span class="n">album</span><span class="o">.</span><span class="n">like</span><span class="p">(</span><span class="s2">"%"</span> <span class="o">+</span> <span class="n">album_name</span> <span class="o">+</span> <span class="s2">"%"</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">artist_name</span><span class="p">:</span>
+        <span class="n">albums</span> <span class="o">=</span> <span class="n">albums</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">Albums</span><span class="o">.</span><span class="n">artist</span><span class="o">.</span><span class="n">like</span><span class="p">(</span><span class="s2">"%"</span> <span class="o">+</span> <span class="n">artist_name</span> <span class="o">+</span> <span class="s2">"%"</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">score</span><span class="p">:</span>
+        <span class="n">albums</span> <span class="o">=</span> <span class="n">albums</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">Albums</span><span class="o">.</span><span class="n">score</span> <span class="o">==</span> <span class="n">score</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+        <span class="s2">"Found </span><span class="si">%s</span><span class="s2"> albums like </span><span class="se">\"</span><span class="si">%s</span><span class="se">\"</span><span class="s2"> by </span><span class="se">\"</span><span class="si">%s</span><span class="se">\"</span><span class="s2"> (max displayed: </span><span class="si">%s</span><span class="s2">)"</span><span class="p">,</span>
+        <span class="nb">len</span><span class="p">(</span><span class="n">albums</span><span class="o">.</span><span class="n">all</span><span class="p">()),</span>
+        <span class="n">album_name</span><span class="p">,</span>
+        <span class="n">artist_name</span><span class="p">,</span>
+        <span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">"MAX_ROWS_SHOW"</span><span class="p">]</span>
+    <span class="p">)</span>
+    <span class="n">albums</span> <span class="o">=</span> <span class="n">albums</span><span class="o">.</span><span class="n">limit</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">"MAX_ROWS_SHOW"</span><span class="p">])</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s2">"index.html"</span><span class="p">,</span> <span class="n">albums</span><span class="o">=</span><span class="n">albums</span><span class="p">)</span></div>
+
+
 <div class="viewcode-block" id="add_entry"><a class="viewcode-back" href="../app.html#app.add_entry">[docs]</a><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">"/add"</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">"POST"</span><span class="p">])</span>
 <span class="k">def</span> <span class="nf">add_entry</span><span class="p">():</span>
     <span class="sd">"""</span>
 <span class="sd">    View that processes a POST request with new album input.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        Redirect to index page if successful; else error page</span>
+<span class="sd">        Redirect to index page if successful, else error page</span>
 <span class="sd">    """</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">form_data</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">form</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>

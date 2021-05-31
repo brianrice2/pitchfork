@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" />
 
     <meta name="generator" content="sphinx-3.5.4, furo 2021.04.11.beta34"/>
-        <title>src.model - pitchfork 0.2 documentation</title>
+        <title>src.model - pitchfork 0.2.1 documentation</title>
       <link rel="stylesheet" href="../../_static/styles/furo.css?digest=59ab60ac09ea94ccfe6deddff6d715cce948a6fc">
     <link rel="stylesheet" href="../../_static/pygments.css">
     <link media="(prefers-color-scheme: dark)" rel="stylesheet" href="../../_static/pygments_dark.css">
@@ -86,7 +86,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">pitchfork 0.2 documentation</div></a>
+      <a href="../../index.html"><div class="brand">pitchfork 0.2.1 documentation</div></a>
     </div>
     <div class="header-right">
       <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
@@ -100,7 +100,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
   
   
-  <span class="sidebar-brand-text">pitchfork 0.2 documentation</span>
+  <span class="sidebar-brand-text">pitchfork 0.2.1 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html">
   <input class="sidebar-search" placeholder=Search name="q">
@@ -207,7 +207,7 @@
     <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">size</span> <span class="o">/</span> <span class="n">_sum</span> <span class="k">for</span> <span class="n">size</span> <span class="ow">in</span> <span class="n">sizes</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="train_pipeline"><a class="viewcode-back" href="../../src.html#src.model.train_pipeline">[docs]</a><span class="k">def</span> <span class="nf">train_pipeline</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">):</span>
+<div class="viewcode-block" id="train_pipeline"><a class="viewcode-back" href="../../src.html#src.model.train_pipeline">[docs]</a><span class="k">def</span> <span class="nf">train_pipeline</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">preprocessor</span><span class="p">,</span> <span class="n">model</span><span class="p">):</span>
     <span class="sd">"""</span>
 <span class="sd">    Create and fit a preprocessing --&gt; modeling pipeline.</span>
 
@@ -218,8 +218,6 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        A fitted :obj:`sklearn.pipeline.Pipeline`</span>
 <span class="sd">    """</span>
-    <span class="n">preprocessor</span> <span class="o">=</span> <span class="n">make_preprocessor</span><span class="p">()</span>
-    <span class="n">model</span> <span class="o">=</span> <span class="n">make_model</span><span class="p">()</span>
     <span class="n">pipe</span> <span class="o">=</span> <span class="n">Pipeline</span><span class="p">(</span><span class="n">steps</span><span class="o">=</span><span class="p">[</span>
         <span class="p">(</span><span class="s2">"preprocessor"</span><span class="p">,</span> <span class="n">preprocessor</span><span class="p">),</span>
         <span class="p">(</span><span class="s2">"predictor"</span><span class="p">,</span> <span class="n">model</span><span class="p">)</span>
