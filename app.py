@@ -54,7 +54,7 @@ def add_entry():
     View that processes a POST request with new album input.
 
     Returns:
-        Redirect to index page if successful; else error page
+        Redirect to index page if successful, else error page
     """
     try:
         form_data = request.form.to_dict()
