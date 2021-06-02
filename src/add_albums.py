@@ -8,6 +8,8 @@ from sqlalchemy import Column, Date, Float, Integer, String
 from sqlalchemy.orm import sessionmaker
 from flask_sqlalchemy import SQLAlchemy
 
+from src import load_data
+
 logger = logging.getLogger(__name__)
 
 Base = declarative_base()
@@ -158,7 +160,6 @@ class AlbumManager:
             None
         """
         try:
-            # Parse datetime
             reviewdate = datetime.strptime(reviewdate, "%B %d %Y").date()
         except ValueError:
             logger.error("Failed to parse the given reviewdate \"%s\". Aborting.", reviewdate)
@@ -205,10 +206,26 @@ class AlbumManager:
         """
         session = self.session
 
-        with open(file_or_path, "r") as file:
+        # If the referenced filepath is in S3, `open()` cannot access -- save a local copy
+        # Put the local copy in the same place it would have gone inside S3
+        if file_or_path.startswith("s3://"):
+            s3bucket, s3path = load_data.parse_s3(file_or_path)
+            local_path = s3path
+            load_data.download_file_from_s3(local_path=local_path, s3path=file_or_path)
+            logger.info("Downloaded a copy of the file to %s", local_path)
+        else:
+            local_path = file_or_path
+
+        with open(local_path, "r") as file:
             reader = csv.DictReader(file)
             for row in reader:
-                row["reviewdate"] = datetime.strptime(row["reviewdate"], "%B %d %Y").date()
+                try:
+                    # Convert reviewdate field to datetime
+                    row["reviewdate"] = datetime.strptime(row["reviewdate"], "%B %d %Y").date()
+                except ValueError:
+                    # Actual date string doesn't match the given format
+                    # (likely has been parsed before during cleaning and is now in ISO format)
+                    row["reviewdate"] = datetime.strptime(row["reviewdate"], "%Y-%m-%d").date()
                 session.add(Albums(**row))
 
         try:
