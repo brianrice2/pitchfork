@@ -2,6 +2,7 @@ import os
 
 DEBUG = True
 LOGGING_CONFIG = "config/logging/local.conf"
+PIPELINE_CONFIG = "config/pipeline.yaml"
 PORT = 5000
 APP_NAME = "pitchfork"
 SQLALCHEMY_TRACK_MODIFICATIONS = True
@@ -9,7 +10,6 @@ HOST = "0.0.0.0"
 SQLALCHEMY_ECHO = False  # If True, SQL queries will be echoed/printed
 MAX_ROWS_SHOW = 1000
 DEFAULT_LOCAL_DATABASE = "sqlite:///data/msia423_db.db"
-SAVED_MODEL_PATH = "models/gbt_pipeline.joblib"
 
 # Connection string
 DB_HOST = os.environ.get("MYSQL_HOST")

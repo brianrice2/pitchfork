@@ -2,13 +2,13 @@ clean:
   convert_nan_to_str:
     colname: artist
   convert_str_to_datetime:
-    colname: releaseyear
+    colname: reviewdate
     format: "%B %d %Y"
   approximate_missing_year:
     fill_column: releaseyear
     approximate_with: reviewdate
   convert_datetime_to_date:
-    colname: releaseyear
+    colname: reviewdate
   fill_missing_manually:
     colname: recordlabel
   strip_whitespace:
@@ -22,15 +22,16 @@ clean:
       replace_with: Maybach
     iteration2:
       colname: recordlabel
-        values:
-          - Self
-          - none
-        replace_with: Self-released
+      values:
+        - Self
+        - none
+      replace_with: Self-released
   fill_na_with_str_missing:
     colname: genre
     fill_string: Missing
 model:
   split_train_val_test:
+    target_col: score
     train_val_test_ratio: "6:2:2"
     random_state: 3947
   make_model:
@@ -41,6 +42,7 @@ model:
     numeric_features:
       - releaseyear
       - danceability
+      - energy
       - key
       - loudness
       - speechiness
@@ -52,3 +54,27 @@ model:
     categorical_features:
       - genre
     handle_unknown: ignore
+  validate_dataframe:
+    output_cols:
+      - artist
+      - album
+      - reviewauthor
+      - releaseyear
+      - reviewdate
+      - recordlabel
+      - genre
+      - danceability
+      - energy
+      - key
+      - loudness
+      - speechiness
+      - acousticness
+      - instrumentalness
+      - liveness
+      - valence
+      - tempo
+  append_predictions:
+    target_col: score
+    output_col: preds
+app:
+  saved_model_path: models/gbt_pipeline.joblib
