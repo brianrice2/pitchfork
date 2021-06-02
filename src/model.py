@@ -2,11 +2,14 @@
 Build, fit, evaluate, and (de)serialize predictive models.
 """
 import logging
+import math
+from time import time
 
 import pandas as pd
 from numpy import NaN
 from sklearn.compose import ColumnTransformer
 from sklearn.ensemble import GradientBoostingRegressor
+from sklearn.metrics import max_error, mean_squared_error, median_absolute_error, r2_score
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
@@ -54,13 +57,12 @@ def split_train_val_test(df, target_col, train_val_test_ratio, **kwargs):
     logger.info(
         "Data split into train/test sets. " +
         "Shapes: X_train=%s, X_val=%s, X_test=%s, y_train=%s, y_val=%s, y_test=%s",
-        (X_train.shape, ),
-        (X_val.shape, ),
-        (X_test.shape, ),
-        (y_train.shape, ),
-        (y_val.shape, ),
-        (y_test.shape, )
-
+        X_train.shape,
+        X_val.shape,
+        X_test.shape,
+        y_train.shape,
+        y_val.shape,
+        y_test.shape
     )
 
     return X_train, X_val, X_test, y_train, y_val, y_test
@@ -91,8 +93,10 @@ def train_pipeline(X_train, y_train, preprocessor, model):
     ])
     logger.info("Pipeline created successfully. Beginning training.")
 
+    start_time = time()
     pipe.fit(X_train, y_train)
-    logger.info("Pipeline training complete")
+    logger.info("Pipeline training complete. Time taken: %0.4f seconds", time() - start_time)
+
     return pipe
 
 
@@ -154,24 +158,15 @@ def get_feature_importances(trained_pipeline, numeric_features):
     return pd.Series(data=importances, index=features)
 
 
-def parse_dict_to_dataframe(form_dict, output_cols=PREDICTION_COLUMNS):
+def parse_dict_to_dataframe(form_dict):
     """
-    Parse a dictionary to `pandas.DataFrame`.
-
-    Uses keys as column names, and creates the columns that don't exist (filling
-    with NA). Reorders columns to match the original training data, per the
-    pipeline's expectation.
+    Parse a dictionary to `pandas.DataFrame` with keys as column names.
 
     Flask forms supply data via POST requests in MultiDict format, but the
-    model pipeline requires an input DataFrame with exactly the same columns
-    as seen during training. The MultiDict can be converted to a flat dict
-    using its `to_dict(flat=True)` method.
+    model pipeline requires an input DataFrame.
 
     Args:
-        form_dict (dict): Flask form response as a flat
-        output_cols (list(str), optional): Required columns for output
-            DataFrame. Defaults to those seen during training. If not
-            provided (`None`), no adjustment to the DataFrame's columns is made.
+        form_dict (dict): Flask form response as a flat dictionary
 
     Returns:
         :obj:`pandas.DataFrame`
@@ -179,6 +174,26 @@ def parse_dict_to_dataframe(form_dict, output_cols=PREDICTION_COLUMNS):
     logger.info("Converting dictionary to pandas DataFrame")
     df = pd.DataFrame([form_dict.values()], columns=form_dict.keys())
 
+    return df
+
+
+def validate_dataframe(df, output_cols=PREDICTION_COLUMNS):
+    """
+    Align a DataFrame with model pipeline's required order and names.
+
+    The model pipeline requires an input DataFrame with exactly the same
+    columns as seen during training, and in the same order.
+    Creates the columns that don't exist (filling with NA).
+
+    Args:
+        df (:obj:`pandas.DataFrame`): Input DataFrame to validate/align
+        output_cols (list(str), optional): Required columns for output
+            DataFrame. Defaults to those seen during training. If not
+            provided (`None`), no adjustment to the DataFrame's columns is made.
+
+    Returns:
+
+    """
     if output_cols:
         # Create columns if they don't exist already
         for colname in output_cols:
@@ -189,5 +204,60 @@ def parse_dict_to_dataframe(form_dict, output_cols=PREDICTION_COLUMNS):
         # Column order must match exactly
         logger.info("Reordering input columns")
         df = df[output_cols]
+
+    return df
+
+
+def evaluate_model(y_true, y_pred):
+    """
+    Evaluate performance against a variety of regression metrics.
+
+    Args:
+        y_true (array-like): True values
+        y_pred (array-like): Predicted values
+
+    Returns:
+        None (logs results).
+    """
+    logger.debug("Evaluating model performance")
+
+    mse = mean_squared_error(y_true, y_pred)
+    rmse = math.sqrt(mse)
+    mad = median_absolute_error(y_true, y_pred)
+    r_squared = r2_score(y_true, y_pred)
+    max_err = max_error(y_true, y_pred)
+
+    logger.info("MSE:\t\t%0.4f" % mse)
+    logger.info("RMSE:\t%0.4f" % rmse)
+    logger.info("MAD:\t\t%0.4f" % mad)
+    logger.info("R-squared:\t%0.4f" % r_squared)
+    logger.info("Max error:\t%0.4f" % max_err)
+
+
+def append_predictions(model, input_data, target_col="score", output_col="preds"):
+    """
+    Append predictions to an existing input DataFrame.
+
+    Args:
+        model (:obj:`sklearn.pipeline.Pipeline): Trained model pipeline
+        input_data (:obj:`pandas.DataFrame`): Input data to predict on
+        target_col (str, optional): Name of response variable (to remove
+            if present). Defaults to "score".
+        output_col (str, optional): Name of column to place predicted
+            values in. Defaults to "preds".
+
+    Returns:
+        array-like of predicted values
+    """
+    logger.debug("Input data has %s columns: %s", len(input_data.columns), ", ".join(input_data.columns))
+    logger.debug("Validating input before predicting")
+    df = validate_dataframe(input_data)
+
+    start_time = time()
+    preds = model.predict(df)
+    logger.info("Predictions made on input data. Time taken: %0.4f seconds", time() - start_time)
+
+    df[output_col] = preds
+    logger.info("Predictions appended to original data")
 
     return df
