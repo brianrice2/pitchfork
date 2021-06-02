@@ -63,14 +63,14 @@ def convert_nan_to_str(df, colname="artist"):
     return df
 
 
-def convert_str_to_datetime(df, colname="releaseyear", format="%B %d %Y"):
+def convert_str_to_datetime(df, colname="reviewdate", format="%B %d %Y"):
     """
     Parse a string column to datetime format.
 
     Args:
         df (:obj:`pandas.DataFrame`): DataFrame to clean
         colname (str, optional): Name of column to apply transformation to.
-            Defaults to "releaseyear".
+            Defaults to "reviewdate".
         format (str, optional): Datetime format of column. Defaults to "%B %d %Y".
             For more info on these codes:
             https://docs.python.org/3/library/datetime.html#strftime-and-strptime-format-codes.
@@ -83,14 +83,14 @@ def convert_str_to_datetime(df, colname="releaseyear", format="%B %d %Y"):
     return df
 
 
-def convert_datetime_to_date(df, colname="releaseyear"):
+def convert_datetime_to_date(df, colname="reviewdate"):
     """
     Remove the time component of a datetime column.
 
     Args:
         df (:obj:`pandas.DataFrame`): DataFrame to clean
         colname (str, optional): Name of column to apply transformation to.
-            Defaults to "releaseyear".
+            Defaults to "reviewdate".
 
     Returns:
         Cleaned :obj:`pandas.DataFrame`
