@@ -173,7 +173,7 @@ if __name__ == "__main__":
     sp_pipeline.add_argument(
         "step",
         help="Which step to run",
-        choices=["clean", "model"]
+        choices=["clean", "model", "predict"]
     )
     sp_pipeline.add_argument(
         "--input", "-i",
@@ -193,7 +193,7 @@ if __name__ == "__main__":
     sp_pipeline.add_argument(
         "--model",
         default=None,
-        help="Path to save/load trained model object. Only used for `model` and `predict`."
+        help="Path to load trained model object. Only used for `predict`."
     )
 
     # Interpret and execute commands
@@ -261,14 +261,25 @@ if __name__ == "__main__":
             logger.info("Input df loaded from %s", args.input)
 
         if args.step == "clean":
+            logger.debug("Beginning `clean`")
             output = clean.clean_dataset(input, config["clean"])
         elif args.step == "model":
+            logger.debug("Beginning `model`")
+            # Data preparation
             X_train, X_val, X_test, y_train, y_val, y_test = \
                 model.split_train_val_test(input, **config["model"]["split_train_val_test"])
 
+            # Model building and training
             preprocessor = model.make_preprocessor(**config["model"]["make_preprocessor"])
-            model = model.make_model(**config["model"]["make_model"])
-            fitted_pipeline = model.train_pipeline(X_train, y_train, preprocessor, model)
+            model_pipeline = model.make_model(**config["model"]["make_model"])
+            fitted_pipeline = model.train_pipeline(X_train, y_train, preprocessor, model_pipeline)
+
+            # Model evaluation
+            y_val_pred = fitted_pipeline.predict(X_val)
+            model.evaluate_model(y_true=y_val, y_pred=y_val_pred)
+        elif args.step == "predict":
+            fitted_pipeline = serialize.load_pipeline(args.model)
+            output = model.append_predictions(fitted_pipeline, input, **config["model"]["append_predictions"])
 
         # Only the output from `model` cannot be saved in CSV format (gives a TMO)
         if args.output:
