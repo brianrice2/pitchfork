@@ -20,4 +20,4 @@ def test_parse_s3_long_path():
 def test_parse_s3_missing_path():
     """Missing S3 path (only bucket provided)."""
     with pytest.raises(AttributeError):
-        bucket, path = load_data.parse_s3("s3://my-bucket/")
+        _, _ = load_data.parse_s3("s3://my-bucket/")
