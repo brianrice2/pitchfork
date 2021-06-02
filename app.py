@@ -3,6 +3,7 @@ import os
 import pkg_resources
 import traceback
 
+import yaml
 from flask import Flask, redirect, render_template, request, send_from_directory, url_for
 
 from src import model
@@ -22,6 +23,9 @@ logging.config.fileConfig(
 )
 logger = logging.getLogger(app.config["APP_NAME"])
 logger.debug("Web app log")
+
+with open(app.config["PIPELINE_CONFIG"], 'r') as config_file:
+    pipeline_config = yaml.load(config_file, Loader=yaml.FullLoader)
 
 # Initialize the database session
 album_manager = AlbumManager(app)
@@ -100,11 +104,12 @@ def predict_rating():
     Returns:
         Redirect to index page
     """
-    pipeline = serialize.load_pipeline(app.config["SAVED_MODEL_PATH"])
+    pipeline = serialize.load_pipeline(pipeline_config["app"]["saved_model_path"])
     logger.info("Loaded saved model pipeline")
 
     input_data = request.form.to_dict()
     df = model.parse_dict_to_dataframe(input_data)
+    df = model.validate_dataframe(df)
     logger.debug("Parsed input data to DataFrame format")
 
     try:
