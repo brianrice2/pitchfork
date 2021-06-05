@@ -18,7 +18,7 @@ def test_parse_ratio():
 
 
 def test_parse_ratio_missing_component():
-    """Ratio only provides two ratios."""
+    """Ratio only provides two components."""
     ratio = "6:4"
     sizes = model.parse_ratio(ratio)
     assert sizes == [0.6, 0., 0.4]
