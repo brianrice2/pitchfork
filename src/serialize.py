@@ -1,4 +1,5 @@
 import logging
+import os
 
 import joblib
 
@@ -43,11 +44,17 @@ def load_pipeline(load_path):
     Returns:
         Fitted :obj:`sklearn.pipeline.Pipeline` object
     """
+    # Download from S3 if a local copy does not already exist
+    # This helps improve inference speed by reducing unnecessary
+    # I/O and network calls
     if load_path.startswith("s3://"):
         s3bucket, s3path = load_data.parse_s3(load_path)
         local_path = s3path
-        load_data.download_file_from_s3(local_path=local_path, s3path=load_path)
-        logger.info("Downloaded a copy of the model to %s", local_path)
+        if not os.path.exists(local_path):
+            load_data.download_file_from_s3(local_path=local_path, s3path=load_path)
+            logger.info("Downloaded a copy of the model to %s", local_path)
+        else:
+            logger.info("Using existing local copy of model at %s", local_path)
         pipeline = joblib.load(local_path)
     else:
         pipeline = joblib.load(load_path)
