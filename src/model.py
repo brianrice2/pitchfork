@@ -19,11 +19,11 @@ logger = logging.getLogger(__name__)
 # The exact same columns must be present, and in the exact same order, as the
 # original training data for the pipeline to make predictions (even if the
 # columns aren't used at all by the preprocessor or model)
-PREDICTION_COLUMNS = (
+PREDICTION_COLUMNS = [
     "artist", "album", "reviewauthor", "releaseyear", "reviewdate",
     "recordlabel", "genre", "danceability", "energy", "key", "loudness",
     "speechiness", "acousticness", "instrumentalness", "liveness", "valence", "tempo"
-)
+]
 
 
 def split_predictors_response(df, target_col="score"):
