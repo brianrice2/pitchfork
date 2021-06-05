@@ -116,7 +116,12 @@ def predict_rating():
 
     try:
         score = round(pipeline.predict(df)[0], 2)
-        logger.info("Prediction: %0.2f. Time taken for inference: %0.4fs", score, time() - start_time)
+        logger.info(
+            """Prediction: %0.2f.
+            Total time for loading model, parsing input, and performing inference: %0.4fs""",
+            score,
+            time() - start_time
+        )
         return str(score)
     except:
         traceback.print_exc()

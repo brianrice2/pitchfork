@@ -19,11 +19,11 @@ logger = logging.getLogger(__name__)
 # The exact same columns must be present, and in the exact same order, as the
 # original training data for the pipeline to make predictions (even if the
 # columns aren't used at all by the preprocessor or model)
-PREDICTION_COLUMNS = [
+PREDICTION_COLUMNS = (
     "artist", "album", "reviewauthor", "releaseyear", "reviewdate",
     "recordlabel", "genre", "danceability", "energy", "key", "loudness",
     "speechiness", "acousticness", "instrumentalness", "liveness", "valence", "tempo"
-]
+)
 
 
 def split_predictors_response(df, target_col="score"):
@@ -45,9 +45,9 @@ def split_train_val_test(features, target, train_val_test_ratio, **kwargs):
     Partition dataset into training, validation, and testing splits.
 
     Args:
-        df (:obj:`pandas.DataFrame`): DataFrame containing input features
-            and response variable
-        target_col (str): Name of column containing response variable
+
+        features (:obj:`pandas.DataFrame`): DataFrame of input features
+        target (array-like): Values of response variable to predict
         train_val_test_ratio (str): Relative proportion of data for each of
             train, val, and test sets, in the form "X:Y:Z" (e.g., "6:2:2").
         **kwargs: Additional settings to pass on to `train_test_split()`
@@ -66,8 +66,8 @@ def split_train_val_test(features, target, train_val_test_ratio, **kwargs):
     )
 
     logger.info(
-        "Data split into train/test sets. " +
-        "Shapes: X_train=%s, X_val=%s, X_test=%s, y_train=%s, y_val=%s, y_test=%s",
+        """Data split into train/test sets.
+        Shapes: X_train=%s, X_val=%s, X_test=%s, y_train=%s, y_val=%s, y_test=%s""",
         X_train.shape,
         X_val.shape,
         X_test.shape,
@@ -84,7 +84,9 @@ def parse_ratio(ratio):
     sizes = [float(n) for n in ratio.split(":")]
     sizes = [sizes[0], 0., sizes[1]] if len(sizes) == 2 else sizes
     _sum = sum(sizes)
-    return list(size / _sum for size in sizes)
+    proportions = list(size / _sum for size in sizes)
+    logger.info("Successfuly parsed ratio %s to %s", ratio, "/".join(proportions))
+    return proportions
 
 
 def train_pipeline(X_train, y_train, preprocessor, model):
@@ -94,6 +96,10 @@ def train_pipeline(X_train, y_train, preprocessor, model):
     Args:
         X_train (:obj:`pandas.DataFrame`): Training features
         y_train (array-like): Training targets
+        preprocessor (obj:`sklearn.compose.ColumnTransformer`): ColumnTransformer
+            defining the processing to perform for input data
+        model (:obj:`sklearn.base.BaseEstimator`): An untrained `sklearn`
+            regression model
 
     Returns:
         A fitted :obj:`sklearn.pipeline.Pipeline`
@@ -117,7 +123,8 @@ def make_preprocessor(numeric_features, categorical_features, handle_unknown):
 
     Performs standard scaling for numeric features and one-hot encoding for categorical
     features. All features specified for this function are processed, and _only_ these
-    features are used when modeling.
+    features are used when modeling. In other words, this preprocessor determines the
+    exact input columns (and order) when training and performing inference.
 
     Args:
         numeric_features (list(str)): Names of numeric features to scale
@@ -171,7 +178,7 @@ def get_feature_importances(trained_pipeline, numeric_features):
 
 def parse_dict_to_dataframe(form_dict):
     """
-    Parse a dictionary to `pandas.DataFrame` with keys as column names.
+    Parse a dictionary to `pandas.DataFrame` format.
 
     Flask forms supply data via POST requests in MultiDict format, but the
     model pipeline requires an input DataFrame.
@@ -180,7 +187,8 @@ def parse_dict_to_dataframe(form_dict):
         form_dict (dict): Flask form response as a flat dictionary
 
     Returns:
-        :obj:`pandas.DataFrame`
+        :obj:`pandas.DataFrame` with keys as column names and values as the
+            associated values for each key
     """
     logger.info("Converting dictionary to pandas DataFrame")
     df = pd.DataFrame([form_dict.values()], columns=form_dict.keys())
@@ -264,7 +272,10 @@ def append_predictions(model, input_data, output_col="preds"):
 
     start_time = time()
     preds = model.predict(df)
-    logger.info("Predictions made on input data. Time taken: %0.4f seconds", time() - start_time)
+    logger.info(
+        "Predictions made on input data. Time taken to predict: %0.4f seconds",
+        time() - start_time
+    )
 
     df[output_col] = preds
     logger.info("Predictions appended to original data")

@@ -1,8 +1,40 @@
 import logging
+from time import time
 
 import pandas as pd
 
 logger = logging.getLogger(__name__)
+
+# Some albums lack a record label in the dataset, even though
+# they have one in reality. Correct these ones manually.
+FILL_MISSING_RECORDLABEL_DATA = (
+    "Fool's Gold",          # Run the Jewels
+    "Vapor",                # 808s and Dark Grapes III
+    "101 Distribution",     # Dedication 2
+    "Jet Life",             # The Drive In Theatre
+    "Espo",                 # Animals
+    "Cinematic",            # 1999
+    "Def Jam",              # Rich Forever
+    "LM Dupli-Cation",      # Cervantine
+    "Glory Boyz",           # Back From the Dead
+    "Epic",                 # Drilluminati
+    "Self-released",        # Community Service 2!
+    "Cash Money",           # Sorry 4 the Wait
+    "Grand Hustle",         # Fuck a Mixtape
+    "Vice",                 # Blue Chips
+    "Free Bandz",           # 56 Nights
+    "Six Shooter Records",  # Retribution
+    "Self-released",        # Acid Rap
+    "Maybach",              # Dreamchasers
+    "Self-released",        # White Mystery
+    "Top Dawg",             # Cilvia Demo
+    "Triple X",             # Winter Hill
+    "1017",                 # 1017 Thug
+    "Rostrum",              # Kush and Orange Juice
+    "BasedWorld",           # God's Father
+    "10.Deep",              # The Mixtape About Nothing
+    "Self-released"         # Coloring Book
+)
 
 
 def clean_dataset(df, config):
@@ -16,6 +48,8 @@ def clean_dataset(df, config):
     Returns:
         :obj:`pandas.DataFrame` of cleaned data
     """
+    start_time = time()
+
     if "convert_nan_to_str" in config:
         df = convert_nan_to_str(df, **config["convert_nan_to_str"])
 
@@ -41,6 +75,7 @@ def clean_dataset(df, config):
     if "fill_na_with_str_missing" in config:
         df = fill_na_with_str_missing(df, **config["fill_na_with_str_missing"])
 
+    logger.info("Completed data cleaning process. Time taken: %0.4fs", time() - start_time)
     return df
 
 
@@ -120,7 +155,7 @@ def approximate_missing_year(df, fill_column="releaseyear", approximate_with="re
     return df
 
 
-def fill_missing_manually(df, colname="recordlabel"):
+def fill_missing_manually(df, colname="recordlabel", fill_with=FILL_MISSING_RECORDLABEL_DATA):
     """
     Manually fill missing values.
 
@@ -128,41 +163,13 @@ def fill_missing_manually(df, colname="recordlabel"):
         df (:obj:`pandas.DataFrame`): DataFrame to clean
         colname (str, optional): Name of column to apply transformation to.
             Defaults to "recordlabel".
+        fill_with (iterable): Corrected values to replace missing values with.
+            Data type depends on the column being filled.
 
     Returns:
         Cleaned :obj:`pandas.DataFrame`
     """
-    fill_missing = pd.Series(
-        data=[
-            "Fool's Gold",          # Run the Jewels
-            "Vapor",                # 808s and Dark Grapes III
-            "101 Distribution",     # Dedication 2
-            "Jet Life",             # The Drive In Theatre
-            "Espo",                 # Animals
-            "Cinematic",            # 1999
-            "Def Jam",              # Rich Forever
-            "LM Dupli-Cation",      # Cervantine
-            "Glory Boyz",           # Back From the Dead
-            "Epic",                 # Drilluminati
-            "Self-released",        # Community Service 2!
-            "Cash Money",           # Sorry 4 the Wait
-            "Grand Hustle",         # Fuck a Mixtape
-            "Vice",                 # Blue Chips
-            "Free Bandz",           # 56 Nights
-            "Six Shooter Records",  # Retribution
-            "Self-released",        # Acid Rap
-            "Maybach",              # Dreamchasers
-            "Self-released",        # White Mystery
-            "Top Dawg",             # Cilvia Demo
-            "Triple X",             # Winter Hill
-            "1017",                 # 1017 Thug
-            "Rostrum",              # Kush and Orange Juice
-            "BasedWorld",           # God's Father
-            "10.Deep",              # The Mixtape About Nothing
-            "Self-released"         # Coloring Book
-        ],
-        index=df[pd.isna(df[colname])].index
-    )
+    fill_missing = pd.Series(data=fill_with, index=df[pd.isna(df[colname])].index)
     df.loc[pd.isna(df[colname]), colname] = fill_missing
     logger.info(
         "Manually filled in missing values for %d missing rows in column %s",

@@ -11,6 +11,33 @@ clean:
     colname: reviewdate
   fill_missing_manually:
     colname: recordlabel
+    fill_with:
+      - "Fool's Gold"          # Run the Jewels
+      - "Vapor"                # 808s and Dark Grapes III
+      - "101 Distribution"     # Dedication 2
+      - "Jet Life"             # The Drive In Theatre
+      - "Espo"                 # Animals
+      - "Cinematic"            # 1999
+      - "Def Jam"              # Rich Forever
+      - "LM Dupli-Cation"      # Cervantine
+      - "Glory Boyz"           # Back From the Dead
+      - "Epic"                 # Drilluminati
+      - "Self-released"        # Community Service 2!
+      - "Cash Money"           # Sorry 4 the Wait
+      - "Grand Hustle"         # Fuck a Mixtape
+      - "Vice"                 # Blue Chips
+      - "Free Bandz"           # 56 Nights
+      - "Six Shooter Records"  # Retribution
+      - "Self-released"        # Acid Rap
+      - "Maybach"              # Dreamchasers
+      - "Self-released"        # White Mystery
+      - "Top Dawg"             # Cilvia Demo
+      - "Triple X"             # Winter Hill
+      - "1017"                 # 1017 Thug
+      - "Rostrum"              # Kush and Orange Juice
+      - "BasedWorld"           # God's Father
+      - "10.Deep"              # The Mixtape About Nothing
+      - "Self-released"         # Coloring Book
   strip_whitespace:
     colname: recordlabel
   bucket_values_together:
