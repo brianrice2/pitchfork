@@ -72,7 +72,7 @@ if __name__ == "__main__":
         "--reviewauthor", default="Ian Cohen", help="Album reviewer's name"
     )
     sp_ingest_album.add_argument("--score", default="9", help="Pitchfork rating")
-    sp_ingest_album.add_argument("--releaseyear", default="2014", help="Album release year")
+    sp_ingest_album.add_argument("--releaseyear", default=2014, help="Album release year")
     sp_ingest_album.add_argument(
         "--reviewdate", default="October 29 2014", help="Pitchfork review date"
     )
@@ -117,7 +117,7 @@ if __name__ == "__main__":
     )
     sp_ingest_dataset.add_argument(
         "--engine_string",
-        default="sqlite:///data/msia423_db.db",
+        default=SQLALCHEMY_DATABASE_URI,
         help="SQLAlchemy connection URI for database",
     )
     sp_ingest_dataset.add_argument(
@@ -191,7 +191,7 @@ if __name__ == "__main__":
         help="Path to save output CSV (optional, default=None)"
     )
     sp_pipeline.add_argument(
-        "--model",
+        "--model", "-m",
         default=None,
         help="Path to load trained model object. Only used for `predict`."
     )
@@ -265,23 +265,19 @@ if __name__ == "__main__":
             output = clean.clean_dataset(input, config["clean"])
         elif args.step == "model":
             logger.debug("Beginning `model`")
-            # Data preparation
-            X_train, X_val, X_test, y_train, y_val, y_test = \
-                model.split_train_val_test(input, **config["model"]["split_train_val_test"])
+            # Train on full dataset for deployment
+            X, y = model.split_predictors_response(input, **config["model"]["split_predictors_response"])
 
             # Model building and training
             preprocessor = model.make_preprocessor(**config["model"]["make_preprocessor"])
             model_pipeline = model.make_model(**config["model"]["make_model"])
-            fitted_pipeline = model.train_pipeline(X_train, y_train, preprocessor, model_pipeline)
-
-            # Model evaluation
-            y_val_pred = fitted_pipeline.predict(X_val)
-            model.evaluate_model(y_true=y_val, y_pred=y_val_pred)
+            fitted_pipeline = model.train_pipeline(X, y, preprocessor, model_pipeline)
         elif args.step == "predict":
+            logger.debug("Beginning `predict`")
             fitted_pipeline = serialize.load_pipeline(args.model)
             output = model.append_predictions(fitted_pipeline, input, **config["model"]["append_predictions"])
 
-        # Only the output from `model` cannot be saved in CSV format (gives a TMO)
+        # Only the output from `model` cannot be saved in CSV format (returns a TMO)
         if args.output:
             if args.step != "model":
                 output.to_csv(args.output, index=False)
