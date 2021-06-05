@@ -65,12 +65,13 @@ The dataset is released under the [Creative Commons Attribution 4.0 Internationa
 ## Directory structure
 
 ```
-├── README.md                         <- You are here
+├── README.md                         <- You are here!
 |
 ├── app/                              <- Configuration files 
 │   ├── static/                       <- Static CSS, JS, etc. files
 │   ├── templates/                    <- HTML (or other code) that is templated and changes based on a set of inputs
-│   └── boot.sh                       <- Start up script for launching app in Docker container
+│   ├── boot.sh                       <- Start up script for launching app in Docker container
+│   └── Dockerfile                    <- Build the Docker image for running the web app
 │
 ├── config/                           <- Configuration files 
 │   ├── local/                        <- Private configuration files and environment variable settings (not tracked)
@@ -90,12 +91,16 @@ The dataset is released under the [Creative Commons Attribution 4.0 Internationa
 │
 ├── src/                              <- Source data for the project 
 │
-├── tests/                            <- Files necessary for running model tests (see documentation below) 
+├── tests/                            <- Pytest unit tests
 │
 ├── app.py                            <- Flask wrapper for running the model
-├── Dockerfile                        <- Builds the Docker image for ingesting data & creating database
-├── run.py                            <- Simplifies the execution of one or more of the src scripts  
-└── requirements.txt                  <- Python package dependencies 
+├── Dockerfile_pipeline               <- Builds the Docker image for the data cleaning & modeling pipeline
+├── Dockerfile_python                 <- Builds the Docker image for ingesting data & creating database
+├── requirements.txt                  <- Python package dependencies
+├── run.py                            <- Simplifies the execution of one or more of the src scripts
+├── run_app.sh                        <- Sets up for and runs Flask web app
+├── run_cleanup.sh                    <- Removes artifacts from data cleaning & modeling pipeline
+└── run_pipeline.sh                   <- Runs the data cleaning & modeling pipeline
 ```
 
 ## Running the app
@@ -114,7 +119,7 @@ export AWS_SECRET_ACCESS_KEY="MY_SECRET_ACCESS_KEY"
 #### Build the Docker image
 
 ```bash
-docker build -t pitchfork .
+docker build -f Dockerfile_python -t pitchfork .
 ````
 
 #### Download raw data and upload to S3
@@ -162,7 +167,7 @@ docker run \
   pitchfork run.py create_db
 ```
 
-By default, `python run.py create_db` creates a local SQLite database at `sqlite:///data/msia423_db.db`.
+By default, `run.py create_db` creates a local SQLite database at `sqlite:///data/msia423_db.db`.
 
 If you know the engine string already, you can simply run:
 
@@ -220,10 +225,23 @@ docker run \
   pitchfork run.py ingest_album
 ```
 
-### Testing
-
-To run the unit tests in a Docker container, first build the image as described above and then run:
+To instead load the contents of a CSV file (again after the table has been created), use:
 
 ```bash
+docker run \
+  -e MYSQL_HOST \
+  -e MYSQL_PORT \
+  -e MYSQL_USER \
+  -e MYSQL_PASSWORD \
+  -e MYSQL_DATABASE \
+  pitchfork run.py ingest_dataset --file "path/to/my/file.csv"
+```
+
+### Testing
+
+To run the unit tests in a Docker container run:
+
+```bash
+docker build -f Dockerfile_python -t pitchfork .
 docker run pitchfork -m pytest
 ```
