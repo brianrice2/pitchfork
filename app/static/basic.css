@@ -179,3 +179,7 @@ body, html {
 .tooltip:hover .tooltiptext {
   visibility: visible;
 }
+
+#predictResult {
+  font-size: 20px;
+}
