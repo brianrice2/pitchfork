@@ -2,6 +2,7 @@ import logging.config
 import os
 import pkg_resources
 import traceback
+from time import time
 
 import yaml
 from flask import Flask, redirect, render_template, request, send_from_directory, url_for
@@ -104,6 +105,7 @@ def predict_rating():
     Returns:
         Redirect to index page
     """
+    start_time = time()
     pipeline = serialize.load_pipeline(pipeline_config["app"]["saved_model_path"])
     logger.info("Loaded saved model pipeline")
 
@@ -114,7 +116,7 @@ def predict_rating():
 
     try:
         score = round(pipeline.predict(df)[0], 2)
-        logger.info("Prediction: %s", score)
+        logger.info("Prediction: %0.2f. Time taken for inference: %0.4fs", score, time() - start_time)
         return str(score)
     except:
         traceback.print_exc()
