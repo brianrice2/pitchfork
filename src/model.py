@@ -26,7 +26,21 @@ PREDICTION_COLUMNS = [
 ]
 
 
-def split_train_val_test(df, target_col, train_val_test_ratio, **kwargs):
+def split_predictors_response(df, target_col="score"):
+    """Separate predictor variables from response variable."""
+    features = df.drop(target_col, axis=1)
+    target = df[target_col]
+    logger.info(
+        "Split predictors and response variable. " +
+        "Shapes: features=%s, target=%s",
+        features.shape,
+        target.shape
+    )
+
+    return features, target
+
+
+def split_train_val_test(features, target, train_val_test_ratio, **kwargs):
     """
     Partition dataset into training, validation, and testing splits.
 
@@ -35,16 +49,13 @@ def split_train_val_test(df, target_col, train_val_test_ratio, **kwargs):
             and response variable
         target_col (str): Name of column containing response variable
         train_val_test_ratio (str): Relative proportion of data for each of
-            train, val, and test sets, in the form "X:Y:Z" (e.g., "6:2:2")
+            train, val, and test sets, in the form "X:Y:Z" (e.g., "6:2:2").
         **kwargs: Additional settings to pass on to `train_test_split()`
             (for example, random seed)
 
     Returns:
         (X_train, X_val, X_test, y_train, y_val, y_test), each as DataFrames
     """
-    features = df.drop(target_col, axis=1)
-    target = df[target_col]
-
     # Compute sizes and split according to ratio
     train_size, val_size, test_size = parse_ratio(train_val_test_ratio)
     X_train_val, X_test, y_train_val, y_test = train_test_split(
@@ -69,7 +80,7 @@ def split_train_val_test(df, target_col, train_val_test_ratio, **kwargs):
 
 
 def parse_ratio(ratio):
-    """Convert a train-val-test ratio from X:Y:Z to list of proportions in [0, 1]."""
+    """Convert a train-val-test ratio from X:Y:Z to list of proportions in [0,1]."""
     sizes = [float(n) for n in ratio.split(":")]
     sizes = [sizes[0], 0., sizes[1]] if len(sizes) == 2 else sizes
     _sum = sum(sizes)
@@ -143,7 +154,7 @@ def make_model(**kwargs):
 
 def get_feature_importances(trained_pipeline, numeric_features):
     """
-    Get feature importance measures. Only applicable with tree-based models.
+    Get feature importance measures from a trained model.
 
     Args:
         trained_pipeline (:obj:`sklearn.pipeline.Pipeline`): Fitted model pipeline
@@ -192,7 +203,7 @@ def validate_dataframe(df, output_cols=PREDICTION_COLUMNS):
             provided (`None`), no adjustment to the DataFrame's columns is made.
 
     Returns:
-
+        Validated :obj:`pandas.DataFrame`
     """
     if output_cols:
         # Create columns if they don't exist already
@@ -234,15 +245,13 @@ def evaluate_model(y_true, y_pred):
     logger.info("Max error:\t%0.4f" % max_err)
 
 
-def append_predictions(model, input_data, target_col="score", output_col="preds"):
+def append_predictions(model, input_data, output_col="preds"):
     """
     Append predictions to an existing input DataFrame.
 
     Args:
         model (:obj:`sklearn.pipeline.Pipeline): Trained model pipeline
         input_data (:obj:`pandas.DataFrame`): Input data to predict on
-        target_col (str, optional): Name of response variable (to remove
-            if present). Defaults to "score".
         output_col (str, optional): Name of column to place predicted
             values in. Defaults to "preds".
 
