@@ -39,8 +39,8 @@ DEFAULT_S3_LOCATION = DEFAULT_S3_BUCKET + DEFAULT_S3_PATH
 
 
 if __name__ == "__main__":
-    # Add parsers for both creating a database and adding albums to it
-    parser = argparse.ArgumentParser(description="Create and/or add data to database")
+    # Add parsers for both managing database, cleaning data, and modeling
+    parser = argparse.ArgumentParser(description="Create/update database, clean data, and model")
     subparsers = parser.add_subparsers(dest="subparser_name")
 
     # Sub-parser for creating a database
