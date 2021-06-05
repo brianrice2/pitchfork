@@ -57,6 +57,7 @@ clean:
     colname: genre
     fill_string: Missing
 model:
+  saved_model_path: s3://2021-msia423-rice-brian/models/gbt_pipeline.joblib
   split_predictors_response:
     target_col: score
   split_train_val_test:
@@ -103,5 +104,3 @@ model:
       - tempo
   append_predictions:
     output_col: preds
-app:
-  saved_model_path: s3://2021-msia423-rice-brian/models/gbt_pipeline.joblib

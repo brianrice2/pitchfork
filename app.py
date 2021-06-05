@@ -15,7 +15,7 @@ from src.add_albums import Albums, AlbumManager
 app = Flask(__name__, template_folder="app/templates", static_folder="app/static")
 app.config.from_pyfile("config/flaskconfig.py")
 
-# Define LOGGING_CONFIG in flask_config.py: path to config file
+# Define LOGGING_CONFIG in flask_config.py as the path to config file
 # Using `pkg_resources` here allows Sphinx to find the logging config
 # file when building the documentation HTML pages
 logging.config.fileConfig(
@@ -25,7 +25,7 @@ logging.config.fileConfig(
 logger = logging.getLogger(app.config["APP_NAME"])
 logger.debug("Web app log")
 
-with open(app.config["PIPELINE_CONFIG"], 'r') as config_file:
+with open(app.config["PIPELINE_CONFIG"], "r") as config_file:
     pipeline_config = yaml.load(config_file, Loader=yaml.FullLoader)
 
 # Initialize the database session
@@ -106,7 +106,7 @@ def predict_rating():
         Redirect to index page
     """
     start_time = time()
-    pipeline = serialize.load_pipeline(pipeline_config["app"]["saved_model_path"])
+    pipeline = serialize.load_pipeline(pipeline_config["model"]["saved_model_path"])
     logger.info("Loaded saved model pipeline")
 
     input_data = request.form.to_dict()
