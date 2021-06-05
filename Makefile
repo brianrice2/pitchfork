@@ -1,4 +1,4 @@
-.PHONY: raw_data cleaned_data model predictions empty_database ingest_dataset app cleanup
+.PHONY: raw_data cleaned_data model pipeline predictions empty_database ingest_dataset app cleanup
 
 PIPELINE_CONFIG="config/pipeline.yaml"
 S3_BUCKET="s3://2021-msia423-rice-brian"
@@ -23,6 +23,8 @@ model:
 		--input "${S3_BUCKET}/${CLEANED_DATA_PATH}" \
 		--config "${PIPELINE_CONFIG}" \
 		--output "${S3_BUCKET}/${SAVED_MODEL_PATH}"
+
+pipeline: cleaned_data model
 
 predictions:
 	python3 run.py pipeline predict \
