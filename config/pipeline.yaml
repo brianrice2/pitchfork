@@ -30,8 +30,9 @@ clean:
     colname: genre
     fill_string: Missing
 model:
-  split_train_val_test:
+  split_predictors_response:
     target_col: score
+  split_train_val_test:
     train_val_test_ratio: "6:2:2"
     random_state: 3947
   make_model:
@@ -74,7 +75,6 @@ model:
       - valence
       - tempo
   append_predictions:
-    target_col: score
     output_col: preds
 app:
   saved_model_path: models/gbt_pipeline.joblib
