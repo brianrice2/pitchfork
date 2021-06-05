@@ -1,5 +1,6 @@
 import csv
 import logging.config
+import traceback
 from datetime import datetime
 
 import sqlalchemy
@@ -162,6 +163,7 @@ class AlbumManager:
         try:
             reviewdate = datetime.strptime(reviewdate, "%B %d %Y").date()
         except ValueError:
+            traceback.print_exc()
             logger.error("Failed to parse the given reviewdate \"%s\". Aborting.", reviewdate)
         else:
             # Add to database
@@ -216,7 +218,8 @@ class AlbumManager:
         else:
             local_path = file_or_path
 
-        with open(local_path, "r") as file:
+        albums = []
+        with open(local_path, "r", encoding="utf-8") as file:
             reader = csv.DictReader(file)
             for row in reader:
                 try:
@@ -226,11 +229,14 @@ class AlbumManager:
                     # Actual date string doesn't match the given format
                     # (likely has been parsed before during cleaning and is now in ISO format)
                     row["reviewdate"] = datetime.strptime(row["reviewdate"], "%Y-%m-%d").date()
-                session.add(Albums(**row))
+                albums.append(Albums(**row))
 
         try:
+            session.add_all(albums)
             session.commit()
         except sqlalchemy.exc.OperationalError:
+            traceback.print_exc()
             logger.error("Could not find table. One possible reason: are you connected to the Northwestern VPN?")
+            session.rollback()
         else:
             logger.info("Contents of %s added to database", file_or_path)
