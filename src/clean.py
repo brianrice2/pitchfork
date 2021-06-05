@@ -72,8 +72,8 @@ def clean_dataset(df, config):
         df = bucket_values_together(df, **config["bucket_values_together"]["iteration1"])
         df = bucket_values_together(df, **config["bucket_values_together"]["iteration2"])
 
-    if "fill_na_with_str_missing" in config:
-        df = fill_na_with_str_missing(df, **config["fill_na_with_str_missing"])
+    if "fill_na_with_str" in config:
+        df = fill_na_with_str(df, **config["fill_na_with_str"])
 
     logger.info("Completed data cleaning process. Time taken: %0.4fs", time() - start_time)
     return df
@@ -226,7 +226,7 @@ def bucket_values_together(df, colname, values, replace_with):
     return df
 
 
-def fill_na_with_str_missing(df, colname="genre", fill_string="Missing"):
+def fill_na_with_str(df, colname="genre", fill_string="Missing"):
     """
     Fill NA values with a string value.
 
