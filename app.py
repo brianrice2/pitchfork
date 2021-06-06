@@ -41,7 +41,7 @@ def index():
     inserts it into the app/templates/index.html template.
 
     Returns:
-        Rendered HTML template
+        Rendered HTML template for the SPA
     """
     try:
         albums = album_manager.session.query(Albums).limit(app.config["MAX_ROWS_SHOW"]).all()
@@ -55,6 +55,12 @@ def index():
 
 @app.route("/search")
 def search():
+    """
+    Search for songs in the database.
+
+    Returns:
+        Rendered HTML template of SPA with songs filtered
+    """
     album_name = request.args.get("album")
     artist_name = request.args.get("artist")
     score = request.args.get("score")
