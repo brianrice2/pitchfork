@@ -91,6 +91,10 @@ def convert_nan_to_str(df, colname="artist"):
     Returns:
         Cleaned :obj:`pandas.DataFrame`
     """
+    if colname not in df.columns:
+        logger.warning("%s not found in columns. Returning original data.", colname)
+        return df
+
     nrows_affected = len(df.loc[pd.isna(df[colname])].index)
     df[colname] = df[colname].where(df[colname].notna(), other="NA")
     logger.info("Replaced missing values in %s with \"NA\"", colname)
@@ -113,6 +117,10 @@ def convert_str_to_datetime(df, colname="reviewdate", format="%B %d %Y"):
     Returns:
         Cleaned :obj:`pandas.DataFrame`
     """
+    if colname not in df.columns:
+        logger.warning("%s not found in columns. Returning original data.", colname)
+        return df
+
     df[colname] = pd.to_datetime(df[colname], format=format)
     logger.info("Converted column %s to datetime format", colname)
     return df
@@ -130,6 +138,10 @@ def convert_datetime_to_date(df, colname="reviewdate"):
     Returns:
         Cleaned :obj:`pandas.DataFrame`
     """
+    if colname not in df.columns:
+        logger.warning("%s not found in columns. Returning original data.", colname)
+        return df
+
     df[colname] = df[colname].dt.date
     logger.info("Converted column %s to date format", colname)
     return df
@@ -141,12 +153,20 @@ def approximate_missing_year(df, fill_column="releaseyear", approximate_with="re
 
     Args:
         df (:obj:`pandas.DataFrame`): DataFrame to clean
-        fill_column:
-        approximate_with:
+        fill_column (str): Name of column to fill values in
+        approximate_with (str): Name of `datetime` column to pull year from
 
     Returns:
         Cleaned :obj:`pandas.DataFrame`
     """
+    if fill_column not in df.columns:
+        logger.warning("%s not found in columns. Returning original data.", fill_column)
+        return df
+
+    if approximate_with not in df.columns:
+        logger.warning("%s not found in columns. Returning original data.", approximate_with)
+        return df
+
     nrows_affected = len(df.loc[pd.isna(df[fill_column])].index)
     df.loc[pd.isna(df[fill_column]), fill_column] = \
         df[pd.isna(df[fill_column])].loc[:, approximate_with].dt.year
@@ -169,6 +189,10 @@ def fill_missing_manually(df, colname="recordlabel", fill_with=FILL_MISSING_RECO
     Returns:
         Cleaned :obj:`pandas.DataFrame`
     """
+    if colname not in df.columns:
+        logger.warning("%s not found in columns. Returning original data.", colname)
+        return df
+
     fill_missing = pd.Series(data=fill_with, index=df[pd.isna(df[colname])].index)
     df.loc[pd.isna(df[colname]), colname] = fill_missing
     logger.info(
@@ -192,6 +216,10 @@ def strip_whitespace(df, colname="recordlabel"):
     Returns:
         Cleaned :obj:`pandas.DataFrame`
     """
+    if colname not in df.columns:
+        logger.warning("%s not found in columns. Returning original data.", colname)
+        return df
+
     df[colname] = df[colname].apply(str.strip)
     logger.info("Trimmed extra whitespace in column %s", colname)
     return df
@@ -210,6 +238,10 @@ def bucket_values_together(df, colname, values, replace_with):
     Returns:
         Cleaned :obj:`pandas.DataFrame`
     """
+    if colname not in df.columns:
+        logger.warning("%s not found in columns. Returning original data.", colname)
+        return df
+
     nrows_affected = 0
     for value in values:
         nrows_affected += len(df.loc[df[colname] == value, colname].index)
@@ -240,6 +272,10 @@ def fill_na_with_str(df, colname="genre", fill_string="Missing"):
     Returns:
         Cleaned :obj:`pandas.DataFrame`
     """
+    if colname not in df.columns:
+        logger.warning("%s not found in columns. Returning original data.", colname)
+        return df
+
     nrows_affected = len(df.loc[pd.isna(df[colname])].index)
     df[colname] = df[colname].fillna(fill_string)
     logger.info("Replaced missing values in %s with %s", colname, fill_string)
