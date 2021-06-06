@@ -94,6 +94,12 @@ def add_entry():
     """
     try:
         form_data = request.form.to_dict()
+
+        # Populate required fields if not provided
+        form_data["album"] = form_data.get("album", "Not provided")
+        form_data["reviewauthor"] = form_data.get("reviewauthor", "Not provided")
+        form_data["score"] = form_data.get("score", 0)
+
         album_manager.add_album(**form_data)
         logger.info("New album added: %s by %s", form_data["album"], form_data["artist"])
         return redirect(url_for("index"))
@@ -137,6 +143,7 @@ def predict_rating():
 
 @app.route("/favicon.ico")
 def favicon():
+    """Show pitchfork favicon in browser."""
     return send_from_directory(
         os.path.join(app.root_path, "app", "static"),
         "favicon.ico",
