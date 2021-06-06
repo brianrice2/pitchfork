@@ -132,10 +132,42 @@
         </label>
         <h1>Source code for src.clean</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">time</span> <span class="kn">import</span> <span class="n">time</span>
 
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="c1"># Some albums lack a record label in the dataset, even though</span>
+<span class="c1"># they have one in reality. Correct these ones manually.</span>
+<span class="n">FILL_MISSING_RECORDLABEL_DATA</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s2">"Fool's Gold"</span><span class="p">,</span>          <span class="c1"># Run the Jewels</span>
+    <span class="s2">"Vapor"</span><span class="p">,</span>                <span class="c1"># 808s and Dark Grapes III</span>
+    <span class="s2">"101 Distribution"</span><span class="p">,</span>     <span class="c1"># Dedication 2</span>
+    <span class="s2">"Jet Life"</span><span class="p">,</span>             <span class="c1"># The Drive In Theatre</span>
+    <span class="s2">"Espo"</span><span class="p">,</span>                 <span class="c1"># Animals</span>
+    <span class="s2">"Cinematic"</span><span class="p">,</span>            <span class="c1"># 1999</span>
+    <span class="s2">"Def Jam"</span><span class="p">,</span>              <span class="c1"># Rich Forever</span>
+    <span class="s2">"LM Dupli-Cation"</span><span class="p">,</span>      <span class="c1"># Cervantine</span>
+    <span class="s2">"Glory Boyz"</span><span class="p">,</span>           <span class="c1"># Back From the Dead</span>
+    <span class="s2">"Epic"</span><span class="p">,</span>                 <span class="c1"># Drilluminati</span>
+    <span class="s2">"Self-released"</span><span class="p">,</span>        <span class="c1"># Community Service 2!</span>
+    <span class="s2">"Cash Money"</span><span class="p">,</span>           <span class="c1"># Sorry 4 the Wait</span>
+    <span class="s2">"Grand Hustle"</span><span class="p">,</span>         <span class="c1"># Fuck a Mixtape</span>
+    <span class="s2">"Vice"</span><span class="p">,</span>                 <span class="c1"># Blue Chips</span>
+    <span class="s2">"Free Bandz"</span><span class="p">,</span>           <span class="c1"># 56 Nights</span>
+    <span class="s2">"Six Shooter Records"</span><span class="p">,</span>  <span class="c1"># Retribution</span>
+    <span class="s2">"Self-released"</span><span class="p">,</span>        <span class="c1"># Acid Rap</span>
+    <span class="s2">"Maybach"</span><span class="p">,</span>              <span class="c1"># Dreamchasers</span>
+    <span class="s2">"Self-released"</span><span class="p">,</span>        <span class="c1"># White Mystery</span>
+    <span class="s2">"Top Dawg"</span><span class="p">,</span>             <span class="c1"># Cilvia Demo</span>
+    <span class="s2">"Triple X"</span><span class="p">,</span>             <span class="c1"># Winter Hill</span>
+    <span class="s2">"1017"</span><span class="p">,</span>                 <span class="c1"># 1017 Thug</span>
+    <span class="s2">"Rostrum"</span><span class="p">,</span>              <span class="c1"># Kush and Orange Juice</span>
+    <span class="s2">"BasedWorld"</span><span class="p">,</span>           <span class="c1"># God's Father</span>
+    <span class="s2">"10.Deep"</span><span class="p">,</span>              <span class="c1"># The Mixtape About Nothing</span>
+    <span class="s2">"Self-released"</span>         <span class="c1"># Coloring Book</span>
+<span class="p">)</span>
 
 
 <div class="viewcode-block" id="clean_dataset"><a class="viewcode-back" href="../../src.html#src.clean.clean_dataset">[docs]</a><span class="k">def</span> <span class="nf">clean_dataset</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
@@ -149,8 +181,11 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        :obj:`pandas.DataFrame` of cleaned data</span>
 <span class="sd">    """</span>
-    <span class="k">if</span> <span class="s2">"convert_nan_to_str"</span> <span class="ow">in</span> <span class="n">config</span><span class="p">:</span>
-        <span class="n">df</span> <span class="o">=</span> <span class="n">convert_nan_to_str</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="o">**</span><span class="n">config</span><span class="p">[</span><span class="s2">"convert_nan_to_str"</span><span class="p">])</span>
+    <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="s2">"fill_na_with_str"</span> <span class="ow">in</span> <span class="n">config</span><span class="p">:</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">fill_na_with_str</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="o">**</span><span class="n">config</span><span class="p">[</span><span class="s2">"fill_na_with_str"</span><span class="p">][</span><span class="s2">"iteration1"</span><span class="p">])</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">fill_na_with_str</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="o">**</span><span class="n">config</span><span class="p">[</span><span class="s2">"fill_na_with_str"</span><span class="p">][</span><span class="s2">"iteration2"</span><span class="p">])</span>
 
     <span class="k">if</span> <span class="s2">"convert_str_to_datetime"</span> <span class="ow">in</span> <span class="n">config</span><span class="p">:</span>
         <span class="n">df</span> <span class="o">=</span> <span class="n">convert_str_to_datetime</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="o">**</span><span class="n">config</span><span class="p">[</span><span class="s2">"convert_str_to_datetime"</span><span class="p">])</span>
@@ -171,9 +206,7 @@
         <span class="n">df</span> <span class="o">=</span> <span class="n">bucket_values_together</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="o">**</span><span class="n">config</span><span class="p">[</span><span class="s2">"bucket_values_together"</span><span class="p">][</span><span class="s2">"iteration1"</span><span class="p">])</span>
         <span class="n">df</span> <span class="o">=</span> <span class="n">bucket_values_together</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="o">**</span><span class="n">config</span><span class="p">[</span><span class="s2">"bucket_values_together"</span><span class="p">][</span><span class="s2">"iteration2"</span><span class="p">])</span>
 
-    <span class="k">if</span> <span class="s2">"fill_na_with_str_missing"</span> <span class="ow">in</span> <span class="n">config</span><span class="p">:</span>
-        <span class="n">df</span> <span class="o">=</span> <span class="n">fill_na_with_str_missing</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="o">**</span><span class="n">config</span><span class="p">[</span><span class="s2">"fill_na_with_str_missing"</span><span class="p">])</span>
-
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Completed data cleaning process. Time taken: </span><span class="si">%0.4f</span><span class="s2">s"</span><span class="p">,</span> <span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">df</span></div>
 
 
@@ -189,6 +222,10 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        Cleaned :obj:`pandas.DataFrame`</span>
 <span class="sd">    """</span>
+    <span class="k">if</span> <span class="n">colname</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">"</span><span class="si">%s</span><span class="s2"> not found in columns. Returning original data."</span><span class="p">,</span> <span class="n">colname</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">df</span>
+
     <span class="n">nrows_affected</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">isna</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">colname</span><span class="p">])]</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
     <span class="n">df</span><span class="p">[</span><span class="n">colname</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">colname</span><span class="p">]</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">colname</span><span class="p">]</span><span class="o">.</span><span class="n">notna</span><span class="p">(),</span> <span class="n">other</span><span class="o">=</span><span class="s2">"NA"</span><span class="p">)</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Replaced missing values in </span><span class="si">%s</span><span class="s2"> with </span><span class="se">\"</span><span class="s2">NA</span><span class="se">\"</span><span class="s2">"</span><span class="p">,</span> <span class="n">colname</span><span class="p">)</span>
@@ -196,14 +233,14 @@
     <span class="k">return</span> <span class="n">df</span></div>
 
 
-<div class="viewcode-block" id="convert_str_to_datetime"><a class="viewcode-back" href="../../src.html#src.clean.convert_str_to_datetime">[docs]</a><span class="k">def</span> <span class="nf">convert_str_to_datetime</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">colname</span><span class="o">=</span><span class="s2">"releaseyear"</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">"%B </span><span class="si">%d</span><span class="s2"> %Y"</span><span class="p">):</span>
+<div class="viewcode-block" id="convert_str_to_datetime"><a class="viewcode-back" href="../../src.html#src.clean.convert_str_to_datetime">[docs]</a><span class="k">def</span> <span class="nf">convert_str_to_datetime</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">colname</span><span class="o">=</span><span class="s2">"reviewdate"</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">"%B </span><span class="si">%d</span><span class="s2"> %Y"</span><span class="p">):</span>
     <span class="sd">"""</span>
 <span class="sd">    Parse a string column to datetime format.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        df (:obj:`pandas.DataFrame`): DataFrame to clean</span>
 <span class="sd">        colname (str, optional): Name of column to apply transformation to.</span>
-<span class="sd">            Defaults to "releaseyear".</span>
+<span class="sd">            Defaults to "reviewdate".</span>
 <span class="sd">        format (str, optional): Datetime format of column. Defaults to "%B %d %Y".</span>
 <span class="sd">            For more info on these codes:</span>
 <span class="sd">            https://docs.python.org/3/library/datetime.html#strftime-and-strptime-format-codes.</span>
@@ -211,23 +248,31 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        Cleaned :obj:`pandas.DataFrame`</span>
 <span class="sd">    """</span>
+    <span class="k">if</span> <span class="n">colname</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">"</span><span class="si">%s</span><span class="s2"> not found in columns. Returning original data."</span><span class="p">,</span> <span class="n">colname</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">df</span>
+
     <span class="n">df</span><span class="p">[</span><span class="n">colname</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">colname</span><span class="p">],</span> <span class="nb">format</span><span class="o">=</span><span class="nb">format</span><span class="p">)</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Converted column </span><span class="si">%s</span><span class="s2"> to datetime format"</span><span class="p">,</span> <span class="n">colname</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">df</span></div>
 
 
-<div class="viewcode-block" id="convert_datetime_to_date"><a class="viewcode-back" href="../../src.html#src.clean.convert_datetime_to_date">[docs]</a><span class="k">def</span> <span class="nf">convert_datetime_to_date</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">colname</span><span class="o">=</span><span class="s2">"releaseyear"</span><span class="p">):</span>
+<div class="viewcode-block" id="convert_datetime_to_date"><a class="viewcode-back" href="../../src.html#src.clean.convert_datetime_to_date">[docs]</a><span class="k">def</span> <span class="nf">convert_datetime_to_date</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">colname</span><span class="o">=</span><span class="s2">"reviewdate"</span><span class="p">):</span>
     <span class="sd">"""</span>
 <span class="sd">    Remove the time component of a datetime column.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        df (:obj:`pandas.DataFrame`): DataFrame to clean</span>
 <span class="sd">        colname (str, optional): Name of column to apply transformation to.</span>
-<span class="sd">            Defaults to "releaseyear".</span>
+<span class="sd">            Defaults to "reviewdate".</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        Cleaned :obj:`pandas.DataFrame`</span>
 <span class="sd">    """</span>
+    <span class="k">if</span> <span class="n">colname</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">"</span><span class="si">%s</span><span class="s2"> not found in columns. Returning original data."</span><span class="p">,</span> <span class="n">colname</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">df</span>
+
     <span class="n">df</span><span class="p">[</span><span class="n">colname</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">colname</span><span class="p">]</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">date</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Converted column </span><span class="si">%s</span><span class="s2"> to date format"</span><span class="p">,</span> <span class="n">colname</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">df</span></div>
@@ -239,12 +284,20 @@
 
 <span class="sd">    Args:</span>
 <span class="sd">        df (:obj:`pandas.DataFrame`): DataFrame to clean</span>
-<span class="sd">        fill_column:</span>
-<span class="sd">        approximate_with:</span>
+<span class="sd">        fill_column (str): Name of column to fill values in</span>
+<span class="sd">        approximate_with (str): Name of `datetime` column to pull year from</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        Cleaned :obj:`pandas.DataFrame`</span>
 <span class="sd">    """</span>
+    <span class="k">if</span> <span class="n">fill_column</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">"</span><span class="si">%s</span><span class="s2"> not found in columns. Returning original data."</span><span class="p">,</span> <span class="n">fill_column</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">df</span>
+
+    <span class="k">if</span> <span class="n">approximate_with</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">"</span><span class="si">%s</span><span class="s2"> not found in columns. Returning original data."</span><span class="p">,</span> <span class="n">approximate_with</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">df</span>
+
     <span class="n">nrows_affected</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">isna</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">fill_column</span><span class="p">])]</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
     <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">isna</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">fill_column</span><span class="p">]),</span> <span class="n">fill_column</span><span class="p">]</span> <span class="o">=</span> \
         <span class="n">df</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">isna</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">fill_column</span><span class="p">])]</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">approximate_with</span><span class="p">]</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">year</span>
@@ -253,7 +306,7 @@
     <span class="k">return</span> <span class="n">df</span></div>
 
 
-<div class="viewcode-block" id="fill_missing_manually"><a class="viewcode-back" href="../../src.html#src.clean.fill_missing_manually">[docs]</a><span class="k">def</span> <span class="nf">fill_missing_manually</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">colname</span><span class="o">=</span><span class="s2">"recordlabel"</span><span class="p">):</span>
+<div class="viewcode-block" id="fill_missing_manually"><a class="viewcode-back" href="../../src.html#src.clean.fill_missing_manually">[docs]</a><span class="k">def</span> <span class="nf">fill_missing_manually</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">colname</span><span class="o">=</span><span class="s2">"recordlabel"</span><span class="p">,</span> <span class="n">fill_with</span><span class="o">=</span><span class="n">FILL_MISSING_RECORDLABEL_DATA</span><span class="p">):</span>
     <span class="sd">"""</span>
 <span class="sd">    Manually fill missing values.</span>
 
@@ -261,41 +314,17 @@
 <span class="sd">        df (:obj:`pandas.DataFrame`): DataFrame to clean</span>
 <span class="sd">        colname (str, optional): Name of column to apply transformation to.</span>
 <span class="sd">            Defaults to "recordlabel".</span>
+<span class="sd">        fill_with (iterable): Corrected values to replace missing values with.</span>
+<span class="sd">            Data type depends on the column being filled.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        Cleaned :obj:`pandas.DataFrame`</span>
 <span class="sd">    """</span>
-    <span class="n">fill_missing</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
-        <span class="n">data</span><span class="o">=</span><span class="p">[</span>
-            <span class="s2">"Fool's Gold"</span><span class="p">,</span>          <span class="c1"># Run the Jewels</span>
-            <span class="s2">"Vapor"</span><span class="p">,</span>                <span class="c1"># 808s and Dark Grapes III</span>
-            <span class="s2">"101 Distribution"</span><span class="p">,</span>     <span class="c1"># Dedication 2</span>
-            <span class="s2">"Jet Life"</span><span class="p">,</span>             <span class="c1"># The Drive In Theatre</span>
-            <span class="s2">"Espo"</span><span class="p">,</span>                 <span class="c1"># Animals</span>
-            <span class="s2">"Cinematic"</span><span class="p">,</span>            <span class="c1"># 1999</span>
-            <span class="s2">"Def Jam"</span><span class="p">,</span>              <span class="c1"># Rich Forever</span>
-            <span class="s2">"LM Dupli-Cation"</span><span class="p">,</span>      <span class="c1"># Cervantine</span>
-            <span class="s2">"Glory Boyz"</span><span class="p">,</span>           <span class="c1"># Back From the Dead</span>
-            <span class="s2">"Epic"</span><span class="p">,</span>                 <span class="c1"># Drilluminati</span>
-            <span class="s2">"Self-released"</span><span class="p">,</span>        <span class="c1"># Community Service 2!</span>
-            <span class="s2">"Cash Money"</span><span class="p">,</span>           <span class="c1"># Sorry 4 the Wait</span>
-            <span class="s2">"Grand Hustle"</span><span class="p">,</span>         <span class="c1"># Fuck a Mixtape</span>
-            <span class="s2">"Vice"</span><span class="p">,</span>                 <span class="c1"># Blue Chips</span>
-            <span class="s2">"Free Bandz"</span><span class="p">,</span>           <span class="c1"># 56 Nights</span>
-            <span class="s2">"Six Shooter Records"</span><span class="p">,</span>  <span class="c1"># Retribution</span>
-            <span class="s2">"Self-released"</span><span class="p">,</span>        <span class="c1"># Acid Rap</span>
-            <span class="s2">"Maybach"</span><span class="p">,</span>              <span class="c1"># Dreamchasers</span>
-            <span class="s2">"Self-released"</span><span class="p">,</span>        <span class="c1"># White Mystery</span>
-            <span class="s2">"Top Dawg"</span><span class="p">,</span>             <span class="c1"># Cilvia Demo</span>
-            <span class="s2">"Triple X"</span><span class="p">,</span>             <span class="c1"># Winter Hill</span>
-            <span class="s2">"1017"</span><span class="p">,</span>                 <span class="c1"># 1017 Thug</span>
-            <span class="s2">"Rostrum"</span><span class="p">,</span>              <span class="c1"># Kush and Orange Juice</span>
-            <span class="s2">"BasedWorld"</span><span class="p">,</span>           <span class="c1"># God's Father</span>
-            <span class="s2">"10.Deep"</span><span class="p">,</span>              <span class="c1"># The Mixtape About Nothing</span>
-            <span class="s2">"Self-released"</span>         <span class="c1"># Coloring Book</span>
-        <span class="p">],</span>
-        <span class="n">index</span><span class="o">=</span><span class="n">df</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">isna</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">colname</span><span class="p">])]</span><span class="o">.</span><span class="n">index</span>
-    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">colname</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">"</span><span class="si">%s</span><span class="s2"> not found in columns. Returning original data."</span><span class="p">,</span> <span class="n">colname</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">df</span>
+
+    <span class="n">fill_missing</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">fill_with</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">df</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">isna</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">colname</span><span class="p">])]</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
     <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">isna</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">colname</span><span class="p">]),</span> <span class="n">colname</span><span class="p">]</span> <span class="o">=</span> <span class="n">fill_missing</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
         <span class="s2">"Manually filled in missing values for </span><span class="si">%d</span><span class="s2"> missing rows in column </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span>
@@ -318,6 +347,10 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        Cleaned :obj:`pandas.DataFrame`</span>
 <span class="sd">    """</span>
+    <span class="k">if</span> <span class="n">colname</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">"</span><span class="si">%s</span><span class="s2"> not found in columns. Returning original data."</span><span class="p">,</span> <span class="n">colname</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">df</span>
+
     <span class="n">df</span><span class="p">[</span><span class="n">colname</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">colname</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="nb">str</span><span class="o">.</span><span class="n">strip</span><span class="p">)</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Trimmed extra whitespace in column </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="n">colname</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">df</span></div>
@@ -335,7 +368,21 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        Cleaned :obj:`pandas.DataFrame`</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        `TypeError` if a single `str` object is passed to `values`. Since a `str` in</span>
+<span class="sd">            Python is simply a list of characters, this doesn't immediately register</span>
+<span class="sd">            as bad input, and logically doesn't really make sense for this method.</span>
 <span class="sd">    """</span>
+    <span class="k">if</span> <span class="n">colname</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">"</span><span class="si">%s</span><span class="s2"> not found in columns. Returning original data."</span><span class="p">,</span> <span class="n">colname</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">df</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">"""Error: Received a single string "</span><span class="si">%s</span><span class="s2">" instead of an iterable</span>
+<span class="s2">            of values to bucket together."""</span><span class="p">,</span> <span class="n">values</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"`bucket_values_together` requires an iterable of values, not a str"</span><span class="p">)</span>
+
     <span class="n">nrows_affected</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">values</span><span class="p">:</span>
         <span class="n">nrows_affected</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="n">colname</span><span class="p">]</span> <span class="o">==</span> <span class="n">value</span><span class="p">,</span> <span class="n">colname</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
@@ -343,7 +390,7 @@
 
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
         <span class="s2">"Replaced values (</span><span class="si">%s</span><span class="s2">) with </span><span class="si">%s</span><span class="s2"> in column </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span>
-        <span class="s2">", "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">values</span><span class="p">),</span>
+        <span class="s2">", "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">values</span><span class="p">)),</span>
         <span class="n">replace_with</span><span class="p">,</span>
         <span class="n">colname</span>
     <span class="p">)</span>
@@ -352,7 +399,7 @@
     <span class="k">return</span> <span class="n">df</span></div>
 
 
-<div class="viewcode-block" id="fill_na_with_str_missing"><a class="viewcode-back" href="../../src.html#src.clean.fill_na_with_str_missing">[docs]</a><span class="k">def</span> <span class="nf">fill_na_with_str_missing</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">colname</span><span class="o">=</span><span class="s2">"genre"</span><span class="p">,</span> <span class="n">fill_string</span><span class="o">=</span><span class="s2">"Missing"</span><span class="p">):</span>
+<div class="viewcode-block" id="fill_na_with_str"><a class="viewcode-back" href="../../src.html#src.clean.fill_na_with_str">[docs]</a><span class="k">def</span> <span class="nf">fill_na_with_str</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">colname</span><span class="o">=</span><span class="s2">"genre"</span><span class="p">,</span> <span class="n">fill_string</span><span class="o">=</span><span class="s2">"Missing"</span><span class="p">):</span>
     <span class="sd">"""</span>
 <span class="sd">    Fill NA values with a string value.</span>
 
@@ -366,6 +413,10 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        Cleaned :obj:`pandas.DataFrame`</span>
 <span class="sd">    """</span>
+    <span class="k">if</span> <span class="n">colname</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">"</span><span class="si">%s</span><span class="s2"> not found in columns. Returning original data."</span><span class="p">,</span> <span class="n">colname</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">df</span>
+
     <span class="n">nrows_affected</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">isna</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">colname</span><span class="p">])]</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
     <span class="n">df</span><span class="p">[</span><span class="n">colname</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">colname</span><span class="p">]</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="n">fill_string</span><span class="p">)</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Replaced missing values in </span><span class="si">%s</span><span class="s2"> with </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="n">colname</span><span class="p">,</span> <span class="n">fill_string</span><span class="p">)</span>

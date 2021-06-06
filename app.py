@@ -16,8 +16,8 @@ app = Flask(__name__, template_folder="app/templates", static_folder="app/static
 app.config.from_pyfile("config/flaskconfig.py")
 
 # Define LOGGING_CONFIG in flask_config.py as the path to config file
-# Using `pkg_resources` here allows Sphinx to find the logging config
-# file when building the documentation HTML pages
+# Using `pkg_resources` here allows Sphinx to find the config files
+# when building the documentation HTML pages
 logging.config.fileConfig(
     pkg_resources.resource_filename(__name__, app.config["LOGGING_CONFIG"]),
     disable_existing_loggers=False
@@ -25,7 +25,7 @@ logging.config.fileConfig(
 logger = logging.getLogger(app.config["APP_NAME"])
 logger.debug("Web app log")
 
-with open(app.config["PIPELINE_CONFIG"], "r") as config_file:
+with open(pkg_resources.resource_filename(__name__, app.config["PIPELINE_CONFIG"]), "r") as config_file:
     pipeline_config = yaml.load(config_file, Loader=yaml.FullLoader)
 
 # Initialize the database session

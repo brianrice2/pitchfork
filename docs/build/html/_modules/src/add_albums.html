@@ -133,7 +133,10 @@
         <h1>Source code for src.add_albums</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">csv</span>
 <span class="kn">import</span> <span class="nn">logging.config</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">traceback</span>
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span> <span class="nn">time</span> <span class="kn">import</span> <span class="n">time</span>
 
 <span class="kn">import</span> <span class="nn">sqlalchemy</span>
 <span class="kn">from</span> <span class="nn">sqlalchemy.ext.declarative</span> <span class="kn">import</span> <span class="n">declarative_base</span>
@@ -141,13 +144,14 @@
 <span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">sessionmaker</span>
 <span class="kn">from</span> <span class="nn">flask_sqlalchemy</span> <span class="kn">import</span> <span class="n">SQLAlchemy</span>
 
-<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">src</span> <span class="kn">import</span> <span class="n">load_data</span>
 
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 <span class="n">Base</span> <span class="o">=</span> <span class="n">declarative_base</span><span class="p">()</span>
 
 
 <div class="viewcode-block" id="Albums"><a class="viewcode-back" href="../../src.html#src.add_albums.Albums">[docs]</a><span class="k">class</span> <span class="nc">Albums</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
-    <span class="sd">"""Create a data model for the database to be set up for capturing albums."""</span>
+    <span class="sd">"""Create a data model for the database to capture albums."""</span>
 
     <span class="n">__tablename__</span> <span class="o">=</span> <span class="s2">"albums"</span>
 
@@ -176,33 +180,15 @@
 
 
 <div class="viewcode-block" id="create_db"><a class="viewcode-back" href="../../src.html#src.add_albums.create_db">[docs]</a><span class="k">def</span> <span class="nf">create_db</span><span class="p">(</span><span class="n">engine_string</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">"""</span>
-<span class="sd">    Create database from provided engine string.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        engine_string (str): Engine string</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        None</span>
-<span class="sd">    """</span>
+    <span class="sd">"""Create database from provided engine string."""</span>
     <span class="n">engine</span> <span class="o">=</span> <span class="n">sqlalchemy</span><span class="o">.</span><span class="n">create_engine</span><span class="p">(</span><span class="n">engine_string</span><span class="p">)</span>
-
     <span class="n">Base</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">create_all</span><span class="p">(</span><span class="n">engine</span><span class="p">)</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Database created"</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="delete_db"><a class="viewcode-back" href="../../src.html#src.add_albums.delete_db">[docs]</a><span class="k">def</span> <span class="nf">delete_db</span><span class="p">(</span><span class="n">engine_string</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">"""</span>
-<span class="sd">    Create database from provided engine string.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        engine_string (str): Engine string</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        None</span>
-<span class="sd">    """</span>
+    <span class="sd">"""Delete database from provided engine string."""</span>
     <span class="n">engine</span> <span class="o">=</span> <span class="n">sqlalchemy</span><span class="o">.</span><span class="n">create_engine</span><span class="p">(</span><span class="n">engine_string</span><span class="p">)</span>
-
     <span class="n">Base</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">drop_all</span><span class="p">(</span><span class="n">engine</span><span class="p">)</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Database deleted"</span><span class="p">)</span></div>
 
@@ -212,6 +198,12 @@
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">engine_string</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">"""</span>
+<span class="sd">        Create a SQLAlchemy session.</span>
+
+<span class="sd">        A Session establishes and maintains the conversation with the database,</span>
+<span class="sd">        and holds the ORM-mapped objects which can be queried. More info:</span>
+<span class="sd">        https://docs.sqlalchemy.org/en/14/orm/session_basics.html</span>
+
 <span class="sd">        Args:</span>
 <span class="sd">            app (Flask, optional): Flask app. Defaults to None.</span>
 <span class="sd">            engine_string (str, optional): Engine string. Defaults to None.</span>
@@ -227,16 +219,14 @@
             <span class="n">Session</span> <span class="o">=</span> <span class="n">sessionmaker</span><span class="p">(</span><span class="n">bind</span><span class="o">=</span><span class="n">engine</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="n">Session</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">"Need either an engine string or a Flask app to initialize"</span>
-            <span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Need either an engine string or a Flask app to initialize"</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s2">"AlbumManager(</span><span class="si">%r</span><span class="s2">)"</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span>
 
 <div class="viewcode-block" id="AlbumManager.close"><a class="viewcode-back" href="../../src.html#src.add_albums.AlbumManager.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">"""</span>
-<span class="sd">        Closes the current SQLAlchemy session.</span>
+<span class="sd">        Close the current SQLAlchemy session.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            None</span>
@@ -265,7 +255,7 @@
         <span class="n">tempo</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">"""</span>
-<span class="sd">        Seeds an existing database with additional albums.</span>
+<span class="sd">        Seed an existing database with additional albums.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            album (str): Album title</span>
@@ -291,9 +281,9 @@
 <span class="sd">            None</span>
 <span class="sd">        """</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="c1"># Parse datetime</span>
             <span class="n">reviewdate</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">reviewdate</span><span class="p">,</span> <span class="s2">"%B </span><span class="si">%d</span><span class="s2"> %Y"</span><span class="p">)</span><span class="o">.</span><span class="n">date</span><span class="p">()</span>
         <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="n">traceback</span><span class="o">.</span><span class="n">print_exc</span><span class="p">()</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">"Failed to parse the given reviewdate </span><span class="se">\"</span><span class="si">%s</span><span class="se">\"</span><span class="s2">. Aborting."</span><span class="p">,</span> <span class="n">reviewdate</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># Add to database</span>
@@ -322,13 +312,19 @@
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
             <span class="k">except</span> <span class="n">sqlalchemy</span><span class="o">.</span><span class="n">exc</span><span class="o">.</span><span class="n">OperationalError</span><span class="p">:</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">"Could not find table. One possible reason: are you connected to the Northwestern VPN?"</span><span class="p">)</span>
+                <span class="n">traceback</span><span class="o">.</span><span class="n">print_exc</span><span class="p">()</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                    <span class="sd">"""Could not find table. Rolling back transaction.</span>
+<span class="sd">                    Please check your connection string.</span>
+<span class="sd">                    One possible reason: are you connected to the Northwestern VPN?"""</span>
+                <span class="p">)</span>
+                <span class="n">session</span><span class="o">.</span><span class="n">rollback</span><span class="p">()</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"</span><span class="si">%s</span><span class="s2"> added to database"</span><span class="p">,</span> <span class="n">album</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="AlbumManager.ingest_dataset"><a class="viewcode-back" href="../../src.html#src.add_albums.AlbumManager.ingest_dataset">[docs]</a>    <span class="k">def</span> <span class="nf">ingest_dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_or_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">"""</span>
-<span class="sd">        Seeds an existing database with entries from a CSV file.</span>
+<span class="sd">        Add entries from a CSV file to the database.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            file_or_path (str): Location of dataset to load into database</span>
@@ -338,18 +334,51 @@
 <span class="sd">        """</span>
         <span class="n">session</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span>
 
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_or_path</span><span class="p">,</span> <span class="s2">"r"</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+        <span class="c1"># If the referenced filepath is in S3, `open()` cannot access -- save a local copy.</span>
+        <span class="c1"># Put the local copy in the same place it would have gone inside S3.</span>
+        <span class="c1"># If a local copy exists already, just use that instead</span>
+        <span class="k">if</span> <span class="n">file_or_path</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"s3://"</span><span class="p">):</span>
+            <span class="n">s3bucket</span><span class="p">,</span> <span class="n">s3path</span> <span class="o">=</span> <span class="n">load_data</span><span class="o">.</span><span class="n">parse_s3</span><span class="p">(</span><span class="n">file_or_path</span><span class="p">)</span>
+            <span class="n">local_path</span> <span class="o">=</span> <span class="n">s3path</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">local_path</span><span class="p">):</span>
+                <span class="n">load_data</span><span class="o">.</span><span class="n">download_file_from_s3</span><span class="p">(</span><span class="n">local_path</span><span class="o">=</span><span class="n">local_path</span><span class="p">,</span> <span class="n">s3path</span><span class="o">=</span><span class="n">file_or_path</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Downloaded a copy of the file to </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="n">local_path</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Using existing local copy of dataset at </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="n">local_path</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">local_path</span> <span class="o">=</span> <span class="n">file_or_path</span>
+
+        <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
+        <span class="n">albums</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">local_path</span><span class="p">,</span> <span class="s2">"r"</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
             <span class="n">reader</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">DictReader</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">reader</span><span class="p">:</span>
-                <span class="n">row</span><span class="p">[</span><span class="s2">"reviewdate"</span><span class="p">]</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s2">"reviewdate"</span><span class="p">],</span> <span class="s2">"%B </span><span class="si">%d</span><span class="s2"> %Y"</span><span class="p">)</span><span class="o">.</span><span class="n">date</span><span class="p">()</span>
-                <span class="n">session</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Albums</span><span class="p">(</span><span class="o">**</span><span class="n">row</span><span class="p">))</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="c1"># Convert reviewdate field to datetime</span>
+                    <span class="n">row</span><span class="p">[</span><span class="s2">"reviewdate"</span><span class="p">]</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s2">"reviewdate"</span><span class="p">],</span> <span class="s2">"%B </span><span class="si">%d</span><span class="s2"> %Y"</span><span class="p">)</span><span class="o">.</span><span class="n">date</span><span class="p">()</span>
+                <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                    <span class="c1"># Actual date string doesn't match the given format</span>
+                    <span class="c1"># (likely has been parsed before during cleaning and is now in ISO format)</span>
+                    <span class="n">row</span><span class="p">[</span><span class="s2">"reviewdate"</span><span class="p">]</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s2">"reviewdate"</span><span class="p">],</span> <span class="s2">"%Y-%m-</span><span class="si">%d</span><span class="s2">"</span><span class="p">)</span><span class="o">.</span><span class="n">date</span><span class="p">()</span>
+                <span class="n">albums</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Albums</span><span class="p">(</span><span class="o">**</span><span class="n">row</span><span class="p">))</span>
 
         <span class="k">try</span><span class="p">:</span>
+            <span class="n">session</span><span class="o">.</span><span class="n">add_all</span><span class="p">(</span><span class="n">albums</span><span class="p">)</span>
             <span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
         <span class="k">except</span> <span class="n">sqlalchemy</span><span class="o">.</span><span class="n">exc</span><span class="o">.</span><span class="n">OperationalError</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">"Could not find table. One possible reason: are you connected to the Northwestern VPN?"</span><span class="p">)</span>
+            <span class="n">traceback</span><span class="o">.</span><span class="n">print_exc</span><span class="p">()</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="sd">"""Could not find table. Rolling back transaction.</span>
+<span class="sd">                Please check your connection string.</span>
+<span class="sd">                One possible reason: are you connected to the Northwestern VPN?"""</span>
+            <span class="p">)</span>
+            <span class="n">session</span><span class="o">.</span><span class="n">rollback</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Contents of </span><span class="si">%s</span><span class="s2"> added to database"</span><span class="p">,</span> <span class="n">file_or_path</span><span class="p">)</span></div></div>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="s2">"Contents of </span><span class="si">%s</span><span class="s2"> added to database. Time taken: </span><span class="si">%0.4f</span><span class="s2">s"</span><span class="p">,</span>
+                <span class="n">file_or_path</span><span class="p">,</span>
+                <span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span>
+            <span class="p">)</span></div></div>
 </pre></div>
       </article>
       <footer>
