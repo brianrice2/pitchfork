@@ -8,9 +8,6 @@ WORKDIR /app
 RUN pip3 install --upgrade pip
 RUN pip3 install -r requirements.txt
 
-RUN dos2unix run_app.sh && apt-get --purge remove -y dos2unix
-RUN chmod +x run_app.sh
-
 EXPOSE 5000
 
 ENTRYPOINT ["make", "app"]
