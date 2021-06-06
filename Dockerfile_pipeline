@@ -11,4 +11,4 @@ RUN pip3 install -r requirements.txt
 RUN dos2unix run_pipeline.sh && apt-get --purge remove -y dos2unix
 RUN chmod +x run_pipeline.sh
 
-ENTRYPOINT ["make pipeline"]
+ENTRYPOINT ["make", "pipeline"]

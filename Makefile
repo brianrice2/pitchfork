@@ -39,7 +39,7 @@ empty_database:
 ingest_dataset:
 	python3 run.py ingest_dataset -f "${S3_BUCKET}/${CLEANED_DATA_PATH}"
 
-app:
+app: empty_database pipeline ingest_dataset
 	python3 app.py
 
 cleanup:

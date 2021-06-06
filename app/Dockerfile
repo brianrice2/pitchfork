@@ -13,4 +13,4 @@ RUN chmod +x run_app.sh
 
 EXPOSE 5000
 
-ENTRYPOINT ["./run_app.sh"]
+ENTRYPOINT ["make", "app"]
