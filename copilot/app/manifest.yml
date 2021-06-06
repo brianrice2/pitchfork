@@ -24,11 +24,6 @@ memory: 512    # Amount of memory in MiB used by the task.
 count: 1       # Number of tasks that should be running in your service.
 exec: true     # Enable running commands in your container.
 
-# Optional fields for more advanced use-cases.
-# Pass environment variables as key value pairs.
-variables:
-  LOG_LEVEL: info
-
 # Pass secrets from AWS Systems Manager (SSM) Parameter Store.
 # Key = name of the environment variable, value = name of SSM parameter.
 secrets:
