@@ -40,34 +40,34 @@ def dummy_df_datetime():
     return pd.DataFrame(data=RAW_DATA_DATETIME, columns=COLUMNS)
 
 
-def test_convert_nan_to_str(dummy_df):
-    """Missing values are converted to the literal string "NA"."""
-    actual = clean.convert_nan_to_str(dummy_df, colname="recordlabel")
+def test_fill_na_with_str(dummy_df):
+    """Fill NaN values with a specified string."""
+    actual = clean.fill_na_with_str(dummy_df, colname="recordlabel", fill_string="Missing")
 
     expected = deepcopy(dummy_df)
-    expected["recordlabel"] = "NA"
+    expected["recordlabel"] = "Missing"
 
     pd.testing.assert_frame_equal(actual, expected)
 
 
-def test_convert_nan_to_str_no_nan(dummy_df):
-    """No missing values in the specified column -- there should be no change."""
-    actual = clean.convert_nan_to_str(dummy_df, colname="artist")
+def test_fill_na_with_str_no_missing_values(dummy_df):
+    """Columns with no missing values should remain unchanged."""
+    actual = clean.fill_na_with_str(dummy_df, colname="album", fill_string="Missing")
     expected = dummy_df
     pd.testing.assert_frame_equal(actual, expected)
 
 
-def test_convert_nan_to_str_invalid_column(dummy_df):
-    """Desired columns don't exist in the DataFrame -- there should be no change."""
+def test_fill_na_with_str_invalid_column(dummy_df):
+    """Gracefully handle when column is not present."""
     expected = dummy_df
 
-    actual = clean.convert_nan_to_str(dummy_df, colname="")
+    actual = clean.fill_na_with_str(dummy_df, colname="", fill_string="Missing")
     pd.testing.assert_frame_equal(actual, expected)
 
-    actual = clean.convert_nan_to_str(dummy_df, colname="brianrice")
+    actual = clean.fill_na_with_str(dummy_df, colname="notarealcolumn", fill_string="Missing")
     pd.testing.assert_frame_equal(actual, expected)
 
-    actual = clean.convert_nan_to_str(dummy_df, colname=None)
+    actual = clean.fill_na_with_str(dummy_df, colname=None, fill_string="Missing")
     pd.testing.assert_frame_equal(actual, expected)
 
 
@@ -323,34 +323,3 @@ def test_bucket_values_together_scalar_values(dummy_df):
             values="Run the Jewels 2",
             replace_with="RTJ2"
         )
-
-
-def test_fill_na_with_str(dummy_df):
-    """Fill NaN values with a specified string."""
-    actual = clean.fill_na_with_str(dummy_df, colname="recordlabel", fill_string="Missing")
-
-    expected = deepcopy(dummy_df)
-    expected["recordlabel"] = "Missing"
-
-    pd.testing.assert_frame_equal(actual, expected)
-
-
-def test_fill_na_with_str_no_missing_values(dummy_df):
-    """Columns with no missing values should remain unchanged."""
-    actual = clean.fill_na_with_str(dummy_df, colname="album", fill_string="Missing")
-    expected = dummy_df
-    pd.testing.assert_frame_equal(actual, expected)
-
-
-def test_fill_na_with_str_invalid_column(dummy_df):
-    """Gracefully handle when column is not present."""
-    expected = dummy_df
-
-    actual = clean.fill_na_with_str(dummy_df, colname="", fill_string="Missing")
-    pd.testing.assert_frame_equal(actual, expected)
-
-    actual = clean.fill_na_with_str(dummy_df, colname="notarealcolumn", fill_string="Missing")
-    pd.testing.assert_frame_equal(actual, expected)
-
-    actual = clean.fill_na_with_str(dummy_df, colname=None, fill_string="Missing")
-    pd.testing.assert_frame_equal(actual, expected)

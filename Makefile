@@ -45,4 +45,4 @@ app: empty_database pipeline ingest_dataset
 cleanup:
 	find ./data -mindepth 1 ! -name '.gitkeep' -delete
 	find ./models -mindepth 1 ! -name '.gitkeep' -delete
-	echo 'Cleaned up artifacts in data/ and models/'
+	@echo 'Cleaned up artifacts in data/ and models/'

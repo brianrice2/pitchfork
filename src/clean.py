@@ -50,8 +50,9 @@ def clean_dataset(df, config):
     """
     start_time = time()
 
-    if "convert_nan_to_str" in config:
-        df = convert_nan_to_str(df, **config["convert_nan_to_str"])
+    if "fill_na_with_str" in config:
+        df = fill_na_with_str(df, **config["fill_na_with_str"]["iteration1"])
+        df = fill_na_with_str(df, **config["fill_na_with_str"]["iteration2"])
 
     if "convert_str_to_datetime" in config:
         df = convert_str_to_datetime(df, **config["convert_str_to_datetime"])
@@ -71,9 +72,6 @@ def clean_dataset(df, config):
     if "bucket_values_together" in config:
         df = bucket_values_together(df, **config["bucket_values_together"]["iteration1"])
         df = bucket_values_together(df, **config["bucket_values_together"]["iteration2"])
-
-    if "fill_na_with_str" in config:
-        df = fill_na_with_str(df, **config["fill_na_with_str"])
 
     logger.info("Completed data cleaning process. Time taken: %0.4fs", time() - start_time)
     return df

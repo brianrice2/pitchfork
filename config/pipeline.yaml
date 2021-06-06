@@ -1,6 +1,11 @@
 clean:
-  convert_nan_to_str:
-    colname: artist
+  fill_na_with_str:
+    iteration1:
+      colname: artist
+      fill_string: "NA"
+    iteration2:
+      colname: genre
+      fill_string: Missing
   convert_str_to_datetime:
     colname: reviewdate
     format: "%B %d %Y"
@@ -53,9 +58,6 @@ clean:
         - Self
         - none
       replace_with: Self-released
-  fill_na_with_str:
-    colname: genre
-    fill_string: Missing
 model:
   saved_model_path: s3://2021-msia423-rice-brian/models/gbt_pipeline.joblib
   split_predictors_response:
