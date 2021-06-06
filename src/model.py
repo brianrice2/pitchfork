@@ -85,7 +85,7 @@ def parse_ratio(ratio):
     sizes = [sizes[0], 0., sizes[1]] if len(sizes) == 2 else sizes
     _sum = sum(sizes)
     proportions = list(size / _sum for size in sizes)
-    logger.info("Successfuly parsed ratio %s to %s", ratio, "/".join(proportions))
+    logger.info("Successfuly parsed ratio %s to %s", ratio, "/".join(map(str, proportions)))
     return proportions
 
 
