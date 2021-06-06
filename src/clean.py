@@ -237,10 +237,20 @@ def bucket_values_together(df, colname, values, replace_with):
 
     Returns:
         Cleaned :obj:`pandas.DataFrame`
+
+    Raises:
+        `TypeError` if a single `str` object is passed to `values`. Since a `str` in
+            Python is simply a list of characters, this doesn't immediately register
+            as bad input, and logically doesn't really make sense for this method.
     """
     if colname not in df.columns:
         logger.warning("%s not found in columns. Returning original data.", colname)
         return df
+
+    if isinstance(values, str):
+        logger.error("""Error: Received a single string "%s" instead of an iterable
+            of values to bucket together.""", values)
+        raise TypeError("`bucket_values_together` requires an iterable of values, not a str")
 
     nrows_affected = 0
     for value in values:
@@ -249,7 +259,7 @@ def bucket_values_together(df, colname, values, replace_with):
 
     logger.info(
         "Replaced values (%s) with %s in column %s",
-        ", ".join(values),
+        ", ".join(map(str, values)),
         replace_with,
         colname
     )
