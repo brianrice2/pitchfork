@@ -106,3 +106,16 @@ model:
       - tempo
   append_predictions:
     output_col: preds
+  get_feature_importances:
+    numeric_features:
+      - releaseyear
+      - danceability
+      - energy
+      - key
+      - loudness
+      - speechiness
+      - acousticness
+      - instrumentalness
+      - liveness
+      - valence
+      - tempo

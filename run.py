@@ -272,6 +272,12 @@ if __name__ == "__main__":
             preprocessor = model.make_preprocessor(**config["model"]["make_preprocessor"])
             model_pipeline = model.make_model(**config["model"]["make_model"])
             fitted_pipeline = model.train_pipeline(X, y, preprocessor, model_pipeline)
+
+            feature_importances = model.get_feature_importances(
+                fitted_pipeline,
+                **config["model"]["get_feature_importances"]
+            )
+            logger.info("Feature importances from training:\n%s", feature_importances)
         elif args.step == "predict":
             logger.debug("Beginning `predict`")
             fitted_pipeline = serialize.load_pipeline(args.model)
