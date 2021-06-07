@@ -310,5 +310,5 @@ To run the unit tests in a Docker container, run:
 
 ```bash
 docker build -f Dockerfile_python -t pitchfork-setup .
-docker run pitchfork-setup -m pytest
+docker run pitchfork-setup -m pytest -v
 ```

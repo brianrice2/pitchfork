@@ -73,7 +73,7 @@ def test_fill_na_with_str_invalid_column(dummy_df):
 
 def test_convert_str_to_datetime(dummy_df, dummy_df_datetime):
     """Parse strings to datetime format."""
-    actual = clean.convert_str_to_datetime(dummy_df, colname="reviewdate", format="%B %d %Y")
+    actual = clean.convert_str_to_datetime(dummy_df, colname="reviewdate", datetime_format="%B %d %Y")
 
     expected = deepcopy(dummy_df_datetime)
 
@@ -87,12 +87,12 @@ def test_convert_str_to_datetime(dummy_df, dummy_df_datetime):
 def test_convert_str_to_datetime_bad_format(dummy_df):
     """Inappropriate datetime format."""
     with pytest.raises(ValueError):
-        clean.convert_str_to_datetime(dummy_df, colname="reviewdate", format="%Y-%m-%d")
+        clean.convert_str_to_datetime(dummy_df, colname="reviewdate", datetime_format="%Y-%m-%d")
 
 
 def test_convert_str_to_datetime_invalid_column_type(dummy_df):
     """Column to parse is not of type `str`."""
-    clean.convert_str_to_datetime(dummy_df, colname="releaseyear", format="%Y")
+    clean.convert_str_to_datetime(dummy_df, colname="releaseyear", datetime_format="%Y")
 
 
 def test_onvert_datetime_to_date(dummy_df_datetime):
