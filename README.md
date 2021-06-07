@@ -30,8 +30,8 @@ Quality Assurance: Cheng Hao Ke
   - [4. Running the web application](#4-running-the-web-application)
     - [Custom connection string](#custom-connection-string)
     - [The verbose way](#the-verbose-way)
-    - [5. Deployment to AWS ECS](#5-deployment-to-aws-ecs)
-  - [Testing](#testing)
+  - [5. Deployment to AWS ECS](#5-deployment-to-aws-ecs)
+  - [0. Testing](#0-testing)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
