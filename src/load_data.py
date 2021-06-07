@@ -43,17 +43,18 @@ def parse_s3(s3path):
     """
     regex = r"s3://([\w._-]+)/([\w./_-]+)"
 
-    m = re.match(regex, s3path)
+    matches = re.match(regex, s3path)
 
-    if m:
-        s3bucket = m.group(1)
-        s3path = m.group(2)
+    if matches:
+        s3bucket = matches.group(1)
+        s3path = matches.group(2)
 
         return s3bucket, s3path
-    else:
-        raise ValueError("""The provided S3 location could not be parsed.
+
+    raise ValueError(
+        """The provided S3 location could not be parsed.
         Please confirm your path follows the structure "s3://bucket/path".
-        """)
+    """)
 
 
 def upload_file_to_s3(local_path, s3path):
@@ -67,6 +68,7 @@ def upload_file_to_s3(local_path, s3path):
     Returns:
         None
     """
+    # Separate bucket from path for boto3
     s3bucket, s3_just_path = parse_s3(s3path)
 
     s3 = boto3.resource("s3")

@@ -99,7 +99,9 @@ if __name__ == "__main__":
         "--acousticness", default="0.0945741669999999", help="Album's Spotify acousticness score"
     )
     sp_ingest_album.add_argument(
-        "--instrumentalness", default="0.0470013809999999", help="Album's Spotify instrumentalness score"
+        "--instrumentalness",
+        default="0.0470013809999999",
+        help="Album's Spotify instrumentalness score"
     )
     sp_ingest_album.add_argument(
         "--liveness", default="0.271858333", help="Album's Spotify liveness score"
@@ -176,9 +178,9 @@ if __name__ == "__main__":
         choices=["clean", "model", "predict"]
     )
     sp_pipeline.add_argument(
-        "--input", "-i",
+        "--input_data", "-i",
         default=None,
-        help="Path to input df (optional, default=None)"
+        help="Path to input_data df (optional, default=None)"
     )
     sp_pipeline.add_argument(
         "--config", "-c",
@@ -254,19 +256,22 @@ if __name__ == "__main__":
         # This loads the full YAML language, but avoids arbitrary code execution.
         with open(args.config, "r") as config_file:
             config = yaml.load(config_file, Loader=yaml.FullLoader)
-        logger.info("Configuration file loaded from %s" % args.config)
+        logger.info("Configuration file loaded from %s", args.config)
 
         if args.input:
-            input = pd.read_csv(args.input)
+            input_data = pd.read_csv(args.input)
             logger.info("Input df loaded from %s", args.input)
 
         if args.step == "clean":
             logger.debug("Beginning `clean`")
-            output = clean.clean_dataset(input, config["clean"])
+            output = clean.clean_dataset(input_data, config["clean"])
         elif args.step == "model":
             logger.debug("Beginning `model`")
             # Train on full dataset for deployment
-            X, y = model.split_predictors_response(input, **config["model"]["split_predictors_response"])
+            X, y = model.split_predictors_response(
+                input_data,
+                **config["model"]["split_predictors_response"]
+            )
 
             # Model building and training
             preprocessor = model.make_preprocessor(**config["model"]["make_preprocessor"])
@@ -281,15 +286,19 @@ if __name__ == "__main__":
         elif args.step == "predict":
             logger.debug("Beginning `predict`")
             fitted_pipeline = serialize.load_pipeline(args.model)
-            output = model.append_predictions(fitted_pipeline, input, **config["model"]["append_predictions"])
+            output = model.append_predictions(
+                fitted_pipeline,
+                input_data,
+                **config["model"]["append_predictions"]
+            )
 
         # Only the output from `model` cannot be saved in CSV format (returns a TMO)
         if args.output:
             if args.step != "model":
                 output.to_csv(args.output, index=False)
-                logger.info("Output saved to %s" % args.output)
+                logger.info("Output saved to %s", args.output)
             else:
                 serialize.save_pipeline(fitted_pipeline, args.output)
-                logger.info("Trained model object saved to %s" % args.output)
+                logger.info("Trained model object saved to %s", args.output)
     else:
         parser.print_help()

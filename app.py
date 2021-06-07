@@ -1,9 +1,12 @@
+"""
+Run the single-page web application with Flask.
+"""
 import logging.config
 import os
-import pkg_resources
 import traceback
 from time import time
 
+import pkg_resources
 import yaml
 from flask import Flask, redirect, render_template, request, send_from_directory, url_for
 
@@ -12,6 +15,8 @@ from src import serialize
 from src.add_albums import Albums, AlbumManager
 
 # Initialize the Flask application
+# By default, Flask looks for templates/ and static/ in the current
+# directory, so we need to tell it to look inside app/
 app = Flask(__name__, template_folder="app/templates", static_folder="app/static")
 app.config.from_pyfile("config/flaskconfig.py")
 
@@ -25,6 +30,7 @@ logging.config.fileConfig(
 logger = logging.getLogger(app.config["APP_NAME"])
 logger.debug("Web app log")
 
+# App loads the serialized fitted model for live inference
 with open(pkg_resources.resource_filename(__name__, app.config["PIPELINE_CONFIG"]), "r") as config_file:
     pipeline_config = yaml.load(config_file, Loader=yaml.FullLoader)
 
@@ -44,6 +50,7 @@ def index():
         Rendered HTML template for the SPA
     """
     try:
+        # Default view shows the first MAX_ROWS_SHOW albums in the database
         albums = album_manager.session.query(Albums).limit(app.config["MAX_ROWS_SHOW"]).all()
         logger.debug("Index page accessed")
         return render_template("index.html", albums=albums)
@@ -61,10 +68,13 @@ def search():
     Returns:
         Rendered HTML template of SPA with songs filtered
     """
+    # Available search fields from HTML
     album_name = request.args.get("album")
     artist_name = request.args.get("artist")
     score = request.args.get("score")
 
+    # Filter all songs based on user input
+    # TO DO: Validate user input before querying database
     albums = album_manager.session.query(Albums)
     if album_name:
         albums = albums.filter(Albums.album.like("%" + album_name + "%"))
@@ -93,6 +103,7 @@ def add_entry():
         Redirect to index page if successful, else error page
     """
     try:
+        # Parse user request
         form_data = request.form.to_dict()
 
         # Populate required fields if not provided
@@ -100,6 +111,7 @@ def add_entry():
         form_data["reviewauthor"] = form_data.get("reviewauthor", "Not provided")
         form_data["score"] = form_data.get("score", 0)
 
+        # Add to database
         album_manager.add_album(**form_data)
         logger.info("New album added: %s by %s", form_data["album"], form_data["artist"])
         return redirect(url_for("index"))
@@ -121,13 +133,16 @@ def predict_rating():
     pipeline = serialize.load_pipeline(pipeline_config["model"]["saved_model_path"])
     logger.info("Loaded saved model pipeline")
 
+    # Convert request form to the model's required `pandas.DataFrame` format
     input_data = request.form.to_dict()
-    df = model.parse_dict_to_dataframe(input_data)
-    df = model.validate_dataframe(df)
+    input_df = model.parse_dict_to_dataframe(input_data)
+
+    # Ensure all columns (& order) match the original training data
+    validated_df = model.validate_dataframe(input_df)
     logger.debug("Parsed input data to DataFrame format")
 
     try:
-        score = round(pipeline.predict(df)[0], 2)
+        score = round(pipeline.predict(validated_df)[0], 2)
         logger.info(
             """Prediction: %0.2f.
             Total time for loading model, parsing input, and performing inference: %0.4fs""",

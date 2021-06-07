@@ -1,5 +1,5 @@
 """
-Build, fit, evaluate, and (de)serialize predictive models.
+Build, fit, and evaluate predictive models.
 """
 import logging
 import math
@@ -31,8 +31,8 @@ def split_predictors_response(df, target_col="score"):
     features = df.drop(target_col, axis=1)
     target = df[target_col]
     logger.info(
-        "Split predictors and response variable. " +
-        "Shapes: features=%s, target=%s",
+        """Split predictors and response variable.
+        Shapes: features=%s, target=%s""",
         features.shape,
         target.shape
     )
@@ -170,7 +170,11 @@ def get_feature_importances(trained_pipeline, numeric_features):
     Returns:
         :obj:`pandas.Series` containing each feature and its importance
     """
-    features = numeric_features + list(trained_pipeline["preprocessor"].transformers_[1][1].get_feature_names())
+    categorical_features = list(trained_pipeline["preprocessor"]
+        .transformers_[1][1]
+        .get_feature_names())
+    features = numeric_features + categorical_features
+
     importances = trained_pipeline["predictor"].feature_importances_
 
     return pd.Series(data=importances, index=features)
@@ -246,11 +250,11 @@ def evaluate_model(y_true, y_pred):
     r_squared = r2_score(y_true, y_pred)
     max_err = max_error(y_true, y_pred)
 
-    logger.info("MSE:\t\t%0.4f" % mse)
-    logger.info("RMSE:\t%0.4f" % rmse)
-    logger.info("MAD:\t\t%0.4f" % mad)
-    logger.info("R-squared:\t%0.4f" % r_squared)
-    logger.info("Max error:\t%0.4f" % max_err)
+    logger.info("MSE:\t\t%0.4f", mse)
+    logger.info("RMSE:\t%0.4f", rmse)
+    logger.info("MAD:\t\t%0.4f", mad)
+    logger.info("R-squared:\t%0.4f", r_squared)
+    logger.info("Max error:\t%0.4f", max_err)
 
 
 def append_predictions(model, input_data, output_col="preds"):
@@ -266,7 +270,11 @@ def append_predictions(model, input_data, output_col="preds"):
     Returns:
         array-like of predicted values
     """
-    logger.debug("Input data has %s columns: %s", len(input_data.columns), ", ".join(input_data.columns))
+    logger.debug(
+        "Input data has %s columns: %s",
+        len(input_data.columns),
+        ", ".join(input_data.columns)
+    )
     logger.debug("Validating input before predicting")
     df = validate_dataframe(input_data)
 

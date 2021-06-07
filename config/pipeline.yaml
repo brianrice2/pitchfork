@@ -8,7 +8,7 @@ clean:
       fill_string: Missing
   convert_str_to_datetime:
     colname: reviewdate
-    format: "%B %d %Y"
+    datetime_format: "%B %d %Y"
   approximate_missing_year:
     fill_column: releaseyear
     approximate_with: reviewdate

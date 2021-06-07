@@ -1,3 +1,6 @@
+"""
+Create and manipulate a relational database for holding album data.
+"""
 import csv
 import logging.config
 import os
@@ -79,8 +82,8 @@ class AlbumManager:
             ValueError: If neither an app nor an engine string is provided.
         """
         if app:
-            self.db = SQLAlchemy(app)
-            self.session = self.db.session
+            self.database = SQLAlchemy(app)
+            self.session = self.database.session
         elif engine_string:
             engine = sqlalchemy.create_engine(engine_string)
             Session = sessionmaker(bind=engine)
@@ -182,8 +185,8 @@ class AlbumManager:
                 traceback.print_exc()
                 logger.error(
                     """Could not find table. Rolling back transaction.
-                    Please check your connection string.
-                    One possible reason: are you connected to the Northwestern VPN?"""
+                    Please check your connection string and ensure
+                    that you are connected to the Northwestern VPN."""
                 )
                 session.rollback()
             else:
@@ -198,6 +201,9 @@ class AlbumManager:
 
         Returns:
             None
+
+        Raises:
+            `ValueError` from `parse_s3` if the provided S3 path is invalid.
         """
         session = self.session
 
@@ -205,7 +211,12 @@ class AlbumManager:
         # Put the local copy in the same place it would have gone inside S3.
         # If a local copy exists already, just use that instead
         if file_or_path.startswith("s3://"):
-            s3bucket, s3path = load_data.parse_s3(file_or_path)
+            # First confirm that the s3 path is valid
+            try:
+                _, s3path = load_data.parse_s3(file_or_path)
+            except ValueError:
+                raise  # The s3 path is invalid. Bubble up to user.
+
             local_path = s3path
             if not os.path.exists(local_path):
                 load_data.download_file_from_s3(local_path=local_path, s3path=file_or_path)
@@ -236,8 +247,8 @@ class AlbumManager:
             traceback.print_exc()
             logger.error(
                 """Could not find table. Rolling back transaction.
-                Please check your connection string.
-                One possible reason: are you connected to the Northwestern VPN?"""
+                Please check your connection string and ensure
+                that you are connected to the Northwestern VPN."""
             )
             session.rollback()
         else:

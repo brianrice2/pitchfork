@@ -1,3 +1,6 @@
+"""
+Clean the dataset before modeling.
+"""
 import logging
 from time import time
 
@@ -37,12 +40,12 @@ FILL_MISSING_RECORDLABEL_DATA = (
 )
 
 
-def clean_dataset(df, config):
+def clean_dataset(data, config):
     """
     Perform full data processing pipeline.
 
     Args:
-        df (:obj:`pandas.DataFrame`): Raw data
+        data (:obj:`pandas.DataFrame`): Raw data
         config (dict): Config file as read in by PyYAML
 
     Returns:
@@ -51,30 +54,30 @@ def clean_dataset(df, config):
     start_time = time()
 
     if "fill_na_with_str" in config:
-        df = fill_na_with_str(df, **config["fill_na_with_str"]["iteration1"])
-        df = fill_na_with_str(df, **config["fill_na_with_str"]["iteration2"])
+        data = fill_na_with_str(data, **config["fill_na_with_str"]["iteration1"])
+        data = fill_na_with_str(data, **config["fill_na_with_str"]["iteration2"])
 
     if "convert_str_to_datetime" in config:
-        df = convert_str_to_datetime(df, **config["convert_str_to_datetime"])
+        data = convert_str_to_datetime(data, **config["convert_str_to_datetime"])
 
     if "approximate_missing_year" in config:
-        df = approximate_missing_year(df, **config["approximate_missing_year"])
+        data = approximate_missing_year(data, **config["approximate_missing_year"])
 
     if "convert_datetime_to_date" in config:
-        df = convert_datetime_to_date(df, **config["convert_datetime_to_date"])
+        data = convert_datetime_to_date(data, **config["convert_datetime_to_date"])
 
     if "fill_missing_manually" in config:
-        df = fill_missing_manually(df, **config["fill_missing_manually"])
+        data = fill_missing_manually(data, **config["fill_missing_manually"])
 
     if "strip_whitespace" in config:
-        df = strip_whitespace(df, **config["strip_whitespace"])
+        data = strip_whitespace(data, **config["strip_whitespace"])
 
     if "bucket_values_together" in config:
-        df = bucket_values_together(df, **config["bucket_values_together"]["iteration1"])
-        df = bucket_values_together(df, **config["bucket_values_together"]["iteration2"])
+        data = bucket_values_together(data, **config["bucket_values_together"]["iteration1"])
+        data = bucket_values_together(data, **config["bucket_values_together"]["iteration2"])
 
     logger.info("Completed data cleaning process. Time taken: %0.4fs", time() - start_time)
-    return df
+    return data
 
 
 def convert_nan_to_str(df, colname="artist"):
@@ -100,7 +103,7 @@ def convert_nan_to_str(df, colname="artist"):
     return df
 
 
-def convert_str_to_datetime(df, colname="reviewdate", format="%B %d %Y"):
+def convert_str_to_datetime(df, colname="reviewdate", datetime_format="%B %d %Y"):
     """
     Parse a string column to datetime format.
 
@@ -108,8 +111,8 @@ def convert_str_to_datetime(df, colname="reviewdate", format="%B %d %Y"):
         df (:obj:`pandas.DataFrame`): DataFrame to clean
         colname (str, optional): Name of column to apply transformation to.
             Defaults to "reviewdate".
-        format (str, optional): Datetime format of column. Defaults to "%B %d %Y".
-            For more info on these codes:
+        datetime_format (str, optional): Datetime format of column. Defaults to
+            "%B %d %Y". For more info on these codes:
             https://docs.python.org/3/library/datetime.html#strftime-and-strptime-format-codes.
 
     Returns:
@@ -119,7 +122,7 @@ def convert_str_to_datetime(df, colname="reviewdate", format="%B %d %Y"):
         logger.warning("%s not found in columns. Returning original data.", colname)
         return df
 
-    df[colname] = pd.to_datetime(df[colname], format=format)
+    df[colname] = pd.to_datetime(df[colname], format=datetime_format)
     logger.info("Converted column %s to datetime format", colname)
     return df
 
@@ -288,5 +291,5 @@ def fill_na_with_str(df, colname="genre", fill_string="Missing"):
     df[colname] = df[colname].fillna(fill_string)
     logger.info("Replaced missing values in %s with %s", colname, fill_string)
     logger.info("Number of rows affected: %d", nrows_affected)
-    
+
     return df

@@ -1,3 +1,6 @@
+"""
+Serialize and deserialize trained model pipelines.
+"""
 import logging
 import os
 
@@ -23,7 +26,7 @@ def save_pipeline(pipeline, save_path):
     # so first save to a local directory and then upload in a separate step.
     # Put the local copy in the same place it would have gone inside S3.
     if save_path.startswith("s3://"):
-        s3bucket, s3path = load_data.parse_s3(save_path)
+        _, s3path = load_data.parse_s3(save_path)
         local_path = s3path
         joblib.dump(pipeline, local_path)
         logger.info("Saved a copy of the model to %s", local_path)
@@ -48,7 +51,7 @@ def load_pipeline(load_path):
     # This helps improve inference speed by reducing unnecessary
     # I/O and network calls
     if load_path.startswith("s3://"):
-        s3bucket, s3path = load_data.parse_s3(load_path)
+        _, s3path = load_data.parse_s3(load_path)
         local_path = s3path
         if not os.path.exists(local_path):
             load_data.download_file_from_s3(local_path=local_path, s3path=load_path)
