@@ -178,7 +178,7 @@ if __name__ == "__main__":
         choices=["clean", "model", "predict"]
     )
     sp_pipeline.add_argument(
-        "--input_data", "-i",
+        "--input", "-i",
         default=None,
         help="Path to input_data df (optional, default=None)"
     )
@@ -259,17 +259,17 @@ if __name__ == "__main__":
         logger.info("Configuration file loaded from %s", args.config)
 
         if args.input:
-            input_data = pd.read_csv(args.input)
+            input = pd.read_csv(args.input)
             logger.info("Input df loaded from %s", args.input)
 
         if args.step == "clean":
             logger.debug("Beginning `clean`")
-            output = clean.clean_dataset(input_data, config["clean"])
+            output = clean.clean_dataset(input, config["clean"])
         elif args.step == "model":
             logger.debug("Beginning `model`")
             # Train on full dataset for deployment
             X, y = model.split_predictors_response(
-                input_data,
+                input,
                 **config["model"]["split_predictors_response"]
             )
 
