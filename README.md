@@ -83,7 +83,8 @@ The dataset is released under the [Creative Commons Attribution 4.0 Internationa
 |   |                                      settings (not tracked)
 │   ├── logging/                      <- Configuration of python loggers
 │   ├── flaskconfig.py                <- Configurations for Flask API
-│   └── pipeline.yaml                 <- Parameter values used (tracked for reproducibility)
+│   └── pipeline.yaml                 <- Parameter values passed to functions. Tracked
+|                                           for reproducibility
 │
 ├── copilot/                          <- Deployment configuration for AWS Copilot, for running
 |                                          the app on ECS
@@ -92,7 +93,8 @@ The dataset is released under the [Creative Commons Attribution 4.0 Internationa
 │   ├── cleaned/                      <- Processed data
 │   └── raw/                          <- Raw datafile
 |
-├── deliverables/                     <- Final presentations, white papers, etc. for stakeholders
+├── deliverables/                     <- Final presentations, white papers, etc. for
+|                                          stakeholders
 │
 ├── docs/                             <- Sphinx documentation based on Python docstrings
 │
@@ -106,10 +108,12 @@ The dataset is released under the [Creative Commons Attribution 4.0 Internationa
 ├── tests/                            <- Pytest unit tests
 │
 ├── app.py                            <- Flask wrapper for running the model
-├── Dockerfile_pipeline               <- Defines the Docker image for the data cleaning & modeling pipeline
-├── Dockerfile_python                 <- Defines the Docker image for ingesting data & creating database
-├── Makefile                          <- Defines handy shortcuts for executing app functionality: ingesting
-|                                          data, training a model, and running the web app
+├── Dockerfile_pipeline               <- Defines the Docker image for the data cleaning and
+|                                          modeling pipeline
+├── Dockerfile_python                 <- Defines the Docker image for ingesting data & creating
+|                                          the database
+├── Makefile                          <- Defines handy shortcuts for executing app functionality:
+|                                          ingesting data, training a model, and running the web app
 ├── requirements.txt                  <- Python package dependencies
 └── run.py                            <- Simplifies the execution of one or more of the src scripts
 ```
