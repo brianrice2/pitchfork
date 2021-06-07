@@ -294,13 +294,13 @@ docker run \
   pitchfork-app
 ```
 
-#### 5. Deployment to AWS ECS
+### 5. Deployment to AWS ECS
 
 If you wish to deploy the application onto ECS, view the [manifest](/copilot/app/manifest.yml) for example configuration. As personal information like usernames and passwords is required, you'll need to use secrets to securely store this information.
 
 Deploying to ECS is outside the scope and responsibility of this application, but the manifest is included for reference purposes to give an idea of what's required and how to configure some of the available options. 
 
-### Testing
+### 0. Testing
 
 To run the unit tests in a Docker container, run:
 
