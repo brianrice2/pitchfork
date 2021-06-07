@@ -37,6 +37,10 @@ with open(pkg_resources.resource_filename(__name__, app.config["PIPELINE_CONFIG"
 # Initialize the database session
 album_manager = AlbumManager(app)
 
+# Preload the trained model for extremely fast inference
+pipeline = serialize.load_pipeline(pipeline_config["model"]["saved_model_path"])
+logger.info("Loaded saved model pipeline")
+
 
 @app.route("/")
 def index():
@@ -130,8 +134,6 @@ def predict_rating():
         Redirect to index page
     """
     start_time = time()
-    pipeline = serialize.load_pipeline(pipeline_config["model"]["saved_model_path"])
-    logger.info("Loaded saved model pipeline")
 
     # Convert request form to the model's required `pandas.DataFrame` format
     input_data = request.form.to_dict()
@@ -143,6 +145,10 @@ def predict_rating():
 
     try:
         score = round(pipeline.predict(validated_df)[0], 2)
+
+        # Clip predicted score between 0 and 10
+        score = min(10, max(0, score))
+
         logger.info(
             """Prediction: %0.2f.
             Total time for loading model, parsing input, and performing inference: %0.4fs""",
