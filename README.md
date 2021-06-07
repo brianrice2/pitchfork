@@ -69,18 +69,25 @@ The dataset is released under the [Creative Commons Attribution 4.0 Internationa
 |
 ├── app/                              <- Configuration files 
 │   ├── static/                       <- Static CSS, JS, etc. files
-│   ├── templates/                    <- HTML (or other code) that is templated and changes based on a set of inputs
-│   ├── boot.sh                       <- Start up script for launching app in Docker container
-│   └── Dockerfile                    <- Build the Docker image for running the web app
+│   ├── templates/                    <- HTML (or other code) that is templated and changes
+|   |                                      based on a set of inputs
+│   └── Dockerfile                    <- Defines the Docker image for running the web app
 │
 ├── config/                           <- Configuration files 
-│   ├── local/                        <- Private configuration files and environment variable settings (not tracked)
+│   ├── local/                        <- Private configuration files and environment variable
+|   |                                      settings (not tracked)
 │   ├── logging/                      <- Configuration of python loggers
-│   └── flaskconfig.py                <- Configurations for Flask API
+│   ├── flaskconfig.py                <- Configurations for Flask API
+│   └── pipeline.yaml                 <- Parameter values used (tracked for reproducibility)
 │
+├── copilot/                          <- Deployment configuration for AWS Copilot, for running
+|                                          the app on ECS
+|
 ├── data/                             <- Data files used for analysis or by the app itself
 │   ├── cleaned/                      <- Processed data
 │   └── raw/                          <- Raw datafile
+|
+├── deliverables/                     <- Final presentations, white papers, etc. for stakeholders
 │
 ├── docs/                             <- Sphinx documentation based on Python docstrings
 │
@@ -94,13 +101,12 @@ The dataset is released under the [Creative Commons Attribution 4.0 Internationa
 ├── tests/                            <- Pytest unit tests
 │
 ├── app.py                            <- Flask wrapper for running the model
-├── Dockerfile_pipeline               <- Builds the Docker image for the data cleaning & modeling pipeline
-├── Dockerfile_python                 <- Builds the Docker image for ingesting data & creating database
+├── Dockerfile_pipeline               <- Defines the Docker image for the data cleaning & modeling pipeline
+├── Dockerfile_python                 <- Defines the Docker image for ingesting data & creating database
+├── Makefile                          <- Defines handy shortcuts for executing app functionality: ingesting
+|                                          data, training a model, and running the web app
 ├── requirements.txt                  <- Python package dependencies
-├── run.py                            <- Simplifies the execution of one or more of the src scripts
-├── run_app.sh                        <- Sets up for and runs Flask web app
-├── run_cleanup.sh                    <- Removes artifacts from data cleaning & modeling pipeline
-└── run_pipeline.sh                   <- Runs the data cleaning & modeling pipeline
+└── run.py                            <- Simplifies the execution of one or more of the src scripts
 ```
 
 ## Running the app
@@ -119,16 +125,16 @@ export AWS_SECRET_ACCESS_KEY="MY_SECRET_ACCESS_KEY"
 #### Build the Docker image
 
 ```bash
-docker build -f Dockerfile_python -t pitchfork .
+docker build -f Dockerfile_python -t pitchfork-setup .
 ````
 
 #### Download raw data and upload to S3
 
 ```bash
-docker run -e AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY pitchfork run.py load_data
+docker run -e AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY pitchfork-setup run.py load_data
 ```
 
-By default, this will download the original data to `data/raw/P4KxSpotify.csv` and then upload into the S3 bucket `s3://2021-msia423-rice-brian/raw/P4KxSpotify.csv`.
+By default, this will download the original data to `data/raw/P4KxSpotify.csv` and then upload into the S3 bucket `s3://2021-msia423-rice-brian/data/raw/P4KxSpotify.csv`.
 
 Optional arguments:
 
@@ -164,7 +170,7 @@ docker run \
   -e MYSQL_USER \
   -e MYSQL_PASSWORD \
   -e MYSQL_DATABASE \
-  pitchfork run.py create_db
+  pitchfork-setup run.py create_db
 ```
 
 By default, `run.py create_db` creates a local SQLite database at `sqlite:///data/msia423_db.db`.
@@ -172,7 +178,7 @@ By default, `run.py create_db` creates a local SQLite database at `sqlite:///dat
 If you know the engine string already, you can simply run:
 
 ```bash
-docker run pitchfork run.py create_db --engine_string <MY_ENGINE_STRING>
+docker run pitchfork-setup run.py create_db --engine_string <MY_ENGINE_STRING>
 ```
 
 ##### Local SQLite database
@@ -184,7 +190,7 @@ A local SQLite database can be created for development and local testing. It doe
 Keep in mind that if the local database is created inside of Docker, it will remain in the writable layer unless a persistent storage drive is mounted. Assuming the current working directory is the root level of this repository:
 
 ```bash
-docker run -v "$(pwd)"/data/:/app/data/ pitchfork run.py create_db
+docker run -v "$(pwd)"/data/:/app/data/ pitchfork-setup run.py create_db
 ```
 
 ##### RDS instance
@@ -208,7 +214,7 @@ And then inside MySQL:
 SHOW DATABASES;
 USE msia423_db;
 SHOW TABLES;
-SELECT * FROM albums;
+SELECT * FROM albums LIMIT 5;
 ```
 
 #### Ingest the data
@@ -222,7 +228,7 @@ docker run \
   -e MYSQL_USER \
   -e MYSQL_PASSWORD \
   -e MYSQL_DATABASE \
-  pitchfork run.py ingest_album
+  pitchfork-setup run.py ingest_album
 ```
 
 To instead load the contents of a CSV file (again after the table has been created), use:
@@ -234,14 +240,66 @@ docker run \
   -e MYSQL_USER \
   -e MYSQL_PASSWORD \
   -e MYSQL_DATABASE \
-  pitchfork run.py ingest_dataset --file "path/to/my/file.csv"
+  pitchfork-setup run.py ingest_dataset --file "path/to/my/file.csv"
 ```
+
+### 3. Training a model
+
+Once the raw data has been downloaded to S3 through the process above, we can train a model to predict the Pitchfork rating for an album! `Dockerfile_pipeline` defines an image to load the existing raw data file, clean and process it, and train a gradient-boosted tree model. The cleaned dataset as well as trained model object are saved to S3 for future use.
+
+Artifacts produced during this process are by design stored in S3, but if you prefer to retain the local copies you may mount a local volume, for example through `docker run -v "$(pwd)"/:/app/ ...`. Since artifacts are produced in both `data/` and `models/`, you must mount the root directory and not only the `data/` folder as was done earlier.
+
+```bash
+docker build -f Dockerfile_pipeline -t pitchfork-pipeline .
+docker run \
+  -e AWS_ACCESS_KEY_ID \
+  -e AWS_SECRET_ACCESS_KEY \
+  pitchfork-pipeline
+```
+
+### 4. Running the web application
+
+Sure, creating and moving data into databases is fun, but eventually we should run the web app. To do so, first ensure the database is not already created or populated and run the command below most closely suited to your situation. You may either use a local SQLite database (default behavior if `MYSQL_*` or `SQLALCHEMY_DATABASE_URI` are not set) or a MySQL database running on RDS.
+
+#### Custom connection string
+
+```bash
+docker build -f app/Dockerfile -t pitchfork-app .
+docker run \
+  -p 5000:5000 \
+  -e AWS_ACCESS_KEY_ID \
+  -e AWS_SECRET_ACCESS_KEY \
+  -e SQLALCHEMY_DATABASE_URI \
+  pitchfork-app
+```
+
+#### The verbose way
+
+```bash
+docker build -f app/Dockerfile -t pitchfork-app .
+docker run \
+  -p 5000:5000 \
+  -e AWS_ACCESS_KEY_ID \
+  -e AWS_SECRET_ACCESS_KEY \
+  -e MYSQL_HOST \
+  -e MYSQL_PORT \
+  -e MYSQL_USER \
+  -e MYSQL_PASSWORD \
+  -e MYSQL_DATABASE \
+  pitchfork-app
+```
+
+#### 5. Deployment to AWS ECS
+
+If you wish to deploy the application onto ECS, view the [manifest](/copilot/app/manifest.yml) for example configuration. As personal information like usernames and passwords is required, you'll need to use secrets to securely store this information.
+
+Deploying to ECS is outside the scope and responsibility of this application, but the manifest is included for reference purposes to give an idea of what's required and how to configure some of the available options. 
 
 ### Testing
 
-To run the unit tests in a Docker container run:
+To run the unit tests in a Docker container, run:
 
 ```bash
-docker build -f Dockerfile_python -t pitchfork .
-docker run pitchfork -m pytest
+docker build -f Dockerfile_python -t pitchfork-setup .
+docker run pitchfork-setup -m pytest
 ```
