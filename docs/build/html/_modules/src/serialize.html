@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" />
 
     <meta name="generator" content="sphinx-3.5.4, furo 2021.04.11.beta34"/>
-        <title>src.serialize - pitchfork 0.1 documentation</title>
+        <title>src.serialize - pitchfork 0.2.1 documentation</title>
       <link rel="stylesheet" href="../../_static/styles/furo.css?digest=59ab60ac09ea94ccfe6deddff6d715cce948a6fc">
     <link rel="stylesheet" href="../../_static/pygments.css">
     <link media="(prefers-color-scheme: dark)" rel="stylesheet" href="../../_static/pygments_dark.css">
@@ -86,7 +86,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">pitchfork 0.1 documentation</div></a>
+      <a href="../../index.html"><div class="brand">pitchfork 0.2.1 documentation</div></a>
     </div>
     <div class="header-right">
       <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
@@ -100,7 +100,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
   
   
-  <span class="sidebar-brand-text">pitchfork 0.1 documentation</span>
+  <span class="sidebar-brand-text">pitchfork 0.2.1 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html">
   <input class="sidebar-search" placeholder=Search name="q">
@@ -132,8 +132,11 @@
         </label>
         <h1>Source code for src.serialize</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
 
 <span class="kn">import</span> <span class="nn">joblib</span>
+
+<span class="kn">from</span> <span class="nn">src</span> <span class="kn">import</span> <span class="n">load_data</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -149,8 +152,19 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        None</span>
 <span class="sd">    """</span>
-    <span class="n">joblib</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">pipeline</span><span class="p">,</span> <span class="n">save_path</span><span class="p">)</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">'Saved model to </span><span class="si">%s</span><span class="s1">'</span><span class="p">,</span> <span class="n">save_path</span><span class="p">)</span></div>
+    <span class="c1"># Saving to S3 requires some extra care compared to a local directory,</span>
+    <span class="c1"># so first save to a local directory and then upload in a separate step.</span>
+    <span class="c1"># Put the local copy in the same place it would have gone inside S3.</span>
+    <span class="k">if</span> <span class="n">save_path</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"s3://"</span><span class="p">):</span>
+        <span class="n">s3bucket</span><span class="p">,</span> <span class="n">s3path</span> <span class="o">=</span> <span class="n">load_data</span><span class="o">.</span><span class="n">parse_s3</span><span class="p">(</span><span class="n">save_path</span><span class="p">)</span>
+        <span class="n">local_path</span> <span class="o">=</span> <span class="n">s3path</span>
+        <span class="n">joblib</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">pipeline</span><span class="p">,</span> <span class="n">local_path</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Saved a copy of the model to </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="n">local_path</span><span class="p">)</span>
+        <span class="n">load_data</span><span class="o">.</span><span class="n">upload_file_to_s3</span><span class="p">(</span><span class="n">local_path</span><span class="o">=</span><span class="n">local_path</span><span class="p">,</span> <span class="n">s3path</span><span class="o">=</span><span class="n">save_path</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">joblib</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">pipeline</span><span class="p">,</span> <span class="n">save_path</span><span class="p">)</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Saved model to </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="n">save_path</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="load_pipeline"><a class="viewcode-back" href="../../src.html#src.serialize.load_pipeline">[docs]</a><span class="k">def</span> <span class="nf">load_pipeline</span><span class="p">(</span><span class="n">load_path</span><span class="p">):</span>
@@ -163,8 +177,22 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        Fitted :obj:`sklearn.pipeline.Pipeline` object</span>
 <span class="sd">    """</span>
-    <span class="n">pipeline</span> <span class="o">=</span> <span class="n">joblib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">load_path</span><span class="p">)</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">'Loaded model pipeline from </span><span class="si">%s</span><span class="s1">'</span><span class="p">,</span> <span class="n">load_path</span><span class="p">)</span>
+    <span class="c1"># Download from S3 if a local copy does not already exist</span>
+    <span class="c1"># This helps improve inference speed by reducing unnecessary</span>
+    <span class="c1"># I/O and network calls</span>
+    <span class="k">if</span> <span class="n">load_path</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"s3://"</span><span class="p">):</span>
+        <span class="n">s3bucket</span><span class="p">,</span> <span class="n">s3path</span> <span class="o">=</span> <span class="n">load_data</span><span class="o">.</span><span class="n">parse_s3</span><span class="p">(</span><span class="n">load_path</span><span class="p">)</span>
+        <span class="n">local_path</span> <span class="o">=</span> <span class="n">s3path</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">local_path</span><span class="p">):</span>
+            <span class="n">load_data</span><span class="o">.</span><span class="n">download_file_from_s3</span><span class="p">(</span><span class="n">local_path</span><span class="o">=</span><span class="n">local_path</span><span class="p">,</span> <span class="n">s3path</span><span class="o">=</span><span class="n">load_path</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Downloaded a copy of the model to </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="n">local_path</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Using existing local copy of model at </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="n">local_path</span><span class="p">)</span>
+        <span class="n">pipeline</span> <span class="o">=</span> <span class="n">joblib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">local_path</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">pipeline</span> <span class="o">=</span> <span class="n">joblib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">load_path</span><span class="p">)</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Loaded model pipeline from </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="n">load_path</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">pipeline</span></div>
 </pre></div>
       </article>

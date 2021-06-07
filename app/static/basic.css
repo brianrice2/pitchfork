@@ -90,6 +90,20 @@ select {
   border: 1px solid #ccc;
 }
 
+button {
+  background-color: #f1f1f1;
+  float: left;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 14px 14px;
+  margin: 0px;
+  margin-left: 2px;
+  margin-right: 2px;
+  transition: 0.5s;
+  font-size: 16px;
+}
+
 body, html {
   height: 100%;
   margin: 0px;
@@ -164,4 +178,8 @@ body, html {
 /* Show the tooltip text when you mouse over the tooltip container */
 .tooltip:hover .tooltiptext {
   visibility: visible;
+}
+
+#predictResult {
+  font-size: 20px;
 }

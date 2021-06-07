@@ -1,14 +1,20 @@
 """
 Receives command-line arguments from the user and delegates
-instructions to the appropriate script in `src/`. It handles:
+instructions to the appropriate module in `src/`. It handles:
 
 - Database interaction (creation, deletion, ingestion)
 - Data downloading from source, uploading to S3, and downloading from S3
+- Data processing and model training pipeline
 """
 import argparse
 import logging.config
 import pkg_resources
 
+import pandas as pd
+import yaml
+
+from config.flaskconfig import SQLALCHEMY_DATABASE_URI
+from src import clean, model, serialize
 from src.add_albums import AlbumManager, create_db, delete_db
 from src.load_data import (
     download_raw_data,
@@ -17,7 +23,6 @@ from src.load_data import (
     upload_file_to_s3,
     upload_to_s3_pandas
 )
-from config.flaskconfig import SQLALCHEMY_DATABASE_URI
 
 # Using `pkg_resources` here allows Sphinx to find the logging config
 # file when building the documentation HTML pages
@@ -34,8 +39,8 @@ DEFAULT_S3_LOCATION = DEFAULT_S3_BUCKET + DEFAULT_S3_PATH
 
 
 if __name__ == "__main__":
-    # Add parsers for both creating a database and adding albums to it
-    parser = argparse.ArgumentParser(description="Create and/or add data to database")
+    # Add parsers for both managing database, cleaning data, and modeling
+    parser = argparse.ArgumentParser(description="Create/update database, clean data, and model")
     subparsers = parser.add_subparsers(dest="subparser_name")
 
     # Sub-parser for creating a database
@@ -67,7 +72,7 @@ if __name__ == "__main__":
         "--reviewauthor", default="Ian Cohen", help="Album reviewer's name"
     )
     sp_ingest_album.add_argument("--score", default="9", help="Pitchfork rating")
-    sp_ingest_album.add_argument("--releaseyear", default="2014", help="Album release year")
+    sp_ingest_album.add_argument("--releaseyear", default=2014, help="Album release year")
     sp_ingest_album.add_argument(
         "--reviewdate", default="October 29 2014", help="Pitchfork review date"
     )
@@ -76,9 +81,7 @@ if __name__ == "__main__":
     )
     sp_ingest_album.add_argument("--genre", default="Rap", help="Album genre")
     sp_ingest_album.add_argument(
-        "--danceability",
-        default="0.639833333",
-        help="Album's Spotify danceability score",
+        "--danceability", default="0.639833333", help="Album's Spotify danceability score"
     )
     sp_ingest_album.add_argument(
         "--energy", default="0.65425", help="Album's Spotify energy score"
@@ -93,14 +96,10 @@ if __name__ == "__main__":
         "--speechiness", default="0.236491667", help="Album's Spotify speechiness score"
     )
     sp_ingest_album.add_argument(
-        "--acousticness",
-        default="0.0945741669999999",
-        help="Album's Spotify acousticness score",
+        "--acousticness", default="0.0945741669999999", help="Album's Spotify acousticness score"
     )
     sp_ingest_album.add_argument(
-        "--instrumentalness",
-        default="0.0470013809999999",
-        help="Album's Spotify instrumentalness score",
+        "--instrumentalness", default="0.0470013809999999", help="Album's Spotify instrumentalness score"
     )
     sp_ingest_album.add_argument(
         "--liveness", default="0.271858333", help="Album's Spotify liveness score"
@@ -118,7 +117,7 @@ if __name__ == "__main__":
     )
     sp_ingest_dataset.add_argument(
         "--engine_string",
-        default="sqlite:///data/msia423_db.db",
+        default=SQLALCHEMY_DATABASE_URI,
         help="SQLAlchemy connection URI for database",
     )
     sp_ingest_dataset.add_argument(
@@ -165,6 +164,36 @@ if __name__ == "__main__":
         default=False,
         action="store_true",
         help="If used, will download the raw dataset from the internet",
+    )
+
+    # Sub-parser for data processing and model training pipeline
+    sp_pipeline = subparsers.add_parser(
+        "pipeline", description="Data cleaning and model training pipeline"
+    )
+    sp_pipeline.add_argument(
+        "step",
+        help="Which step to run",
+        choices=["clean", "model", "predict"]
+    )
+    sp_pipeline.add_argument(
+        "--input", "-i",
+        default=None,
+        help="Path to input df (optional, default=None)"
+    )
+    sp_pipeline.add_argument(
+        "--config", "-c",
+        default="config/pipeline.yaml",
+        help="Path to configuration file"
+    )
+    sp_pipeline.add_argument(
+        "--output", "-o",
+        default=None,
+        help="Path to save output CSV (optional, default=None)"
+    )
+    sp_pipeline.add_argument(
+        "--model", "-m",
+        default=None,
+        help="Path to load trained model object. Only used for `predict`."
     )
 
     # Interpret and execute commands
@@ -218,5 +247,49 @@ if __name__ == "__main__":
                 upload_to_s3_pandas(args.local_path, args.s3path, args.sep)
             else:
                 upload_file_to_s3(args.local_path, args.s3path)
+    elif sp_used == "pipeline":
+        # Load configuration file for parameters and trained model object path
+        # In PyYAML 5.1+, using `yaml.load` _without the `Loader` param_ has
+        # been deprecated (for security reasons), so specify `FullLoader`.
+        # This loads the full YAML language, but avoids arbitrary code execution.
+        with open(args.config, "r") as config_file:
+            config = yaml.load(config_file, Loader=yaml.FullLoader)
+        logger.info("Configuration file loaded from %s" % args.config)
+
+        if args.input:
+            input = pd.read_csv(args.input)
+            logger.info("Input df loaded from %s", args.input)
+
+        if args.step == "clean":
+            logger.debug("Beginning `clean`")
+            output = clean.clean_dataset(input, config["clean"])
+        elif args.step == "model":
+            logger.debug("Beginning `model`")
+            # Train on full dataset for deployment
+            X, y = model.split_predictors_response(input, **config["model"]["split_predictors_response"])
+
+            # Model building and training
+            preprocessor = model.make_preprocessor(**config["model"]["make_preprocessor"])
+            model_pipeline = model.make_model(**config["model"]["make_model"])
+            fitted_pipeline = model.train_pipeline(X, y, preprocessor, model_pipeline)
+
+            feature_importances = model.get_feature_importances(
+                fitted_pipeline,
+                **config["model"]["get_feature_importances"]
+            )
+            logger.info("Feature importances from training:\n%s", feature_importances)
+        elif args.step == "predict":
+            logger.debug("Beginning `predict`")
+            fitted_pipeline = serialize.load_pipeline(args.model)
+            output = model.append_predictions(fitted_pipeline, input, **config["model"]["append_predictions"])
+
+        # Only the output from `model` cannot be saved in CSV format (returns a TMO)
+        if args.output:
+            if args.step != "model":
+                output.to_csv(args.output, index=False)
+                logger.info("Output saved to %s" % args.output)
+            else:
+                serialize.save_pipeline(fitted_pipeline, args.output)
+                logger.info("Trained model object saved to %s" % args.output)
     else:
         parser.print_help()

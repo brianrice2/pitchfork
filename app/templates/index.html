@@ -1,9 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script src="http://malsup.github.io/jquery.form.js"></script>
     <meta charset="UTF-8">
     <link href="static/basic.css" rel="stylesheet">
     <title>p4k.ai</title>
+
+    <!-- Display prediction result directly on form submission (without page reload) -->
+    <script>
+        $(document).ready(function() {
+            // Upon submission, unhide the div and display predicted rating
+            $("#predictForm").ajaxForm({
+                success: function(msg) {
+                    showPredictionResult("Predicted rating:\t\t\t" + msg);
+                }
+            });
+        });
+    </script>
 </head>
 
 <body onload="document.getElementById('browseButton').click();">
@@ -19,6 +33,16 @@
 
     <!-- Browse albums -->
     <div id="Browse" class="tabcontent">
+        <!-- Search for albums -->
+        <form action="{{ url_for('search') }}" method=get class=searchAlbums>
+            <dl>
+                <input type=text name=artist placeholder="Artist" style="width:15%">
+                <input type=text name=album placeholder="Album" style="width:25%">
+                <input type=text name=score placeholder="Score" style="width:5%">
+                <input type=submit value=Search>
+            </dl>
+        </form>
+
         <!-- Display album data -->
         <table className="tablePadding" id="browseAlbums">
              <thead>
@@ -176,9 +200,16 @@
 
             <br><input type=submit id="submitPrediction" value=Predict>
         </form>
+
+        <br>
+
+        <!-- Hidden div that displays predicted value -->
+        <div id="predictResult" style="display:none"></div>
+
     </div>
 
-    <script>
+    <!-- Prediction form: parse input & display result -->
+    <script type=text/javascript>
         // Input sliders
         var sliderReleaseYear = document.getElementById("rangeReleaseYear");
         var outputReleaseYear = document.getElementById("valueReleaseYear");
@@ -235,13 +266,20 @@
         var outputTempo = document.getElementById("valueTempo");
         outputTempo.innerHTML = sliderTempo.value;
         sliderTempo.oninput = function() { outputTempo.innerHTML = this.value; }
+
+        // Show prediction result on Submit click
+        function showPredictionResult(msg) {
+            var T = document.getElementById("predictResult");
+            T.style.display = "block";
+            T.innerHTML = msg;
+        }
     </script>
 
 </body>
 </html>
 
 <!-- Toggle between tabs -->
-<script>
+<script type=text/javascript>
     function openTab(evt, tabName) {
         // Declare all variables
         var i, tabcontent, tablinks;

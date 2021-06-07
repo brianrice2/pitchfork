@@ -1,0 +1,121 @@
+clean:
+  fill_na_with_str:
+    iteration1:
+      colname: artist
+      fill_string: "NA"
+    iteration2:
+      colname: genre
+      fill_string: Missing
+  convert_str_to_datetime:
+    colname: reviewdate
+    format: "%B %d %Y"
+  approximate_missing_year:
+    fill_column: releaseyear
+    approximate_with: reviewdate
+  convert_datetime_to_date:
+    colname: reviewdate
+  fill_missing_manually:
+    colname: recordlabel
+    fill_with:
+      - "Fool's Gold"          # Run the Jewels
+      - "Vapor"                # 808s and Dark Grapes III
+      - "101 Distribution"     # Dedication 2
+      - "Jet Life"             # The Drive In Theatre
+      - "Espo"                 # Animals
+      - "Cinematic"            # 1999
+      - "Def Jam"              # Rich Forever
+      - "LM Dupli-Cation"      # Cervantine
+      - "Glory Boyz"           # Back From the Dead
+      - "Epic"                 # Drilluminati
+      - "Self-released"        # Community Service 2!
+      - "Cash Money"           # Sorry 4 the Wait
+      - "Grand Hustle"         # Fuck a Mixtape
+      - "Vice"                 # Blue Chips
+      - "Free Bandz"           # 56 Nights
+      - "Six Shooter Records"  # Retribution
+      - "Self-released"        # Acid Rap
+      - "Maybach"              # Dreamchasers
+      - "Self-released"        # White Mystery
+      - "Top Dawg"             # Cilvia Demo
+      - "Triple X"             # Winter Hill
+      - "1017"                 # 1017 Thug
+      - "Rostrum"              # Kush and Orange Juice
+      - "BasedWorld"           # God's Father
+      - "10.Deep"              # The Mixtape About Nothing
+      - "Self-released"         # Coloring Book
+  strip_whitespace:
+    colname: recordlabel
+  bucket_values_together:
+    iteration1:
+      colname: recordlabel
+      values:
+        - Maybach Music Group
+        - Maybach/Warner Bros.
+      replace_with: Maybach
+    iteration2:
+      colname: recordlabel
+      values:
+        - Self
+        - none
+      replace_with: Self-released
+model:
+  saved_model_path: s3://2021-msia423-rice-brian/models/gbt_pipeline.joblib
+  split_predictors_response:
+    target_col: score
+  split_train_val_test:
+    train_val_test_ratio: "6:2:2"
+    random_state: 3947
+  make_model:
+    learning_rate: 0.075
+    ccp_alpha: 0.001
+    random_state: 3947
+  make_preprocessor:
+    numeric_features:
+      - releaseyear
+      - danceability
+      - energy
+      - key
+      - loudness
+      - speechiness
+      - acousticness
+      - instrumentalness
+      - liveness
+      - valence
+      - tempo
+    categorical_features:
+      - genre
+    handle_unknown: ignore
+  validate_dataframe:
+    output_cols:
+      - artist
+      - album
+      - reviewauthor
+      - releaseyear
+      - reviewdate
+      - recordlabel
+      - genre
+      - danceability
+      - energy
+      - key
+      - loudness
+      - speechiness
+      - acousticness
+      - instrumentalness
+      - liveness
+      - valence
+      - tempo
+  append_predictions:
+    output_col: preds
+  get_feature_importances:
+    numeric_features:
+      - releaseyear
+      - danceability
+      - energy
+      - key
+      - loudness
+      - speechiness
+      - acousticness
+      - instrumentalness
+      - liveness
+      - valence
+      - tempo

@@ -2,11 +2,14 @@
 Build, fit, evaluate, and (de)serialize predictive models.
 """
 import logging
+import math
+from time import time
 
 import pandas as pd
 from numpy import NaN
 from sklearn.compose import ColumnTransformer
 from sklearn.ensemble import GradientBoostingRegressor
+from sklearn.metrics import max_error, mean_squared_error, median_absolute_error, r2_score
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
@@ -23,25 +26,36 @@ PREDICTION_COLUMNS = [
 ]
 
 
-def split_train_val_test(df, target_col, train_val_test_ratio, **kwargs):
+def split_predictors_response(df, target_col="score"):
+    """Separate predictor variables from response variable."""
+    features = df.drop(target_col, axis=1)
+    target = df[target_col]
+    logger.info(
+        "Split predictors and response variable. " +
+        "Shapes: features=%s, target=%s",
+        features.shape,
+        target.shape
+    )
+
+    return features, target
+
+
+def split_train_val_test(features, target, train_val_test_ratio, **kwargs):
     """
     Partition dataset into training, validation, and testing splits.
 
     Args:
-        df (:obj:`pandas.DataFrame`): DataFrame containing input features
-            and response variable
-        target_col (str): Name of column containing response variable
+
+        features (:obj:`pandas.DataFrame`): DataFrame of input features
+        target (array-like): Values of response variable to predict
         train_val_test_ratio (str): Relative proportion of data for each of
-            train, val, and test sets, in the form "X:Y:Z" (e.g., "6:2:2")
+            train, val, and test sets, in the form "X:Y:Z" (e.g., "6:2:2").
         **kwargs: Additional settings to pass on to `train_test_split()`
             (for example, random seed)
 
     Returns:
         (X_train, X_val, X_test, y_train, y_val, y_test), each as DataFrames
     """
-    features = df.drop(target_col, axis=1)
-    target = df[target_col]
-
     # Compute sizes and split according to ratio
     train_size, val_size, test_size = parse_ratio(train_val_test_ratio)
     X_train_val, X_test, y_train_val, y_test = train_test_split(
@@ -52,49 +66,54 @@ def split_train_val_test(df, target_col, train_val_test_ratio, **kwargs):
     )
 
     logger.info(
-        "Data split into train/test sets. " +
-        "Shapes: X_train=%s, X_val=%s, X_test=%s, y_train=%s, y_val=%s, y_test=%s",
-        (X_train.shape, ),
-        (X_val.shape, ),
-        (X_test.shape, ),
-        (y_train.shape, ),
-        (y_val.shape, ),
-        (y_test.shape, )
-
+        """Data split into train/test sets.
+        Shapes: X_train=%s, X_val=%s, X_test=%s, y_train=%s, y_val=%s, y_test=%s""",
+        X_train.shape,
+        X_val.shape,
+        X_test.shape,
+        y_train.shape,
+        y_val.shape,
+        y_test.shape
     )
 
     return X_train, X_val, X_test, y_train, y_val, y_test
 
 
 def parse_ratio(ratio):
-    """Convert a train-val-test ratio from X:Y:Z to list of proportions in [0, 1]."""
+    """Convert a train-val-test ratio from X:Y:Z to list of proportions in [0,1]."""
     sizes = [float(n) for n in ratio.split(":")]
     sizes = [sizes[0], 0., sizes[1]] if len(sizes) == 2 else sizes
     _sum = sum(sizes)
-    return list(size / _sum for size in sizes)
+    proportions = list(size / _sum for size in sizes)
+    logger.info("Successfuly parsed ratio %s to %s", ratio, "/".join(map(str, proportions)))
+    return proportions
 
 
-def train_pipeline(X_train, y_train):
+def train_pipeline(X_train, y_train, preprocessor, model):
     """
     Create and fit a preprocessing --> modeling pipeline.
 
     Args:
         X_train (:obj:`pandas.DataFrame`): Training features
         y_train (array-like): Training targets
+        preprocessor (obj:`sklearn.compose.ColumnTransformer`): ColumnTransformer
+            defining the processing to perform for input data
+        model (:obj:`sklearn.base.BaseEstimator`): An untrained `sklearn`
+            regression model
 
     Returns:
         A fitted :obj:`sklearn.pipeline.Pipeline`
     """
-    preprocessor = make_preprocessor()
-    model = make_model()
     pipe = Pipeline(steps=[
         ("preprocessor", preprocessor),
         ("predictor", model)
     ])
     logger.info("Pipeline created successfully. Beginning training.")
 
+    start_time = time()
     pipe.fit(X_train, y_train)
-    logger.info("Pipeline training complete")
+    logger.info("Pipeline training complete. Time taken: %0.4f seconds", time() - start_time)
+
     return pipe
 
 
@@ -104,7 +123,8 @@ def make_preprocessor(numeric_features, categorical_features, handle_unknown):
 
     Performs standard scaling for numeric features and one-hot encoding for categorical
     features. All features specified for this function are processed, and _only_ these
-    features are used when modeling.
+    features are used when modeling. In other words, this preprocessor determines the
+    exact input columns (and order) when training and performing inference.
 
     Args:
         numeric_features (list(str)): Names of numeric features to scale
@@ -141,7 +161,7 @@ def make_model(**kwargs):
 
 def get_feature_importances(trained_pipeline, numeric_features):
     """
-    Get feature importance measures. Only applicable with tree-based models.
+    Get feature importance measures from a trained model.
 
     Args:
         trained_pipeline (:obj:`sklearn.pipeline.Pipeline`): Fitted model pipeline
@@ -156,31 +176,43 @@ def get_feature_importances(trained_pipeline, numeric_features):
     return pd.Series(data=importances, index=features)
 
 
-def parse_dict_to_dataframe(form_dict, output_cols=PREDICTION_COLUMNS):
+def parse_dict_to_dataframe(form_dict):
     """
-    Parse a dictionary to `pandas.DataFrame`.
-
-    Uses keys as column names, and creates the columns that don't exist (filling
-    with NA). Reorders columns to match the original training data, per the
-    pipeline's expectation.
+    Parse a dictionary to `pandas.DataFrame` format.
 
     Flask forms supply data via POST requests in MultiDict format, but the
-    model pipeline requires an input DataFrame with exactly the same columns
-    as seen during training. The MultiDict can be converted to a flat dict
-    using its `to_dict(flat=True)` method.
+    model pipeline requires an input DataFrame.
 
     Args:
-        form_dict (dict): Flask form response as a flat
+        form_dict (dict): Flask form response as a flat dictionary
+
+    Returns:
+        :obj:`pandas.DataFrame` with keys as column names and values as the
+            associated values for each key
+    """
+    logger.info("Converting dictionary to pandas DataFrame")
+    df = pd.DataFrame([form_dict.values()], columns=form_dict.keys())
+
+    return df
+
+
+def validate_dataframe(df, output_cols=PREDICTION_COLUMNS):
+    """
+    Align a DataFrame with model pipeline's required order and names.
+
+    The model pipeline requires an input DataFrame with exactly the same
+    columns as seen during training, and in the same order.
+    Creates the columns that don't exist (filling with NA).
+
+    Args:
+        df (:obj:`pandas.DataFrame`): Input DataFrame to validate/align
         output_cols (list(str), optional): Required columns for output
             DataFrame. Defaults to those seen during training. If not
             provided (`None`), no adjustment to the DataFrame's columns is made.
 
     Returns:
-        :obj:`pandas.DataFrame`
+        Validated :obj:`pandas.DataFrame`
     """
-    logger.info("Converting dictionary to pandas DataFrame")
-    df = pd.DataFrame([form_dict.values()], columns=form_dict.keys())
-
     if output_cols:
         # Create columns if they don't exist already
         for colname in output_cols:
@@ -191,5 +223,61 @@ def parse_dict_to_dataframe(form_dict, output_cols=PREDICTION_COLUMNS):
         # Column order must match exactly
         logger.info("Reordering input columns")
         df = df[output_cols]
+
+    return df
+
+
+def evaluate_model(y_true, y_pred):
+    """
+    Evaluate performance against a variety of regression metrics.
+
+    Args:
+        y_true (array-like): True values
+        y_pred (array-like): Predicted values
+
+    Returns:
+        None (logs results).
+    """
+    logger.debug("Evaluating model performance")
+
+    mse = mean_squared_error(y_true, y_pred)
+    rmse = math.sqrt(mse)
+    mad = median_absolute_error(y_true, y_pred)
+    r_squared = r2_score(y_true, y_pred)
+    max_err = max_error(y_true, y_pred)
+
+    logger.info("MSE:\t\t%0.4f" % mse)
+    logger.info("RMSE:\t%0.4f" % rmse)
+    logger.info("MAD:\t\t%0.4f" % mad)
+    logger.info("R-squared:\t%0.4f" % r_squared)
+    logger.info("Max error:\t%0.4f" % max_err)
+
+
+def append_predictions(model, input_data, output_col="preds"):
+    """
+    Append predictions to an existing input DataFrame.
+
+    Args:
+        model (:obj:`sklearn.pipeline.Pipeline): Trained model pipeline
+        input_data (:obj:`pandas.DataFrame`): Input data to predict on
+        output_col (str, optional): Name of column to place predicted
+            values in. Defaults to "preds".
+
+    Returns:
+        array-like of predicted values
+    """
+    logger.debug("Input data has %s columns: %s", len(input_data.columns), ", ".join(input_data.columns))
+    logger.debug("Validating input before predicting")
+    df = validate_dataframe(input_data)
+
+    start_time = time()
+    preds = model.predict(df)
+    logger.info(
+        "Predictions made on input data. Time taken to predict: %0.4f seconds",
+        time() - start_time
+    )
+
+    df[output_col] = preds
+    logger.info("Predictions appended to original data")
 
     return df
