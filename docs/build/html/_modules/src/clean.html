@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" />
 
     <meta name="generator" content="sphinx-3.5.4, furo 2021.04.11.beta34"/>
-        <title>src.clean - pitchfork 0.2.1 documentation</title>
+        <title>src.clean - pitchfork 1.0.0 documentation</title>
       <link rel="stylesheet" href="../../_static/styles/furo.css?digest=59ab60ac09ea94ccfe6deddff6d715cce948a6fc">
     <link rel="stylesheet" href="../../_static/pygments.css">
     <link media="(prefers-color-scheme: dark)" rel="stylesheet" href="../../_static/pygments_dark.css">
@@ -86,7 +86,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">pitchfork 0.2.1 documentation</div></a>
+      <a href="../../index.html"><div class="brand">pitchfork 1.0.0 documentation</div></a>
     </div>
     <div class="header-right">
       <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
@@ -100,7 +100,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
   
   
-  <span class="sidebar-brand-text">pitchfork 0.2.1 documentation</span>
+  <span class="sidebar-brand-text">pitchfork 1.0.0 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html">
   <input class="sidebar-search" placeholder=Search name="q">
@@ -131,7 +131,10 @@
           <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
         </label>
         <h1>Source code for src.clean</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span></span><span class="sd">"""</span>
+<span class="sd">Clean the dataset before modeling.</span>
+<span class="sd">"""</span>
+<span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">from</span> <span class="nn">time</span> <span class="kn">import</span> <span class="n">time</span>
 
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
@@ -170,12 +173,12 @@
 <span class="p">)</span>
 
 
-<div class="viewcode-block" id="clean_dataset"><a class="viewcode-back" href="../../src.html#src.clean.clean_dataset">[docs]</a><span class="k">def</span> <span class="nf">clean_dataset</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
+<div class="viewcode-block" id="clean_dataset"><a class="viewcode-back" href="../../src.html#src.clean.clean_dataset">[docs]</a><span class="k">def</span> <span class="nf">clean_dataset</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
     <span class="sd">"""</span>
 <span class="sd">    Perform full data processing pipeline.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        df (:obj:`pandas.DataFrame`): Raw data</span>
+<span class="sd">        data (:obj:`pandas.DataFrame`): Raw data</span>
 <span class="sd">        config (dict): Config file as read in by PyYAML</span>
 
 <span class="sd">    Returns:</span>
@@ -184,30 +187,30 @@
     <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
 
     <span class="k">if</span> <span class="s2">"fill_na_with_str"</span> <span class="ow">in</span> <span class="n">config</span><span class="p">:</span>
-        <span class="n">df</span> <span class="o">=</span> <span class="n">fill_na_with_str</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="o">**</span><span class="n">config</span><span class="p">[</span><span class="s2">"fill_na_with_str"</span><span class="p">][</span><span class="s2">"iteration1"</span><span class="p">])</span>
-        <span class="n">df</span> <span class="o">=</span> <span class="n">fill_na_with_str</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="o">**</span><span class="n">config</span><span class="p">[</span><span class="s2">"fill_na_with_str"</span><span class="p">][</span><span class="s2">"iteration2"</span><span class="p">])</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">fill_na_with_str</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="o">**</span><span class="n">config</span><span class="p">[</span><span class="s2">"fill_na_with_str"</span><span class="p">][</span><span class="s2">"iteration1"</span><span class="p">])</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">fill_na_with_str</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="o">**</span><span class="n">config</span><span class="p">[</span><span class="s2">"fill_na_with_str"</span><span class="p">][</span><span class="s2">"iteration2"</span><span class="p">])</span>
 
     <span class="k">if</span> <span class="s2">"convert_str_to_datetime"</span> <span class="ow">in</span> <span class="n">config</span><span class="p">:</span>
-        <span class="n">df</span> <span class="o">=</span> <span class="n">convert_str_to_datetime</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="o">**</span><span class="n">config</span><span class="p">[</span><span class="s2">"convert_str_to_datetime"</span><span class="p">])</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">convert_str_to_datetime</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="o">**</span><span class="n">config</span><span class="p">[</span><span class="s2">"convert_str_to_datetime"</span><span class="p">])</span>
 
     <span class="k">if</span> <span class="s2">"approximate_missing_year"</span> <span class="ow">in</span> <span class="n">config</span><span class="p">:</span>
-        <span class="n">df</span> <span class="o">=</span> <span class="n">approximate_missing_year</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="o">**</span><span class="n">config</span><span class="p">[</span><span class="s2">"approximate_missing_year"</span><span class="p">])</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">approximate_missing_year</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="o">**</span><span class="n">config</span><span class="p">[</span><span class="s2">"approximate_missing_year"</span><span class="p">])</span>
 
     <span class="k">if</span> <span class="s2">"convert_datetime_to_date"</span> <span class="ow">in</span> <span class="n">config</span><span class="p">:</span>
-        <span class="n">df</span> <span class="o">=</span> <span class="n">convert_datetime_to_date</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="o">**</span><span class="n">config</span><span class="p">[</span><span class="s2">"convert_datetime_to_date"</span><span class="p">])</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">convert_datetime_to_date</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="o">**</span><span class="n">config</span><span class="p">[</span><span class="s2">"convert_datetime_to_date"</span><span class="p">])</span>
 
     <span class="k">if</span> <span class="s2">"fill_missing_manually"</span> <span class="ow">in</span> <span class="n">config</span><span class="p">:</span>
-        <span class="n">df</span> <span class="o">=</span> <span class="n">fill_missing_manually</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="o">**</span><span class="n">config</span><span class="p">[</span><span class="s2">"fill_missing_manually"</span><span class="p">])</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">fill_missing_manually</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="o">**</span><span class="n">config</span><span class="p">[</span><span class="s2">"fill_missing_manually"</span><span class="p">])</span>
 
     <span class="k">if</span> <span class="s2">"strip_whitespace"</span> <span class="ow">in</span> <span class="n">config</span><span class="p">:</span>
-        <span class="n">df</span> <span class="o">=</span> <span class="n">strip_whitespace</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="o">**</span><span class="n">config</span><span class="p">[</span><span class="s2">"strip_whitespace"</span><span class="p">])</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">strip_whitespace</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="o">**</span><span class="n">config</span><span class="p">[</span><span class="s2">"strip_whitespace"</span><span class="p">])</span>
 
     <span class="k">if</span> <span class="s2">"bucket_values_together"</span> <span class="ow">in</span> <span class="n">config</span><span class="p">:</span>
-        <span class="n">df</span> <span class="o">=</span> <span class="n">bucket_values_together</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="o">**</span><span class="n">config</span><span class="p">[</span><span class="s2">"bucket_values_together"</span><span class="p">][</span><span class="s2">"iteration1"</span><span class="p">])</span>
-        <span class="n">df</span> <span class="o">=</span> <span class="n">bucket_values_together</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="o">**</span><span class="n">config</span><span class="p">[</span><span class="s2">"bucket_values_together"</span><span class="p">][</span><span class="s2">"iteration2"</span><span class="p">])</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">bucket_values_together</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="o">**</span><span class="n">config</span><span class="p">[</span><span class="s2">"bucket_values_together"</span><span class="p">][</span><span class="s2">"iteration1"</span><span class="p">])</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">bucket_values_together</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="o">**</span><span class="n">config</span><span class="p">[</span><span class="s2">"bucket_values_together"</span><span class="p">][</span><span class="s2">"iteration2"</span><span class="p">])</span>
 
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Completed data cleaning process. Time taken: </span><span class="si">%0.4f</span><span class="s2">s"</span><span class="p">,</span> <span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">df</span></div>
+    <span class="k">return</span> <span class="n">data</span></div>
 
 
 <div class="viewcode-block" id="convert_nan_to_str"><a class="viewcode-back" href="../../src.html#src.clean.convert_nan_to_str">[docs]</a><span class="k">def</span> <span class="nf">convert_nan_to_str</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">colname</span><span class="o">=</span><span class="s2">"artist"</span><span class="p">):</span>
@@ -233,7 +236,7 @@
     <span class="k">return</span> <span class="n">df</span></div>
 
 
-<div class="viewcode-block" id="convert_str_to_datetime"><a class="viewcode-back" href="../../src.html#src.clean.convert_str_to_datetime">[docs]</a><span class="k">def</span> <span class="nf">convert_str_to_datetime</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">colname</span><span class="o">=</span><span class="s2">"reviewdate"</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">"%B </span><span class="si">%d</span><span class="s2"> %Y"</span><span class="p">):</span>
+<div class="viewcode-block" id="convert_str_to_datetime"><a class="viewcode-back" href="../../src.html#src.clean.convert_str_to_datetime">[docs]</a><span class="k">def</span> <span class="nf">convert_str_to_datetime</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">colname</span><span class="o">=</span><span class="s2">"reviewdate"</span><span class="p">,</span> <span class="n">datetime_format</span><span class="o">=</span><span class="s2">"%B </span><span class="si">%d</span><span class="s2"> %Y"</span><span class="p">):</span>
     <span class="sd">"""</span>
 <span class="sd">    Parse a string column to datetime format.</span>
 
@@ -241,8 +244,8 @@
 <span class="sd">        df (:obj:`pandas.DataFrame`): DataFrame to clean</span>
 <span class="sd">        colname (str, optional): Name of column to apply transformation to.</span>
 <span class="sd">            Defaults to "reviewdate".</span>
-<span class="sd">        format (str, optional): Datetime format of column. Defaults to "%B %d %Y".</span>
-<span class="sd">            For more info on these codes:</span>
+<span class="sd">        datetime_format (str, optional): Datetime format of column. Defaults to</span>
+<span class="sd">            "%B %d %Y". For more info on these codes:</span>
 <span class="sd">            https://docs.python.org/3/library/datetime.html#strftime-and-strptime-format-codes.</span>
 
 <span class="sd">    Returns:</span>
@@ -252,7 +255,7 @@
         <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">"</span><span class="si">%s</span><span class="s2"> not found in columns. Returning original data."</span><span class="p">,</span> <span class="n">colname</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">df</span>
 
-    <span class="n">df</span><span class="p">[</span><span class="n">colname</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">colname</span><span class="p">],</span> <span class="nb">format</span><span class="o">=</span><span class="nb">format</span><span class="p">)</span>
+    <span class="n">df</span><span class="p">[</span><span class="n">colname</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">colname</span><span class="p">],</span> <span class="nb">format</span><span class="o">=</span><span class="n">datetime_format</span><span class="p">)</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Converted column </span><span class="si">%s</span><span class="s2"> to datetime format"</span><span class="p">,</span> <span class="n">colname</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">df</span></div>
 
@@ -421,7 +424,7 @@
     <span class="n">df</span><span class="p">[</span><span class="n">colname</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">colname</span><span class="p">]</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="n">fill_string</span><span class="p">)</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Replaced missing values in </span><span class="si">%s</span><span class="s2"> with </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="n">colname</span><span class="p">,</span> <span class="n">fill_string</span><span class="p">)</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Number of rows affected: </span><span class="si">%d</span><span class="s2">"</span><span class="p">,</span> <span class="n">nrows_affected</span><span class="p">)</span>
-    
+
     <span class="k">return</span> <span class="n">df</span></div>
 </pre></div>
       </article>

@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" />
 
     <meta name="generator" content="sphinx-3.5.4, furo 2021.04.11.beta34"/>
-        <title>src.model - pitchfork 0.2.1 documentation</title>
+        <title>src.model - pitchfork 1.0.0 documentation</title>
       <link rel="stylesheet" href="../../_static/styles/furo.css?digest=59ab60ac09ea94ccfe6deddff6d715cce948a6fc">
     <link rel="stylesheet" href="../../_static/pygments.css">
     <link media="(prefers-color-scheme: dark)" rel="stylesheet" href="../../_static/pygments_dark.css">
@@ -86,7 +86,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">pitchfork 0.2.1 documentation</div></a>
+      <a href="../../index.html"><div class="brand">pitchfork 1.0.0 documentation</div></a>
     </div>
     <div class="header-right">
       <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
@@ -100,7 +100,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
   
   
-  <span class="sidebar-brand-text">pitchfork 0.2.1 documentation</span>
+  <span class="sidebar-brand-text">pitchfork 1.0.0 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html">
   <input class="sidebar-search" placeholder=Search name="q">
@@ -132,7 +132,7 @@
         </label>
         <h1>Source code for src.model</h1><div class="highlight"><pre>
 <span></span><span class="sd">"""</span>
-<span class="sd">Build, fit, evaluate, and (de)serialize predictive models.</span>
+<span class="sd">Build, fit, and evaluate predictive models.</span>
 <span class="sd">"""</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">math</span>
@@ -164,8 +164,8 @@
     <span class="n">features</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">target_col</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
     <span class="n">target</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">target_col</span><span class="p">]</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-        <span class="s2">"Split predictors and response variable. "</span> <span class="o">+</span>
-        <span class="s2">"Shapes: features=</span><span class="si">%s</span><span class="s2">, target=</span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span>
+        <span class="sd">"""Split predictors and response variable.</span>
+<span class="sd">        Shapes: features=%s, target=%s"""</span><span class="p">,</span>
         <span class="n">features</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span>
         <span class="n">target</span><span class="o">.</span><span class="n">shape</span>
     <span class="p">)</span>
@@ -303,7 +303,11 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        :obj:`pandas.Series` containing each feature and its importance</span>
 <span class="sd">    """</span>
-    <span class="n">features</span> <span class="o">=</span> <span class="n">numeric_features</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">trained_pipeline</span><span class="p">[</span><span class="s2">"preprocessor"</span><span class="p">]</span><span class="o">.</span><span class="n">transformers_</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">get_feature_names</span><span class="p">())</span>
+    <span class="n">categorical_features</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">trained_pipeline</span><span class="p">[</span><span class="s2">"preprocessor"</span><span class="p">]</span>
+        <span class="o">.</span><span class="n">transformers_</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+        <span class="o">.</span><span class="n">get_feature_names</span><span class="p">())</span>
+    <span class="n">features</span> <span class="o">=</span> <span class="n">numeric_features</span> <span class="o">+</span> <span class="n">categorical_features</span>
+
     <span class="n">importances</span> <span class="o">=</span> <span class="n">trained_pipeline</span><span class="p">[</span><span class="s2">"predictor"</span><span class="p">]</span><span class="o">.</span><span class="n">feature_importances_</span>
 
     <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">importances</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">features</span><span class="p">)</span></div>
@@ -379,11 +383,11 @@
     <span class="n">r_squared</span> <span class="o">=</span> <span class="n">r2_score</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)</span>
     <span class="n">max_err</span> <span class="o">=</span> <span class="n">max_error</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)</span>
 
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"MSE:</span><span class="se">\t\t</span><span class="si">%0.4f</span><span class="s2">"</span> <span class="o">%</span> <span class="n">mse</span><span class="p">)</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"RMSE:</span><span class="se">\t</span><span class="si">%0.4f</span><span class="s2">"</span> <span class="o">%</span> <span class="n">rmse</span><span class="p">)</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"MAD:</span><span class="se">\t\t</span><span class="si">%0.4f</span><span class="s2">"</span> <span class="o">%</span> <span class="n">mad</span><span class="p">)</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"R-squared:</span><span class="se">\t</span><span class="si">%0.4f</span><span class="s2">"</span> <span class="o">%</span> <span class="n">r_squared</span><span class="p">)</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Max error:</span><span class="se">\t</span><span class="si">%0.4f</span><span class="s2">"</span> <span class="o">%</span> <span class="n">max_err</span><span class="p">)</span></div>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"MSE:</span><span class="se">\t\t</span><span class="si">%0.4f</span><span class="s2">"</span><span class="p">,</span> <span class="n">mse</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"RMSE:</span><span class="se">\t</span><span class="si">%0.4f</span><span class="s2">"</span><span class="p">,</span> <span class="n">rmse</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"MAD:</span><span class="se">\t\t</span><span class="si">%0.4f</span><span class="s2">"</span><span class="p">,</span> <span class="n">mad</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"R-squared:</span><span class="se">\t</span><span class="si">%0.4f</span><span class="s2">"</span><span class="p">,</span> <span class="n">r_squared</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Max error:</span><span class="se">\t</span><span class="si">%0.4f</span><span class="s2">"</span><span class="p">,</span> <span class="n">max_err</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="append_predictions"><a class="viewcode-back" href="../../src.html#src.model.append_predictions">[docs]</a><span class="k">def</span> <span class="nf">append_predictions</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">input_data</span><span class="p">,</span> <span class="n">output_col</span><span class="o">=</span><span class="s2">"preds"</span><span class="p">):</span>
@@ -391,7 +395,7 @@
 <span class="sd">    Append predictions to an existing input DataFrame.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        model (:obj:`sklearn.pipeline.Pipeline): Trained model pipeline</span>
+<span class="sd">        model (:obj:`sklearn.pipeline.Pipeline`): Trained model pipeline</span>
 <span class="sd">        input_data (:obj:`pandas.DataFrame`): Input data to predict on</span>
 <span class="sd">        output_col (str, optional): Name of column to place predicted</span>
 <span class="sd">            values in. Defaults to "preds".</span>
@@ -399,7 +403,11 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        array-like of predicted values</span>
 <span class="sd">    """</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"Input data has </span><span class="si">%s</span><span class="s2"> columns: </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">input_data</span><span class="o">.</span><span class="n">columns</span><span class="p">),</span> <span class="s2">", "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">input_data</span><span class="o">.</span><span class="n">columns</span><span class="p">))</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+        <span class="s2">"Input data has </span><span class="si">%s</span><span class="s2"> columns: </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span>
+        <span class="nb">len</span><span class="p">(</span><span class="n">input_data</span><span class="o">.</span><span class="n">columns</span><span class="p">),</span>
+        <span class="s2">", "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">input_data</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
+    <span class="p">)</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"Validating input before predicting"</span><span class="p">)</span>
     <span class="n">df</span> <span class="o">=</span> <span class="n">validate_dataframe</span><span class="p">(</span><span class="n">input_data</span><span class="p">)</span>
 

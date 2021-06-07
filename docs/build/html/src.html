@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="prev" title="run module" href="run.html" />
 
     <meta name="generator" content="sphinx-3.5.4, furo 2021.04.11.beta34"/>
-        <title>src package - pitchfork 0.9 documentation</title>
+        <title>src package - pitchfork 1.0.0 documentation</title>
       <link rel="stylesheet" href="_static/styles/furo.css?digest=59ab60ac09ea94ccfe6deddff6d715cce948a6fc">
     <link rel="stylesheet" href="_static/pygments.css">
     <link media="(prefers-color-scheme: dark)" rel="stylesheet" href="_static/pygments_dark.css">
@@ -86,7 +86,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="index.html"><div class="brand">pitchfork 0.9 documentation</div></a>
+      <a href="index.html"><div class="brand">pitchfork 1.0.0 documentation</div></a>
     </div>
     <div class="header-right">
       <label class="toc-overlay-icon toc-header-icon" for="__toc">
@@ -100,7 +100,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
   
   
-  <span class="sidebar-brand-text">pitchfork 0.9 documentation</span>
+  <span class="sidebar-brand-text">pitchfork 1.0.0 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="search.html">
   <input class="sidebar-search" placeholder=Search name="q">
@@ -137,6 +137,7 @@
 </div>
 <div class="section" id="module-src.add_albums">
 <span id="src-add-albums-module"></span><h2>src.add_albums module<a class="headerlink" href="#module-src.add_albums" title="Permalink to this headline">¶</a></h2>
+<p>Create and manipulate a relational database for holding album data.</p>
 <dl class="py class">
 <dt id="src.add_albums.AlbumManager">
 <em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">src.add_albums.</span></code><code class="sig-name descname"><span class="pre">AlbumManager</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">engine_string</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/add_albums.html#AlbumManager"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.add_albums.AlbumManager" title="Permalink to this definition">¶</a></dt>
@@ -194,6 +195,9 @@
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – </p>
 </dd>
 </dl>
 </dd></dl>
@@ -293,6 +297,7 @@
 </div>
 <div class="section" id="module-src.clean">
 <span id="src-clean-module"></span><h2>src.clean module<a class="headerlink" href="#module-src.clean" title="Permalink to this headline">¶</a></h2>
+<p>Clean the dataset before modeling.</p>
 <dl class="py function">
 <dt id="src.clean.approximate_missing_year">
 <code class="sig-prename descclassname"><span class="pre">src.clean.</span></code><code class="sig-name descname"><span class="pre">approximate_missing_year</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fill_column</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'releaseyear'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">approximate_with</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'reviewdate'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/clean.html#approximate_missing_year"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.clean.approximate_missing_year" title="Permalink to this definition">¶</a></dt>
@@ -334,12 +339,12 @@
 </dd></dl>
 <dl class="py function">
 <dt id="src.clean.clean_dataset">
-<code class="sig-prename descclassname"><span class="pre">src.clean.</span></code><code class="sig-name descname"><span class="pre">clean_dataset</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/clean.html#clean_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.clean.clean_dataset" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">src.clean.</span></code><code class="sig-name descname"><span class="pre">clean_dataset</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/clean.html#clean_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.clean.clean_dataset" title="Permalink to this definition">¶</a></dt>
 <dd><p>Perform full data processing pipeline.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>df</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code>) – Raw data</p></li>
+<li><p><strong>data</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code>) – Raw data</p></li>
 <li><p><strong>config</strong> (<em>dict</em>) – Config file as read in by PyYAML</p></li>
 </ul>
 </dd>
@@ -384,7 +389,7 @@ Defaults to “artist”.</p></li>
 </dd></dl>
 <dl class="py function">
 <dt id="src.clean.convert_str_to_datetime">
-<code class="sig-prename descclassname"><span class="pre">src.clean.</span></code><code class="sig-name descname"><span class="pre">convert_str_to_datetime</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'reviewdate'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'%B</span> <span class="pre">%d</span> <span class="pre">%Y'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/clean.html#convert_str_to_datetime"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.clean.convert_str_to_datetime" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">src.clean.</span></code><code class="sig-name descname"><span class="pre">convert_str_to_datetime</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'reviewdate'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datetime_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'%B</span> <span class="pre">%d</span> <span class="pre">%Y'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/clean.html#convert_str_to_datetime"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.clean.convert_str_to_datetime" title="Permalink to this definition">¶</a></dt>
 <dd><p>Parse a string column to datetime format.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -392,8 +397,8 @@ Defaults to “artist”.</p></li>
 <li><p><strong>df</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code>) – DataFrame to clean</p></li>
 <li><p><strong>colname</strong> (<em>str</em><em>, </em><em>optional</em>) – Name of column to apply transformation to.
 Defaults to “reviewdate”.</p></li>
-<li><p><strong>format</strong> (<em>str</em><em>, </em><em>optional</em>) – Datetime format of column. Defaults to “%B %d %Y”.
-For more info on these codes:
+<li><p><strong>datetime_format</strong> (<em>str</em><em>, </em><em>optional</em>) – Datetime format of column. Defaults to
+“%B %d %Y”. For more info on these codes:
 <a class="reference external" href="https://docs.python.org/3/library/datetime.html#strftime-and-strptime-format-codes">https://docs.python.org/3/library/datetime.html#strftime-and-strptime-format-codes</a>.</p></li>
 </ul>
 </dd>
@@ -563,7 +568,7 @@ Defaults to “recordlabel”.</p></li>
 </div>
 <div class="section" id="module-src.model">
 <span id="src-model-module"></span><h2>src.model module<a class="headerlink" href="#module-src.model" title="Permalink to this headline">¶</a></h2>
-<p>Build, fit, evaluate, and (de)serialize predictive models.</p>
+<p>Build, fit, and evaluate predictive models.</p>
 <dl class="py function">
 <dt id="src.model.append_predictions">
 <code class="sig-prename descclassname"><span class="pre">src.model.</span></code><code class="sig-name descname"><span class="pre">append_predictions</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_col</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'preds'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/model.html#append_predictions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.model.append_predictions" title="Permalink to this definition">¶</a></dt>
@@ -571,7 +576,7 @@ Defaults to “recordlabel”.</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>(</strong> (<em>model</em>) – obj:<a href="#id1"><span class="problematic" id="id2">`</span></a>sklearn.pipeline.Pipeline): Trained model pipeline</p></li>
+<li><p><strong>model</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">sklearn.pipeline.Pipeline</span></code>) – Trained model pipeline</p></li>
 <li><p><strong>input_data</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code>) – Input data to predict on</p></li>
 <li><p><strong>output_col</strong> (<em>str</em><em>, </em><em>optional</em>) – Name of column to place predicted
 values in. Defaults to “preds”.</p></li>
@@ -742,6 +747,7 @@ provided (<cite>None</cite>), no adjustment to the DataFrame’s columns is made
 </div>
 <div class="section" id="module-src.serialize">
 <span id="src-serialize-module"></span><h2>src.serialize module<a class="headerlink" href="#module-src.serialize" title="Permalink to this headline">¶</a></h2>
+<p>Serialize and deserialize trained model pipelines.</p>
 <dl class="py function">
 <dt id="src.serialize.load_pipeline">
 <code class="sig-prename descclassname"><span class="pre">src.serialize.</span></code><code class="sig-name descname"><span class="pre">load_pipeline</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">load_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/serialize.html#load_pipeline"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.serialize.load_pipeline" title="Permalink to this definition">¶</a></dt>

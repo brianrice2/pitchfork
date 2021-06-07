@@ -262,7 +262,7 @@ def append_predictions(model, input_data, output_col="preds"):
     Append predictions to an existing input DataFrame.
 
     Args:
-        model (:obj:`sklearn.pipeline.Pipeline): Trained model pipeline
+        model (:obj:`sklearn.pipeline.Pipeline`): Trained model pipeline
         input_data (:obj:`pandas.DataFrame`): Input data to predict on
         output_col (str, optional): Name of column to place predicted
             values in. Defaults to "preds".
