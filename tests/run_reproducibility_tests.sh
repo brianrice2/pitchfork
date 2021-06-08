@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-PIPELINE_CONFIG="config/pipeline.yaml"
+PIPELINE_CONFIG="tests/reproducibility-config.yaml"
 REPR_ACTUAL_DIR="tests/reproducibility-actual"
 S3_BUCKET="s3://2021-msia423-rice-brian"
 
