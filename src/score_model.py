@@ -29,10 +29,10 @@ def get_predictions(trained_model, input_data):
 
     # Validate input and make predictions
     logger.debug("Validating input before predicting")
-    df = model.validate_dataframe(input_data)
+    data = model.validate_dataframe(input_data)
 
     start_time = time()
-    preds = trained_model.predict(df)
+    preds = trained_model.predict(data)
     logger.debug(
         "Predictions made on input data. Time taken to predict: %0.4f seconds",
         time() - start_time
@@ -54,12 +54,12 @@ def append_predictions(trained_model, input_data, output_col="preds"):
     Returns:
         Input `pandas.DataFrame` with predictions appended as a new column
     """
-    df = deepcopy(input_data)
+    data = deepcopy(input_data)
     predictions = get_predictions(trained_model, input_data)
 
     # Overwrites column named `output_col` if it exists already (in this case,
     # it may not actually be the last column). New columns always placed at end.
-    df[output_col] = predictions
+    data[output_col] = predictions
     logger.info("Predictions appended to original data")
 
-    return df
+    return data

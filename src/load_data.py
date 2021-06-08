@@ -96,10 +96,10 @@ def upload_to_s3_pandas(local_path, s3path, sep=","):
         None
     """
     # Assumes that input is already in a compatible format
-    df = pd.read_csv(local_path, sep=sep)
+    data = pd.read_csv(local_path, sep=sep)
 
     try:
-        df.to_csv(s3path, sep=sep, index=False)
+        data.to_csv(s3path, sep=sep, index=False)
     except botocore.exceptions.NoCredentialsError:
         logger.error(MISSING_AWS_CREDENTIALS_MSG)
         logger.error("Data not uploaded")
@@ -146,12 +146,12 @@ def download_from_s3_pandas(local_path, s3path, sep=","):
     """
     try:
         # Assumes that file is already in a compatible format
-        df = pd.read_csv(s3path, sep=sep)
+        data = pd.read_csv(s3path, sep=sep)
     except botocore.exceptions.NoCredentialsError:
         logger.error(MISSING_AWS_CREDENTIALS_MSG)
         logger.error("Data not downloaded")
     else:
-        df.to_csv(local_path, sep=sep, index=False)
+        data.to_csv(local_path, sep=sep, index=False)
         logger.info("Data downloaded from %s to %s", s3path, local_path)
 
 

@@ -25,10 +25,10 @@ PREDICTION_COLUMNS = [
 ]
 
 
-def split_predictors_response(df, target_col="score"):
+def split_predictors_response(data, target_col="score"):
     """Separate predictor variables from response variable."""
-    features = df.drop(target_col, axis=1)
-    target = df[target_col]
+    features = data.drop(target_col, axis=1)
+    target = data[target_col]
     logger.info(
         """Split predictors and response variable.
         Shapes: features=%s, target=%s""",
@@ -202,12 +202,12 @@ def parse_dict_to_dataframe(form_dict):
     # This structure is intuitive for a single record and scalar values,
     # but may behavior weird if, for example, lists or other multi-value
     # data structures are stored in a key's value
-    df = pd.DataFrame([form_dict.values()], columns=form_dict.keys())
+    data = pd.DataFrame([form_dict.values()], columns=form_dict.keys())
 
-    return df
+    return data
 
 
-def validate_dataframe(df, output_cols=PREDICTION_COLUMNS):
+def validate_dataframe(data, output_cols=PREDICTION_COLUMNS):
     """
     Align a DataFrame with model pipeline's required order and names.
 
@@ -216,7 +216,7 @@ def validate_dataframe(df, output_cols=PREDICTION_COLUMNS):
     Creates the columns that don't exist (filling with NA).
 
     Args:
-        df (:obj:`pandas.DataFrame`): Input DataFrame to validate/align
+        data (:obj:`pandas.DataFrame`): Input DataFrame to validate/align
         output_cols (list(str), optional): Required columns for output
             DataFrame. Defaults to those seen during training. If not
             provided (`None`), no adjustment to the DataFrame's columns is made.
@@ -227,12 +227,12 @@ def validate_dataframe(df, output_cols=PREDICTION_COLUMNS):
     if output_cols:
         # Create columns if they don't exist already
         for colname in output_cols:
-            if colname not in df.columns:
+            if colname not in data.columns:
                 logger.debug("Column %s not found. Creating and filling with NA.", colname)
-                df[colname] = NaN
+                data[colname] = NaN
 
         # Column order must match exactly
         logger.debug("Reordering input columns")
-        df = df[output_cols]
+        data = data[output_cols]
 
-    return df
+    return data

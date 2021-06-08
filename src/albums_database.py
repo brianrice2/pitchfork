@@ -219,7 +219,8 @@ class AlbumManager:
             try:
                 _, s3path = load_data.parse_s3(file_or_path)
             except ValueError:
-                raise  # The s3 path is invalid. Bubble up to user.
+                logger.error("Error: Invalid S3 path!")
+                raise  # Error is due to user input, so bubble up to user
 
             local_path = s3path
             if not os.path.exists(local_path):
