@@ -59,7 +59,6 @@ clean:
         - none
       replace_with: Self-released
 model:
-  saved_model_path: s3://2021-msia423-rice-brian/models/gbt_pipeline.joblib
   split_predictors_response:
     target_col: score
   split_train_val_test:
