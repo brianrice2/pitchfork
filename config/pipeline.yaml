@@ -103,13 +103,16 @@ model:
       - liveness
       - valence
       - tempo
+score_model:
   append_predictions:
     output_col: preds
+evaluate_performance:
   evaluate_model:
     y_true_colname: score
     y_pred_colname: preds
-  get_feature_importances:
-    numeric_features:
+post_process:
+  get_feature_importance:
+    numeric_features:  # Same as `make_preprocessor` above
       - releaseyear
       - danceability
       - energy

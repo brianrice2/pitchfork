@@ -15,11 +15,20 @@ import pandas as pd
 import yaml
 
 from config.flaskconfig import SQLALCHEMY_DATABASE_URI
-from src import clean, load_data, model, serialize
-from src.add_albums import AlbumManager, create_db, delete_db
+from src import (
+    albums_database,
+    clean,
+    evaluate_performance,
+    load_data,
+    model,
+    post_process,
+    score_model,
+    serialize
+)
 
 # Using `pkg_resources` here allows Sphinx to find the logging config
-# file when building the documentation HTML pages
+# file when building the documentation HTML pages (only necessary for
+# root-level scripts)
 logging.config.fileConfig(
     pkg_resources.resource_filename(__name__, "config/logging/local.conf"),
     disable_existing_loggers=False
@@ -201,11 +210,11 @@ if __name__ == "__main__":
     args = parser.parse_args()
     sp_used = args.subparser_name
     if sp_used == "create_db":
-        create_db(args.engine_string)
+        albums_database.create_db(args.engine_string)
     elif sp_used == "delete_db":
-        delete_db(args.engine_string)
+        albums_database.delete_db(args.engine_string)
     elif sp_used == "ingest_album":
-        album_manager = AlbumManager(engine_string=args.engine_string)
+        album_manager = albums_database.AlbumManager(engine_string=args.engine_string)
         album_manager.add_album(
             args.album,
             args.artist,
@@ -228,7 +237,7 @@ if __name__ == "__main__":
         )
         album_manager.close()
     elif sp_used == "ingest_dataset":
-        album_manager = AlbumManager(engine_string=args.engine_string)
+        album_manager = albums_database.AlbumManager(engine_string=args.engine_string)
         album_manager.ingest_dataset(args.file)
         album_manager.close()
     elif sp_used == "load_data":
@@ -278,22 +287,25 @@ if __name__ == "__main__":
             model_pipeline = model.make_model(**config["model"]["make_model"])
             fitted_pipeline = model.train_pipeline(X, y, preprocessor, model_pipeline)
 
-            feature_importances = model.get_feature_importances(
+            feature_importances = post_process.get_feature_importance(
                 fitted_pipeline,
-                **config["model"]["get_feature_importances"]
+                **config["post_process"]["get_feature_importance"]
             )
             logger.info("Feature importances from training:\n%s", feature_importances)
         elif args.step == "predict":
             logger.debug("Beginning `predict`")
             fitted_pipeline = serialize.load_pipeline(args.model)
-            output = model.append_predictions(
+            output = score_model.append_predictions(
                 fitted_pipeline,
                 input_data,
-                **config["model"]["append_predictions"]
+                **config["score_model"]["append_predictions"]
             )
         elif args.step == "evaluate":
             logger.debug("Beginning `evaluate`")
-            output = model.evaluate_model(input_data, **config["model"]["evaluate_model"])
+            output = evaluate_performance.evaluate_model(
+                input_data,
+                **config["evaluate_performance"]["evaluate_model"]
+            )
 
         # Only the output from `model` cannot be saved in CSV format (returns a TMO)
         if args.output:

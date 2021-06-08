@@ -2,15 +2,13 @@
 Build, fit, and evaluate predictive models.
 """
 import logging
-import math
-from copy import deepcopy
 from time import time
 
 import pandas as pd
 from numpy import NaN
 from sklearn.compose import ColumnTransformer
 from sklearn.ensemble import GradientBoostingRegressor
-from sklearn.metrics import max_error, mean_squared_error, median_absolute_error, r2_score
+
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
@@ -160,27 +158,6 @@ def make_model(**kwargs):
     return model
 
 
-def get_feature_importances(trained_pipeline, numeric_features):
-    """
-    Get feature importance measures from a trained model.
-
-    Args:
-        trained_pipeline (:obj:`sklearn.pipeline.Pipeline`): Fitted model pipeline
-        numeric_features (list(str)): Names of numeric features
-
-    Returns:
-        :obj:`pandas.Series` containing each feature and its importance
-    """
-    categorical_features = list(trained_pipeline["preprocessor"]
-        .transformers_[1][1]
-        .get_feature_names())
-    features = numeric_features + categorical_features
-
-    importances = trained_pipeline["predictor"].feature_importances_
-
-    return pd.Series(data=importances, index=features)
-
-
 def parse_dict_to_dataframe(form_dict):
     """
     Parse a dictionary to `pandas.DataFrame` format.
@@ -228,109 +205,5 @@ def validate_dataframe(df, output_cols=PREDICTION_COLUMNS):
         # Column order must match exactly
         logger.debug("Reordering input columns")
         df = df[output_cols]
-
-    return df
-
-
-def evaluate_model(results_data, y_true_colname, y_pred_colname):
-    """
-    Evaluate performance against a variety of regression metrics.
-
-    Args:
-        results_data (:obj:`pandas.DataFrame`): DataFrame containing (at least)
-            predicted and ground truth values
-        y_true_colname (str): Name of column containing true values
-        y_pred_colname (str): Name of column containing predicted values
-
-    Returns:
-        :obj:`pandas.DataFrame` containing metrics and values
-    """
-    logger.debug("Evaluating model performance")
-
-    y_true = results_data[y_true_colname]
-    y_pred = results_data[y_pred_colname]
-
-    # Calculate metrics
-    mse = mean_squared_error(y_true, y_pred)
-    rmse = math.sqrt(mse)
-    mad = median_absolute_error(y_true, y_pred)
-    r_squared = r2_score(y_true, y_pred)
-    max_err = max_error(y_true, y_pred)
-
-    # Log results
-    logger.info("""
-        MSE:\t\t%0.4f
-        RMSE:\t\t%0.4f
-        MAD:\t\t%0.4f
-        R-squared:\t%0.4f
-        Max error:\t%0.4f""",
-        mse, rmse, mad, r_squared, max_err
-    )
-
-    # Create a DataFrame of metrics and results
-    metric_data = pd.DataFrame(
-        data=[
-            ["mse", mse],
-            ["rmse", rmse],
-            ["mad", mad],
-            ["r_squared", r_squared],
-            ["max_err", max_err]
-        ],
-        columns=["metric", "performance"]
-    )
-    return metric_data
-
-
-def get_predictions(model, input_data):
-    """
-    Get predicted values for input data.
-
-    Args:
-        model (:obj:`sklearn.pipeline.Pipeline`): Trained model pipeline
-        input_data (:obj:`pandas.DataFrame`): Input data to predict on
-
-    Returns:
-        array-like of predicted values
-    """
-    logger.debug(
-        "Input data has %s columns: %s",
-        len(input_data.columns),
-        ", ".join(input_data.columns)
-    )
-
-    # Validate input and make predictions
-    logger.debug("Validating input before predicting")
-    df = validate_dataframe(input_data)
-
-    start_time = time()
-    preds = model.predict(df)
-    logger.debug(
-        "Predictions made on input data. Time taken to predict: %0.4f seconds",
-        time() - start_time
-    )
-
-    return preds
-
-
-def append_predictions(model, input_data, output_col="preds"):
-    """
-    Append predictions to an existing input DataFrame.
-
-    Args:
-        model (:obj:`sklearn.pipeline.Pipeline`): Trained model pipeline
-        input_data (:obj:`pandas.DataFrame`): Input data to predict on
-        output_col (str, optional): Name of column to place predicted
-            values in. Defaults to "preds".
-
-    Returns:
-        Input `pandas.DataFrame` with predictions appended as a new column
-    """
-    df = deepcopy(input_data)
-    predictions = get_predictions(model, input_data)
-
-    # Overwrites column named `output_col` if it exists already (in this case,
-    # it may not actually be the last column). New columns always placed at end.
-    df[output_col] = predictions
-    logger.info("Predictions appended to original data")
 
     return df

@@ -13,7 +13,7 @@ from flask import Flask, redirect, render_template, request, send_from_directory
 
 from src import model
 from src import serialize
-from src.add_albums import Albums, AlbumManager
+from src.albums_database import Albums, AlbumManager
 
 # Initialize the Flask application
 # By default, Flask looks for templates/ and static/ in the current
@@ -22,8 +22,9 @@ app = Flask(__name__, template_folder="app/templates", static_folder="app/static
 app.config.from_pyfile("config/flaskconfig.py")
 
 # Define LOGGING_CONFIG in flask_config.py as the path to config file
-# Using `pkg_resources` here allows Sphinx to find the config files
-# when building the documentation HTML pages
+# Using `pkg_resources` here allows Sphinx to find the logging config
+# file when building the documentation HTML pages (only necessary for
+# root-level scripts)
 logging.config.fileConfig(
     pkg_resources.resource_filename(__name__, app.config["LOGGING_CONFIG"]),
     disable_existing_loggers=False

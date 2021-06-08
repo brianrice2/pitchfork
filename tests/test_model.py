@@ -85,6 +85,9 @@ def test_split_train_val_test_bad_ratio(dummy_df):
         model.split_train_val_test(features, target, "0:0:10")
 
     with pytest.raises(ValueError):
+        model.split_train_val_test(features, target, "5:0:5")
+
+    with pytest.raises(ValueError):
         model.split_train_val_test(features, target, "6:4")
 
 
