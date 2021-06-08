@@ -268,7 +268,9 @@ docker run \
 
 ### 4. Running the web application
 
-Sure, creating and moving data into databases is fun, but eventually we should run the web app. To do so, first ensure the database is not already created or populated and run the command below most closely suited to your situation. You may either use a local SQLite database (default behavior if `MYSQL_*` or `SQLALCHEMY_DATABASE_URI` are not set) or a MySQL database running on RDS.
+Sure, creating and moving data into databases is fun, but eventually we should run the web app. To do so, first ensure the database is not already created or populated and run the command below most closely suited to your situation (it will still work, but the dataset will be added again, resulting in duplicate entries). You may either use a local SQLite database (default behavior if `MYSQL_*` or `SQLALCHEMY_DATABASE_URI` are not set) or a MySQL database running on RDS.
+
+Please note that, apart from the database specification, S3 credentials are required for the app to function as it pulls raw data and other artifacts during the pipeline.
 
 #### Custom connection string
 
@@ -300,9 +302,9 @@ docker run \
 
 ### 5. Deployment to AWS ECS
 
-If you wish to deploy the application onto ECS, view the [manifest](/copilot/app/manifest.yml) for example configuration. As personal information like usernames and passwords is required, you'll need to use secrets to securely store this information.
+If you wish to deploy the application onto ECS, view the [copilot manifest](/copilot/app/manifest.yml) for example configuration. As personal information like a username and password is required, you'll need to use secrets to securely store this information ([tutorial here](https://ecsworkshop.com/secrets/05-inject-params/)).
 
-Deploying to ECS is outside the scope and responsibility of this application, but the manifest is included for reference purposes to give an idea of what's required and how to configure some of the available options. 
+Your deployment to ECS is outside the scope and responsibility of this application, but the manifest is included for reference purposes to give an idea of what's required and how to configure some of the available options. 
 
 ### 0. Testing
 
@@ -311,4 +313,24 @@ To run the unit tests in a Docker container, run:
 ```bash
 docker build -f Dockerfile_python -t pitchfork-setup .
 docker run pitchfork-setup -m pytest -v
+```
+
+In addition, there are some reproducibility tests to ensure that the pipeline is executed in a reproducible manner. There are a few ways to execute these tests:
+
+Locally:
+
+```bash
+./tests/run_reproducibility_tests.sh
+```
+
+or
+
+```bash
+make reproducibility_tests
+```
+
+With Docker (using the same `Dockerfile_python` as the unit tests):
+
+```bash
+docker run pitchfork-setup -m tests/run_reproducibility_tests.py
 ```
