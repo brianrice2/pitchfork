@@ -256,21 +256,21 @@ docker run \
 
 Once the raw data has been downloaded to S3 through the process above, we can train a model to predict the Pitchfork rating for an album! `Dockerfile_pipeline` defines an image to load the existing raw data file, clean and process it, and train a gradient-boosted tree model. The cleaned dataset as well as trained model object are saved to S3 for future use.
 
-Artifacts produced during this process are by design stored in S3, but if you prefer to retain the local copies you may mount a local volume, for example through `docker run -v "$(pwd)"/:/app/ ...`. Since artifacts are produced in both `data/` and `models/`, you must mount the root directory and not only the `data/` folder as was done earlier.
+Artifacts produced during this process are stored locally and in S3. If you prefer to retain the local copies you may mount a local volume, for example through `docker run -v "$(pwd)"/:/app/ ...`. Since artifacts are produced in both `data/` and `models/`, you must mount the root directory and not only the `data/` folder as was done earlier.
 
 ```bash
 docker build -f Dockerfile_pipeline -t pitchfork-pipeline .
 docker run \
   -e AWS_ACCESS_KEY_ID \
   -e AWS_SECRET_ACCESS_KEY \
-  pitchfork-pipeline
+  pitchfork-pipeline make pipeline
 ```
 
 ### 4. Running the web application
 
 Sure, creating and moving data into databases is fun, but eventually we should run the web app. To do so, first ensure the database is not already created or populated and run the command below most closely suited to your situation (it will still work, but the dataset will be added again, resulting in duplicate entries). You may either use a local SQLite database (default behavior if `MYSQL_*` or `SQLALCHEMY_DATABASE_URI` are not set) or a MySQL database running on RDS.
 
-Please note that, apart from the database specification, S3 credentials are required for the app to function as it pulls raw data and other artifacts during the pipeline.
+Please note that, apart from the database specification, S3 credentials are required for the app to function as it pulls raw data and other artifacts during the pipeline from S3.
 
 #### Custom connection string
 

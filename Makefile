@@ -26,43 +26,56 @@ help:
 	@echo '       Add albums from file into database'
 	@echo 'make app'
 	@echo '       Clean data, model, create and populate DB, and run web app'
-	@echo 'make cleanup'
-	@echo '       Remove artifacts from data/ and models/'
 	@echo 'make reproducibility_tests'
 	@echo '       Run additional reproducibility tests'
+	@echo 'make cleanup'
+	@echo '       Remove artifacts from data/, models/, and tests/reproducibility-actual/'
 
-# Dependencies don't work well with S3, so these generally are not included
-raw_data:
+
+# Dependencies don't work with S3, so these aren't included and directives are phony
+data/raw/P4KxSpotify.csv:
 	python3 run.py load_data \
 		--local_path "${RAW_DATA_PATH}" \
 		--s3path "${S3_BUCKET}/${RAW_DATA_PATH}"
+		# A local copy is saved by default as an intermediate step before uploading to S3
 
-cleaned_data:
+raw_data: data/raw/P4KxSpotify.csv
+
+data/cleaned/P4KxSpotify.csv: data/raw/P4KxSpotify.csv config/pipeline.yaml
 	python3 run.py pipeline clean \
 		--input "${S3_BUCKET}/${RAW_DATA_PATH}" \
 		--config "${PIPELINE_CONFIG}" \
-		--output "${S3_BUCKET}/${CLEANED_DATA_PATH}"
+		--output "${S3_BUCKET}/${CLEANED_DATA_PATH}" \
+		--local_copy "${CLEANED_DATA_PATH}"
 
-model:
+cleaned_data: data/cleaned/P4KxSpotify.csv
+
+models/gbt_pipeline.joblib: data/cleaned/P4KxSpotify.csv config/pipeline.yaml
 	python3 run.py pipeline model \
 		--input "${S3_BUCKET}/${CLEANED_DATA_PATH}" \
 		--config "${PIPELINE_CONFIG}" \
 		--output "${S3_BUCKET}/${SAVED_MODEL_PATH}"
+		# A local copy is saved by default due to the joblib file format
+
+model: models/gbt_pipeline.joblib config/pipeline.yaml
 
 pipeline: cleaned_data model
 
-predictions:
+models/cleaned_with_predictions.csv: models/gbt_pipeline.joblib data/cleaned/P4KxSpotify.csv config/pipeline.yaml
 	python3 run.py pipeline predict \
 		--input "${S3_BUCKET}/${CLEANED_DATA_PATH}" \
 		--model "${S3_BUCKET}/${SAVED_MODEL_PATH}" \
 		--config "${PIPELINE_CONFIG}" \
-		--output "${S3_BUCKET}/${SAVED_MODEL_PREDICTIONS_PATH}"
+		--output "${S3_BUCKET}/${SAVED_MODEL_PREDICTIONS_PATH}" \
+		--local_copy "${SAVED_MODEL_PREDICTIONS_PATH}"
+
+predictions: models/cleaned_with_predictions.csv
 
 empty_database:
 	python3 run.py create_db
 
-ingest_dataset:
-	python3 run.py ingest_dataset -f "${S3_BUCKET}/${CLEANED_DATA_PATH}"
+ingest_dataset: data/cleaned/P4KxSpotify.csv
+	python3 run.py ingest_dataset -f "${CLEANED_DATA_PATH}"
 
 app: empty_database pipeline ingest_dataset
 	python3 app.py --model "${S3_BUCKET}/${SAVED_MODEL_PATH}"

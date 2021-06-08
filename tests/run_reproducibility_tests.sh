@@ -31,6 +31,6 @@ python3 run.py pipeline predict \
   --output "${SAVED_MODEL_PREDICTIONS_PATH}"
 
 # Exactly compare pipeline artifacts
-echo 'Comparing actual and expected results:'
+echo 'Comparing actual and expected results. Differences found:'
 diff -ru -x '.gitkeep' tests/reproducibility-actual/ tests/reproducibility-expected/
 echo 'All done!'

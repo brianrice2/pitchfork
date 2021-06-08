@@ -191,6 +191,11 @@ if __name__ == "__main__":
         default=None,
         help="Path to load trained model object. Only used for `predict`."
     )
+    sp_pipeline.add_argument(
+        "--local_copy",
+        default=None,
+        help="Local path to save output CSV (optional, default=None)"
+    )
 
     # Interpret and execute commands
     args = parser.parse_args()
@@ -277,6 +282,15 @@ if __name__ == "__main__":
                 **config["model"]["get_feature_importances"]
             )
             logger.info("Feature importances from training:\n%s", feature_importances)
+        elif args.step == "evaluate":
+            logger.debug("Beginning `evaluate`")
+            fitted_pipeline = serialize.load_pipeline(args.model)
+
+            # Split into train and test for evaluation
+            X, y = model.split_predictors_response(
+                input_data,
+                **config["model"]["split_predictors_response"]
+            )
         elif args.step == "predict":
             logger.debug("Beginning `predict`")
             fitted_pipeline = serialize.load_pipeline(args.model)
@@ -291,6 +305,10 @@ if __name__ == "__main__":
             if args.step != "model":
                 output.to_csv(args.output, index=False)
                 logger.info("Output saved to %s", args.output)
+
+                if args.local_copy:
+                    output.to_csv(args.local_copy, index=False)
+                    logger.info("Local copy saved to %s", args.local_copy)
             else:
                 serialize.save_pipeline(fitted_pipeline, args.output)
                 logger.info("Trained model object saved to %s", args.output)
