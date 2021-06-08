@@ -7,6 +7,8 @@ CLEANED_DATA_PATH="data/cleaned/P4KxSpotify.csv"
 SAVED_MODEL_PATH="models/gbt_pipeline.joblib"
 SAVED_MODEL_PREDICTIONS_PATH="models/cleaned_with_predictions.csv"
 
+
+# Dependencies don't work well with S3, so these generally are not included
 raw_data:
 	python3 run.py load_data \
 		--local_path "${RAW_DATA_PATH}" \
@@ -40,7 +42,7 @@ ingest_dataset:
 	python3 run.py ingest_dataset -f "${S3_BUCKET}/${CLEANED_DATA_PATH}"
 
 app: empty_database pipeline ingest_dataset
-	python3 app.py
+	python3 app.py --model "${S3_BUCKET}/${SAVED_MODEL_PATH}"
 
 cleanup:
 	find ./data -mindepth 1 ! -name '.gitkeep' -delete

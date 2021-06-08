@@ -1,6 +1,7 @@
 """
 Run the single-page web application with Flask.
 """
+import argparse
 import logging.config
 import os
 import traceback
@@ -36,10 +37,6 @@ with open(pkg_resources.resource_filename(__name__, app.config["PIPELINE_CONFIG"
 
 # Initialize the database session
 album_manager = AlbumManager(app)
-
-# Preload the trained model for extremely fast inference
-pipeline = serialize.load_pipeline(pipeline_config["model"]["saved_model_path"])
-logger.info("Loaded saved model pipeline")
 
 
 @app.route("/")
@@ -86,7 +83,7 @@ def search():
         albums = albums.filter(Albums.artist.like("%" + artist_name + "%"))
     if score:
         albums = albums.filter(Albums.score == score)
-    logger.info(
+    logger.debug(
         "Found %s albums like \"%s\" by \"%s\" (max displayed: %s)",
         len(albums.all()),
         album_name,
@@ -149,7 +146,7 @@ def predict_rating():
         # Clip predicted score between 0 and 10
         score = min(10, max(0, score))
 
-        logger.info(
+        logger.debug(
             """Prediction: %0.2f.
             Total time for loading model, parsing input, and performing inference: %0.4fs""",
             score,
@@ -173,4 +170,12 @@ def favicon():
 
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description="Run web application")
+    parser.add_argument("--model", "-m", help="Path to trained model object")
+    args = parser.parse_args()
+
+    # Preload the trained model for extremely fast inference
+    pipeline = serialize.load_pipeline(args.model)
+    logger.debug("Loaded saved model pipeline")
+
     app.run(debug=app.config["DEBUG"], port=app.config["PORT"], host=app.config["HOST"])
