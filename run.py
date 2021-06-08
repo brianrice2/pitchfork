@@ -169,7 +169,7 @@ if __name__ == "__main__":
     sp_pipeline.add_argument(
         "step",
         help="Which step to run",
-        choices=["clean", "model", "predict"]
+        choices=["clean", "model", "predict", "evaluate"]
     )
     sp_pipeline.add_argument(
         "--input", "-i",
@@ -266,6 +266,7 @@ if __name__ == "__main__":
             output = clean.clean_dataset(input_data, config["clean"])
         elif args.step == "model":
             logger.debug("Beginning `model`")
+
             # Train on full dataset for deployment
             X, y = model.split_predictors_response(
                 input_data,
@@ -282,15 +283,6 @@ if __name__ == "__main__":
                 **config["model"]["get_feature_importances"]
             )
             logger.info("Feature importances from training:\n%s", feature_importances)
-        elif args.step == "evaluate":
-            logger.debug("Beginning `evaluate`")
-            fitted_pipeline = serialize.load_pipeline(args.model)
-
-            # Split into train and test for evaluation
-            X, y = model.split_predictors_response(
-                input_data,
-                **config["model"]["split_predictors_response"]
-            )
         elif args.step == "predict":
             logger.debug("Beginning `predict`")
             fitted_pipeline = serialize.load_pipeline(args.model)
@@ -299,6 +291,9 @@ if __name__ == "__main__":
                 input_data,
                 **config["model"]["append_predictions"]
             )
+        elif args.step == "evaluate":
+            logger.debug("Beginning `evaluate`")
+            output = model.evaluate_model(input_data, **config["model"]["evaluate_model"])
 
         # Only the output from `model` cannot be saved in CSV format (returns a TMO)
         if args.output:

@@ -105,6 +105,9 @@ model:
       - tempo
   append_predictions:
     output_col: preds
+  evaluate_model:
+    y_true_colname: score
+    y_pred_colname: preds
   get_feature_importances:
     numeric_features:
       - releaseyear

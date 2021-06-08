@@ -3,6 +3,7 @@ Build, fit, and evaluate predictive models.
 """
 import logging
 import math
+from copy import deepcopy
 from time import time
 
 import pandas as pd
@@ -231,19 +232,23 @@ def validate_dataframe(df, output_cols=PREDICTION_COLUMNS):
     return df
 
 
-def evaluate_model(y_true, y_pred, save_metrics_path):
+def evaluate_model(results_data, y_true_colname, y_pred_colname):
     """
     Evaluate performance against a variety of regression metrics.
 
     Args:
-        y_true (array-like): True values
-        y_pred (array-like): Predicted values
-        save_metrics_path (str): Location to save performance metrics
+        results_data (:obj:`pandas.DataFrame`): DataFrame containing (at least)
+            predicted and ground truth values
+        y_true_colname (str): Name of column containing true values
+        y_pred_colname (str): Name of column containing predicted values
 
     Returns:
-        None (logs and saves results).
+        :obj:`pandas.DataFrame` containing metrics and values
     """
     logger.debug("Evaluating model performance")
+
+    y_true = results_data[y_true_colname]
+    y_pred = results_data[y_pred_colname]
 
     # Calculate metrics
     mse = mean_squared_error(y_true, y_pred)
@@ -255,31 +260,34 @@ def evaluate_model(y_true, y_pred, save_metrics_path):
     # Log results
     logger.info("""
         MSE:\t\t%0.4f
-        RMSE:\t%0.4f
+        RMSE:\t\t%0.4f
         MAD:\t\t%0.4f
         R-squared:\t%0.4f
         Max error:\t%0.4f""",
         mse, rmse, mad, r_squared, max_err
     )
 
-    # Also save a copy of metrics to disk
+    # Create a DataFrame of metrics and results
     metric_data = pd.DataFrame(
-        data=[mse, rmse, mad, r_squared, max_err],
-        index=["mse", "rmse", "mad", "r_squared", "max_err"],
-        columns=["performance"]
+        data=[
+            ["mse", mse],
+            ["rmse", rmse],
+            ["mad", mad],
+            ["r_squared", r_squared],
+            ["max_err", max_err]
+        ],
+        columns=["metric", "performance"]
     )
-    metric_data.to_csv(save_metrics_path)
+    return metric_data
 
 
-def append_predictions(model, input_data, output_col="preds"):
+def get_predictions(model, input_data):
     """
-    Append predictions to an existing input DataFrame.
+    Get predicted values for input data.
 
     Args:
         model (:obj:`sklearn.pipeline.Pipeline`): Trained model pipeline
         input_data (:obj:`pandas.DataFrame`): Input data to predict on
-        output_col (str, optional): Name of column to place predicted
-            values in. Defaults to "preds".
 
     Returns:
         array-like of predicted values
@@ -301,10 +309,28 @@ def append_predictions(model, input_data, output_col="preds"):
         time() - start_time
     )
 
-    # Store results in original DataFrame -- new columns always placed at end
+    return preds
+
+
+def append_predictions(model, input_data, output_col="preds"):
+    """
+    Append predictions to an existing input DataFrame.
+
+    Args:
+        model (:obj:`sklearn.pipeline.Pipeline`): Trained model pipeline
+        input_data (:obj:`pandas.DataFrame`): Input data to predict on
+        output_col (str, optional): Name of column to place predicted
+            values in. Defaults to "preds".
+
+    Returns:
+        Input `pandas.DataFrame` with predictions appended as a new column
+    """
+    df = deepcopy(input_data)
+    predictions = get_predictions(model, input_data)
+
     # Overwrites column named `output_col` if it exists already (in this case,
-    # it may not actually be the last column)
-    df[output_col] = preds
+    # it may not actually be the last column). New columns always placed at end.
+    df[output_col] = predictions
     logger.info("Predictions appended to original data")
 
     return df

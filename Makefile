@@ -6,6 +6,7 @@ RAW_DATA_PATH="data/raw/P4KxSpotify.csv"
 CLEANED_DATA_PATH="data/cleaned/P4KxSpotify.csv"
 SAVED_MODEL_PATH="models/gbt_pipeline.joblib"
 SAVED_MODEL_PREDICTIONS_PATH="models/cleaned_with_predictions.csv"
+SAVED_MODEL_PERFORMANCE_PATH="models/performance_report.csv"
 
 
 .DEFAULT: help
@@ -36,8 +37,7 @@ help:
 data/raw/P4KxSpotify.csv:
 	python3 run.py load_data \
 		--local_path "${RAW_DATA_PATH}" \
-		--s3path "${S3_BUCKET}/${RAW_DATA_PATH}"
-		# A local copy is saved by default as an intermediate step before uploading to S3
+		--s3path "${S3_BUCKET}/${RAW_DATA_PATH}" # A local copy is saved by default as an intermediate step before uploading to S3
 
 raw_data: data/raw/P4KxSpotify.csv
 
@@ -54,8 +54,7 @@ models/gbt_pipeline.joblib: data/cleaned/P4KxSpotify.csv config/pipeline.yaml
 	python3 run.py pipeline model \
 		--input "${S3_BUCKET}/${CLEANED_DATA_PATH}" \
 		--config "${PIPELINE_CONFIG}" \
-		--output "${S3_BUCKET}/${SAVED_MODEL_PATH}"
-		# A local copy is saved by default due to the joblib file format
+		--output "${S3_BUCKET}/${SAVED_MODEL_PATH}" # A local copy is saved by default due to the joblib file format
 
 model: models/gbt_pipeline.joblib config/pipeline.yaml
 
@@ -70,6 +69,15 @@ models/cleaned_with_predictions.csv: models/gbt_pipeline.joblib data/cleaned/P4K
 		--local_copy "${SAVED_MODEL_PREDICTIONS_PATH}"
 
 predictions: models/cleaned_with_predictions.csv
+
+models/performance_report.csv: models/cleaned_with_predictions.csv
+	python3 run.py pipeline evaluate \
+		--input "${S3_BUCKET}/${SAVED_MODEL_PREDICTIONS_PATH}" \
+		--config "${PIPELINE_CONFIG}" \
+		--output "${S3_BUCKET}/${SAVED_MODEL_PERFORMANCE_PATH}" \
+		--local_copy "${SAVED_MODEL_PERFORMANCE_PATH}"
+
+evaluate: models/performance_report.csv
 
 empty_database:
 	python3 run.py create_db
