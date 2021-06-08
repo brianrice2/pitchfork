@@ -5,7 +5,7 @@ S3_BUCKET="s3://2021-msia423-rice-brian"
 RAW_DATA_PATH="data/raw/P4KxSpotify.csv"
 CLEANED_DATA_PATH="data/cleaned/P4KxSpotify.csv"
 SAVED_MODEL_PATH="models/gbt_pipeline.joblib"
-SAVED_MODEL_PREDICTIONS_PATH="models/cleaned_with_predictions.csv"
+SAVED_MODEL_PREDICTIONS_PATH="models/predictions.csv"
 SAVED_MODEL_PERFORMANCE_PATH="models/performance_report.csv"
 
 
@@ -60,7 +60,7 @@ model: models/gbt_pipeline.joblib config/pipeline.yaml
 
 pipeline: cleaned_data model
 
-models/cleaned_with_predictions.csv: models/gbt_pipeline.joblib data/cleaned/P4KxSpotify.csv config/pipeline.yaml
+models/predictions.csv: models/gbt_pipeline.joblib data/cleaned/P4KxSpotify.csv config/pipeline.yaml
 	python3 run.py pipeline predict \
 		--input "${S3_BUCKET}/${CLEANED_DATA_PATH}" \
 		--model "${S3_BUCKET}/${SAVED_MODEL_PATH}" \
@@ -68,9 +68,9 @@ models/cleaned_with_predictions.csv: models/gbt_pipeline.joblib data/cleaned/P4K
 		--output "${S3_BUCKET}/${SAVED_MODEL_PREDICTIONS_PATH}" \
 		--local_copy "${SAVED_MODEL_PREDICTIONS_PATH}"
 
-predictions: models/cleaned_with_predictions.csv
+predictions: models/predictions.csv
 
-models/performance_report.csv: models/cleaned_with_predictions.csv
+models/performance_report.csv: models/predictions.csv
 	python3 run.py pipeline evaluate \
 		--input "${S3_BUCKET}/${SAVED_MODEL_PREDICTIONS_PATH}" \
 		--config "${PIPELINE_CONFIG}" \
