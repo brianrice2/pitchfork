@@ -1,4 +1,4 @@
-.PHONY: raw_data cleaned_data model pipeline predictions empty_database ingest_dataset app cleanup
+.PHONY: help raw_data cleaned_data model pipeline predictions empty_database ingest_dataset app reproducibility_tests cleanup
 
 PIPELINE_CONFIG="config/pipeline.yaml"
 S3_BUCKET="s3://2021-msia423-rice-brian"
@@ -7,6 +7,29 @@ CLEANED_DATA_PATH="data/cleaned/P4KxSpotify.csv"
 SAVED_MODEL_PATH="models/gbt_pipeline.joblib"
 SAVED_MODEL_PREDICTIONS_PATH="models/cleaned_with_predictions.csv"
 
+
+.DEFAULT: help
+help:
+	@echo 'make raw_data'
+	@echo '       Acquire raw data'
+	@echo 'make cleaned_data'
+	@echo '       Clean data for modeling'
+	@echo 'make model'
+	@echo '       Train a model pipeline'
+	@echo 'make pipeline'
+	@echo '       Clean data and train a model'
+	@echo 'make predictions'
+	@echo '       Make predictions on an input dataset'
+	@echo 'make empty_database'
+	@echo '       Create an empty MySQL/SQLite database'
+	@echo 'make ingest_dataset'
+	@echo '       Add albums from file into database'
+	@echo 'make app'
+	@echo '       Clean data, model, create and populate DB, and run web app'
+	@echo 'make cleanup'
+	@echo '       Remove artifacts from data/ and models/'
+	@echo 'make reproducibility_tests'
+	@echo '       Run additional reproducibility tests'
 
 # Dependencies don't work well with S3, so these generally are not included
 raw_data:
@@ -44,7 +67,11 @@ ingest_dataset:
 app: empty_database pipeline ingest_dataset
 	python3 app.py --model "${S3_BUCKET}/${SAVED_MODEL_PATH}"
 
+reproducibility_tests:
+	./tests/run_reproducibility_tests.sh
+
 cleanup:
 	find ./data -mindepth 1 ! -name '.gitkeep' -delete
 	find ./models -mindepth 1 ! -name '.gitkeep' -delete
-	@echo 'Cleaned up artifacts in data/ and models/'
+	find ./tests/reproducibility-actual -mindepth 1 ! -name '.gitkeep' -delete
+	@echo 'Cleaned up artifacts in data/, models/, and tests/reproducibility-actual/'
