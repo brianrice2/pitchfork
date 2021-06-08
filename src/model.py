@@ -56,7 +56,7 @@ def split_train_val_test(features, target, train_val_test_ratio, **kwargs):
         (X_train, X_val, X_test, y_train, y_val, y_test), each as DataFrames
     """
     # Compute sizes and split according to ratio
-    train_size, val_size, test_size = parse_ratio(train_val_test_ratio)
+    train_size, val_size, test_size = _parse_ratio(train_val_test_ratio)
     X_train_val, X_test, y_train_val, y_test = train_test_split(
         features, target, test_size=test_size, **kwargs
     )
@@ -78,7 +78,7 @@ def split_train_val_test(features, target, train_val_test_ratio, **kwargs):
     return X_train, X_val, X_test, y_train, y_val, y_test
 
 
-def parse_ratio(ratio):
+def _parse_ratio(ratio):
     """Convert a train-val-test ratio from X:Y:Z to list of proportions in [0,1]."""
     sizes = [float(n) for n in ratio.split(":")]
     sizes = [sizes[0], 0., sizes[1]] if len(sizes) == 2 else sizes

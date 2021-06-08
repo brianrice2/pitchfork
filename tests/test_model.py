@@ -14,14 +14,14 @@ def dummy_df():
 def test_parse_ratio():
     """Parses ratio as expected."""
     ratio = "6:2:2"
-    sizes = model.parse_ratio(ratio)
+    sizes = model._parse_ratio(ratio)
     assert sizes == [0.6, 0.2, 0.2]
 
 
 def test_parse_ratio_missing_component():
     """Ratio only provides two components."""
     ratio = "6:4"
-    sizes = model.parse_ratio(ratio)
+    sizes = model._parse_ratio(ratio)
     assert sizes == [0.6, 0., 0.4]
 
 
@@ -29,7 +29,7 @@ def test_parse_ratio_invalid_ratio():
     """Ratio uses incorrect separator."""
     ratio = "6;2;2"
     with pytest.raises(ValueError):
-        model.parse_ratio(ratio)
+        model._parse_ratio(ratio)
 
 
 def test_split_predictors_response(dummy_df):
