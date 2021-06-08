@@ -53,29 +53,46 @@ def split_train_val_test(features, target, train_val_test_ratio, **kwargs):
             (for example, random seed)
 
     Returns:
-        (X_train, X_val, X_test, y_train, y_val, y_test), each as DataFrames
+        (X_train, X_val, X_test, y_train, y_val, y_test), each as DataFrames.
+            X_val and y_val are omitted if the desired ratio does not specify
+            the size of a validation set.
     """
     # Compute sizes and split according to ratio
     train_size, val_size, test_size = _parse_ratio(train_val_test_ratio)
     X_train_val, X_test, y_train_val, y_test = train_test_split(
         features, target, test_size=test_size, **kwargs
     )
-    X_train, X_val, y_train, y_val = train_test_split(
-        X_train_val, y_train_val, test_size=(val_size / (val_size + train_size)), **kwargs
-    )
 
+    # If no validation set is provided, additional splitting will throw an error
+    if val_size > 0:
+        X_train, X_val, y_train, y_val = train_test_split(
+            X_train_val, y_train_val, test_size=(val_size / (val_size + train_size)), **kwargs
+        )
+        logger.debug(
+            """Data split into train/test sets.
+            Shapes: X_train=%s, X_val=%s, X_test=%s, y_train=%s, y_val=%s, y_test=%s""",
+            X_train.shape,
+            X_val.shape,
+            X_test.shape,
+            y_train.shape,
+            y_val.shape,
+            y_test.shape
+        )
+
+        return X_train, X_val, X_test, y_train, y_val, y_test
+
+    # Otherwise just return train and test sets
+    X_train, y_train = X_train_val, y_train_val
     logger.debug(
         """Data split into train/test sets.
-        Shapes: X_train=%s, X_val=%s, X_test=%s, y_train=%s, y_val=%s, y_test=%s""",
+        Shapes: X_train=%s, X_test=%s, y_train=%s, y_test=%s""",
         X_train.shape,
-        X_val.shape,
         X_test.shape,
         y_train.shape,
-        y_val.shape,
         y_test.shape
     )
 
-    return X_train, X_val, X_test, y_train, y_val, y_test
+    return X_train, X_test, y_train, y_test
 
 
 def _parse_ratio(ratio):

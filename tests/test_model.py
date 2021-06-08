@@ -70,6 +70,28 @@ def test_split_train_val_test(dummy_df):
     assert y_test.shape == (20, )
 
 
+def test_split_train_val_test_no_validation(dummy_df):
+    """Splits into train/test (no val) with dimensions as expected."""
+    target = dummy_df["target"]
+    features = dummy_df.drop("target", axis=1)
+
+    # Ratio specifies all three numbers
+    X_train, X_test, y_train, y_test = model.split_train_val_test(features, target, "3:0:1")
+
+    assert X_train.shape == (75, 1)
+    assert X_test.shape == (25, 1)
+    assert y_train.shape == (75,)
+    assert y_test.shape == (25,)
+
+    # Ratio provides only two numbers
+    X_train, X_test, y_train, y_test = model.split_train_val_test(features, target, "3:1")
+
+    assert X_train.shape == (75, 1)
+    assert X_test.shape == (25, 1)
+    assert y_train.shape == (75, )
+    assert y_test.shape == (25, )
+
+
 def test_split_train_val_test_bad_ratio(dummy_df):
     """Ratio results in an empty train, validation, or test set."""
     target = dummy_df["target"]
@@ -83,12 +105,6 @@ def test_split_train_val_test_bad_ratio(dummy_df):
 
     with pytest.raises(ValueError):
         model.split_train_val_test(features, target, "0:0:10")
-
-    with pytest.raises(ValueError):
-        model.split_train_val_test(features, target, "5:0:5")
-
-    with pytest.raises(ValueError):
-        model.split_train_val_test(features, target, "6:4")
 
 
 def test_parse_dict_to_dataframe():
@@ -107,6 +123,7 @@ def test_parse_dict_to_dataframe_empty_dict():
     """An empty dict yields an empty DataFrame."""
     data_dict = dict()
     actual_df = model.parse_dict_to_dataframe(data_dict)
+
     # An empty `pandas.DataFrame` still has one index entry
     expected_df = pd.DataFrame(index=[0])
 
