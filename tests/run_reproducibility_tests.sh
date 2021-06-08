@@ -7,7 +7,8 @@ S3_BUCKET="s3://2021-msia423-rice-brian"
 RAW_DATA_PATH="${REPR_ACTUAL_DIR}/raw_data.csv"
 CLEANED_DATA_PATH="${REPR_ACTUAL_DIR}/cleaned_data.csv"
 SAVED_MODEL_PATH="${REPR_ACTUAL_DIR}/trained_model.joblib"
-SAVED_MODEL_PREDICTIONS_PATH="${REPR_ACTUAL_DIR}/cleaned_with_predictions.csv"
+SAVED_MODEL_PREDICTIONS_PATH="${REPR_ACTUAL_DIR}/predictions.csv"
+SAVED_MODEL_PERFORMANCE_PATH="${REPR_ACTUAL_DIR}/performance_report.csv"
 
 
 # Assume that raw data already exists in S3 (it may be expensive to acquire)
@@ -29,6 +30,12 @@ python3 run.py pipeline predict \
   --model "${SAVED_MODEL_PATH}" \
   --config "${PIPELINE_CONFIG}" \
   --output "${SAVED_MODEL_PREDICTIONS_PATH}"
+
+# Calculate evaluation metrics
+python3 run.py pipeline evaluate \
+  --input "${SAVED_MODEL_PREDICTIONS_PATH}" \
+  --config "${PIPELINE_CONFIG}" \
+  --output "${SAVED_MODEL_PERFORMANCE_PATH}"
 
 # Exactly compare pipeline artifacts
 echo 'Comparing actual and expected results. Differences found:'
