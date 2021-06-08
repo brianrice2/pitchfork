@@ -256,20 +256,20 @@ if __name__ == "__main__":
         # This loads the full YAML language, but avoids arbitrary code execution.
         with open(args.config, "r") as config_file:
             config = yaml.load(config_file, Loader=yaml.FullLoader)
-        logger.info("Configuration file loaded from %s", args.config)
+        logger.debug("Configuration file loaded from %s", args.config)
 
         if args.input:
-            input = pd.read_csv(args.input)
-            logger.info("Input df loaded from %s", args.input)
+            input_data = pd.read_csv(args.input)
+            logger.debug("Input df loaded from %s", args.input)
 
         if args.step == "clean":
             logger.debug("Beginning `clean`")
-            output = clean.clean_dataset(input, config["clean"])
+            output = clean.clean_dataset(input_data, config["clean"])
         elif args.step == "model":
             logger.debug("Beginning `model`")
             # Train on full dataset for deployment
             X, y = model.split_predictors_response(
-                input,
+                input_data,
                 **config["model"]["split_predictors_response"]
             )
 

@@ -65,7 +65,7 @@ def split_train_val_test(features, target, train_val_test_ratio, **kwargs):
         X_train_val, y_train_val, test_size=(val_size / (val_size + train_size)), **kwargs
     )
 
-    logger.info(
+    logger.debug(
         """Data split into train/test sets.
         Shapes: X_train=%s, X_val=%s, X_test=%s, y_train=%s, y_val=%s, y_test=%s""",
         X_train.shape,
@@ -85,7 +85,7 @@ def parse_ratio(ratio):
     sizes = [sizes[0], 0., sizes[1]] if len(sizes) == 2 else sizes
     _sum = sum(sizes)
     proportions = list(size / _sum for size in sizes)
-    logger.info("Successfuly parsed ratio %s to %s", ratio, "/".join(map(str, proportions)))
+    logger.debug("Successfuly parsed ratio %s to %s", ratio, "/".join(map(str, proportions)))
     return proportions
 
 
@@ -194,7 +194,7 @@ def parse_dict_to_dataframe(form_dict):
         :obj:`pandas.DataFrame` with keys as column names and values as the
             associated values for each key
     """
-    logger.info("Converting dictionary to pandas DataFrame")
+    logger.debug("Converting dictionary to pandas DataFrame")
     df = pd.DataFrame([form_dict.values()], columns=form_dict.keys())
 
     return df
@@ -221,11 +221,11 @@ def validate_dataframe(df, output_cols=PREDICTION_COLUMNS):
         # Create columns if they don't exist already
         for colname in output_cols:
             if colname not in df.columns:
-                logger.info("Column %s not found. Creating and filling with NA.", colname)
+                logger.debug("Column %s not found. Creating and filling with NA.", colname)
                 df[colname] = NaN
 
         # Column order must match exactly
-        logger.info("Reordering input columns")
+        logger.debug("Reordering input columns")
         df = df[output_cols]
 
     return df
@@ -250,11 +250,14 @@ def evaluate_model(y_true, y_pred):
     r_squared = r2_score(y_true, y_pred)
     max_err = max_error(y_true, y_pred)
 
-    logger.info("MSE:\t\t%0.4f", mse)
-    logger.info("RMSE:\t%0.4f", rmse)
-    logger.info("MAD:\t\t%0.4f", mad)
-    logger.info("R-squared:\t%0.4f", r_squared)
-    logger.info("Max error:\t%0.4f", max_err)
+    logger.info("""
+        MSE:\t\t%0.4f
+        RMSE:\t%0.4f
+        MAD:\t\t%0.4f
+        R-squared:\t%0.4f
+        Max error:\t%0.4f""",
+        mse, rmse, mad, r_squared, max_err
+    )
 
 
 def append_predictions(model, input_data, output_col="preds"):
@@ -280,7 +283,7 @@ def append_predictions(model, input_data, output_col="preds"):
 
     start_time = time()
     preds = model.predict(df)
-    logger.info(
+    logger.debug(
         "Predictions made on input data. Time taken to predict: %0.4f seconds",
         time() - start_time
     )

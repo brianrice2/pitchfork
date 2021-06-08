@@ -220,25 +220,29 @@ class AlbumManager:
             local_path = s3path
             if not os.path.exists(local_path):
                 load_data.download_file_from_s3(local_path=local_path, s3path=file_or_path)
-                logger.info("Downloaded a copy of the file to %s", local_path)
+                logger.debug("Downloaded a copy of the file to %s", local_path)
             else:
-                logger.info("Using existing local copy of dataset at %s", local_path)
+                logger.debug("Using existing local copy of dataset at %s", local_path)
         else:
             local_path = file_or_path
 
         start_time = time()
         albums = []
-        with open(local_path, "r", encoding="utf-8") as file:
-            reader = csv.DictReader(file)
-            for row in reader:
-                try:
-                    # Convert reviewdate field to datetime
-                    row["reviewdate"] = datetime.strptime(row["reviewdate"], "%B %d %Y").date()
-                except ValueError:
-                    # Actual date string doesn't match the given format
-                    # (likely has been parsed before during cleaning and is now in ISO format)
-                    row["reviewdate"] = datetime.strptime(row["reviewdate"], "%Y-%m-%d").date()
-                albums.append(Albums(**row))
+        try:
+            with open(local_path, "r", encoding="utf-8") as file:
+                reader = csv.DictReader(file)
+                for row in reader:
+                    try:
+                        # Convert reviewdate field to datetime
+                        row["reviewdate"] = datetime.strptime(row["reviewdate"], "%B %d %Y").date()
+                    except ValueError:
+                        # Actual date string doesn't match the given format
+                        # (likely has been parsed before during cleaning and is now in ISO format)
+                        row["reviewdate"] = datetime.strptime(row["reviewdate"], "%Y-%m-%d").date()
+                    albums.append(Albums(**row))
+        except FileNotFoundError:
+            logger.error("Could not find file %s to ingest", local_path)
+            raise
 
         try:
             session.add_all(albums)

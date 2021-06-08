@@ -29,7 +29,7 @@ def save_pipeline(pipeline, save_path):
         _, s3path = load_data.parse_s3(save_path)
         local_path = s3path
         joblib.dump(pipeline, local_path)
-        logger.info("Saved a copy of the model to %s", local_path)
+        logger.debug("Saved a copy of the model to %s", local_path)
         load_data.upload_file_to_s3(local_path=local_path, s3path=save_path)
     else:
         joblib.dump(pipeline, save_path)
@@ -55,9 +55,9 @@ def load_pipeline(load_path):
         local_path = s3path
         if not os.path.exists(local_path):
             load_data.download_file_from_s3(local_path=local_path, s3path=load_path)
-            logger.info("Downloaded a copy of the model to %s", local_path)
+            logger.debug("Downloaded a copy of the model to %s", local_path)
         else:
-            logger.info("Using existing local copy of model at %s", local_path)
+            logger.debug("Using existing local copy of model at %s", local_path)
         pipeline = joblib.load(local_path)
     else:
         pipeline = joblib.load(load_path)

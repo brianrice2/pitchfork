@@ -98,8 +98,8 @@ def convert_nan_to_str(df, colname="artist"):
 
     nrows_affected = len(df.loc[pd.isna(df[colname])].index)
     df[colname] = df[colname].where(df[colname].notna(), other="NA")
-    logger.info("Replaced missing values in %s with \"NA\"", colname)
-    logger.info("Number of rows affected: %d", nrows_affected)
+    logger.debug("Replaced missing values in %s with \"NA\"", colname)
+    logger.debug("Number of rows affected: %d", nrows_affected)
     return df
 
 
@@ -123,7 +123,7 @@ def convert_str_to_datetime(df, colname="reviewdate", datetime_format="%B %d %Y"
         return df
 
     df[colname] = pd.to_datetime(df[colname], format=datetime_format)
-    logger.info("Converted column %s to datetime format", colname)
+    logger.debug("Converted column %s to datetime format", colname)
     return df
 
 
@@ -144,7 +144,7 @@ def convert_datetime_to_date(df, colname="reviewdate"):
         return df
 
     df[colname] = df[colname].dt.date
-    logger.info("Converted column %s to date format", colname)
+    logger.debug("Converted column %s to date format", colname)
     return df
 
 
@@ -171,8 +171,8 @@ def approximate_missing_year(df, fill_column="releaseyear", approximate_with="re
     nrows_affected = len(df.loc[pd.isna(df[fill_column])].index)
     df.loc[pd.isna(df[fill_column]), fill_column] = \
         df[pd.isna(df[fill_column])].loc[:, approximate_with].dt.year
-    logger.info("Filled missing values in %s with year from %s", fill_column, approximate_with)
-    logger.info("Number of rows affected: %d", nrows_affected)
+    logger.debug("Filled missing values in %s with year from %s", fill_column, approximate_with)
+    logger.debug("Number of rows affected: %d", nrows_affected)
     return df
 
 
@@ -196,7 +196,7 @@ def fill_missing_manually(df, colname="recordlabel", fill_with=FILL_MISSING_RECO
 
     fill_missing = pd.Series(data=fill_with, index=df[pd.isna(df[colname])].index)
     df.loc[pd.isna(df[colname]), colname] = fill_missing
-    logger.info(
+    logger.debug(
         "Manually filled in missing values for %d missing rows in column %s",
         len(fill_missing.index),
         colname
@@ -222,7 +222,7 @@ def strip_whitespace(df, colname="recordlabel"):
         return df
 
     df[colname] = df[colname].apply(str.strip)
-    logger.info("Trimmed extra whitespace in column %s", colname)
+    logger.debug("Trimmed extra whitespace in column %s", colname)
     return df
 
 
@@ -258,13 +258,13 @@ def bucket_values_together(df, colname, values, replace_with):
         nrows_affected += len(df.loc[df[colname] == value, colname].index)
         df.loc[df[colname] == value, colname] = replace_with
 
-    logger.info(
+    logger.debug(
         "Replaced values (%s) with %s in column %s",
         ", ".join(map(str, values)),
         replace_with,
         colname
     )
-    logger.info("Number of rows affected: %d", nrows_affected)
+    logger.debug("Number of rows affected: %d", nrows_affected)
 
     return df
 
@@ -289,7 +289,7 @@ def fill_na_with_str(df, colname="genre", fill_string="Missing"):
 
     nrows_affected = len(df.loc[pd.isna(df[colname])].index)
     df[colname] = df[colname].fillna(fill_string)
-    logger.info("Replaced missing values in %s with %s", colname, fill_string)
-    logger.info("Number of rows affected: %d", nrows_affected)
+    logger.debug("Replaced missing values in %s with %s", colname, fill_string)
+    logger.debug("Number of rows affected: %d", nrows_affected)
 
     return df
