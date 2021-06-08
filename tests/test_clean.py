@@ -1,3 +1,6 @@
+"""
+Test clean.py module.
+"""
 import datetime
 from copy import deepcopy
 
@@ -32,11 +35,13 @@ RAW_DATA_DATETIME = [
 
 @pytest.fixture()
 def dummy_df():
+    """Example data for reuse with tests."""
     return pd.DataFrame(data=RAW_DATA, columns=COLUMNS)
 
 
 @pytest.fixture
 def dummy_df_datetime():
+    """Example data with `reviewdate` in datetime format."""
     return pd.DataFrame(data=RAW_DATA_DATETIME, columns=COLUMNS)
 
 
@@ -119,6 +124,7 @@ def test_convert_datetime_to_date_invalid_column_type(dummy_df_datetime):
 
 
 def test_approximate_missing_year(dummy_df_datetime):
+    """Use a datetime column to fill in the year of another column."""
     actual = clean.approximate_missing_year(
         dummy_df_datetime,
         fill_column="releaseyear",
@@ -242,6 +248,7 @@ def test_strip_whitespace_invalid_column_type(dummy_df, dummy_df_datetime):
 
 
 def test_bucket_values_together(dummy_df):
+    """Replace a few album names with one corrected value."""
     actual = clean.bucket_values_together(
         dummy_df,
         colname="album",

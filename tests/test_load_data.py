@@ -1,3 +1,6 @@
+"""
+Test load_data.py module.
+"""
 import pytest
 
 from src import load_data

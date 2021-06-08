@@ -1,3 +1,6 @@
+"""
+Test model.py module.
+"""
 import numpy as np
 import pandas as pd
 import pytest
@@ -7,6 +10,7 @@ from src import model
 
 @pytest.fixture
 def dummy_df():
+    """Example data to test modeling utility functions"""
     dummy_df = pd.DataFrame(data={"col1": list(range(100)), "target": list(range(100))})
     return dummy_df
 
@@ -60,7 +64,10 @@ def test_split_train_val_test(dummy_df):
     """Splits into train/val/test with dimensions as expected."""
     target = dummy_df["target"]
     features = dummy_df.drop("target", axis=1)
-    X_train, X_val, X_test, y_train, y_val, y_test = model.split_train_val_test(features, target, "6:2:2")
+    splits = model.split_train_val_test(features, target, "6:2:2")
+    assert len(splits) == 6  # Features and response for each of train/val/test
+
+    X_train, X_val, X_test, y_train, y_val, y_test = splits
 
     assert X_train.shape == (60, 1)
     assert X_val.shape == (20, 1)
