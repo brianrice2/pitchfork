@@ -231,25 +231,28 @@ def validate_dataframe(df, output_cols=PREDICTION_COLUMNS):
     return df
 
 
-def evaluate_model(y_true, y_pred):
+def evaluate_model(y_true, y_pred, save_metrics_path):
     """
     Evaluate performance against a variety of regression metrics.
 
     Args:
         y_true (array-like): True values
         y_pred (array-like): Predicted values
+        save_metrics_path (str): Location to save performance metrics
 
     Returns:
-        None (logs results).
+        None (logs and saves results).
     """
     logger.debug("Evaluating model performance")
 
+    # Calculate metrics
     mse = mean_squared_error(y_true, y_pred)
     rmse = math.sqrt(mse)
     mad = median_absolute_error(y_true, y_pred)
     r_squared = r2_score(y_true, y_pred)
     max_err = max_error(y_true, y_pred)
 
+    # Log results
     logger.info("""
         MSE:\t\t%0.4f
         RMSE:\t%0.4f
@@ -258,6 +261,14 @@ def evaluate_model(y_true, y_pred):
         Max error:\t%0.4f""",
         mse, rmse, mad, r_squared, max_err
     )
+
+    # Also save a copy of metrics to disk
+    metric_data = pd.DataFrame(
+        data=[mse, rmse, mad, r_squared, max_err],
+        index=["mse", "rmse", "mad", "r_squared", "max_err"],
+        columns=["performance"]
+    )
+    metric_data.to_csv(save_metrics_path)
 
 
 def append_predictions(model, input_data, output_col="preds"):
@@ -278,6 +289,8 @@ def append_predictions(model, input_data, output_col="preds"):
         len(input_data.columns),
         ", ".join(input_data.columns)
     )
+
+    # Validate input and make predictions
     logger.debug("Validating input before predicting")
     df = validate_dataframe(input_data)
 
@@ -288,6 +301,9 @@ def append_predictions(model, input_data, output_col="preds"):
         time() - start_time
     )
 
+    # Store results in original DataFrame -- new columns always placed at end
+    # Overwrites column named `output_col` if it exists already (in this case,
+    # it may not actually be the last column)
     df[output_col] = preds
     logger.info("Predictions appended to original data")
 

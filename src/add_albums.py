@@ -151,6 +151,7 @@ class AlbumManager:
             None
         """
         try:
+            # The original dataset provides dates in form (for example) "June 9 2021"
             reviewdate = datetime.strptime(reviewdate, "%B %d %Y").date()
         except ValueError:
             traceback.print_exc()

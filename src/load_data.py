@@ -33,17 +33,17 @@ def parse_s3(s3path):
     Split an S3 filepath into the bucket name and subsequent path.
 
     Args:
-        s3path (str): File path in S3
+        s3path (str): File path in S3 (including "s3://" prefix)
 
     Returns:
         tuple(str, str): Tuple containing S3 bucket name and S3 path
 
     Raises:
-        ValueError: `s3path` not in the format "s3://bucket/path"
+        `ValueError` if `s3path` not in the format "s3://bucket/path"
     """
-    regex = r"s3://([\w._-]+)/([\w./_-]+)"
-
-    matches = re.match(regex, s3path)
+    # Search string for bucket and path names
+    pattern = r"s3://([\w._-]+)/([\w./_-]+)"
+    matches = re.match(pattern, s3path)
 
     if matches:
         s3bucket = matches.group(1)
@@ -51,6 +51,7 @@ def parse_s3(s3path):
 
         return s3bucket, s3path
 
+    # If no matches were found, the user entered bad input
     raise ValueError(
         """The provided S3 location could not be parsed.
         Please confirm your path follows the structure "s3://bucket/path".
@@ -70,7 +71,6 @@ def upload_file_to_s3(local_path, s3path):
     """
     # Separate bucket from path for boto3
     s3bucket, s3_just_path = parse_s3(s3path)
-
     s3 = boto3.resource("s3")
     bucket = s3.Bucket(s3bucket)
 
@@ -95,6 +95,7 @@ def upload_to_s3_pandas(local_path, s3path, sep=","):
     Returns:
         None
     """
+    # Assumes that input is already in a compatible format
     df = pd.read_csv(local_path, sep=sep)
 
     try:
@@ -117,8 +118,8 @@ def download_file_from_s3(local_path, s3path):
     Returns:
         None
     """
+    # Separate bucket from path for boto3
     s3bucket, s3_just_path = parse_s3(s3path)
-
     s3 = boto3.resource("s3")
     bucket = s3.Bucket(s3bucket)
 
@@ -144,6 +145,7 @@ def download_from_s3_pandas(local_path, s3path, sep=","):
         None
     """
     try:
+        # Assumes that file is already in a compatible format
         df = pd.read_csv(s3path, sep=sep)
     except botocore.exceptions.NoCredentialsError:
         logger.error(MISSING_AWS_CREDENTIALS_MSG)
@@ -163,7 +165,9 @@ def download_raw_data(local_destination):
     Returns:
         None
     """
+    # Download raw data from the internet
     response = requests.get(RAW_DATA_SOURCE_URL)
+
     if response.ok:
         with open(local_destination, "wb") as file:
             for chunk in response:
