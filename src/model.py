@@ -81,10 +81,15 @@ def split_train_val_test(features, target, train_val_test_ratio, **kwargs):
 def _parse_ratio(ratio):
     """Convert a train-val-test ratio from X:Y:Z to list of proportions in [0,1]."""
     sizes = [float(n) for n in ratio.split(":")]
+
+    # If only 2 pieces are given, keep train and test
     sizes = [sizes[0], 0., sizes[1]] if len(sizes) == 2 else sizes
+
+    # Scale to [0,1]
     _sum = sum(sizes)
     proportions = list(size / _sum for size in sizes)
     logger.debug("Successfuly parsed ratio %s to %s", ratio, "/".join(map(str, proportions)))
+
     return proportions
 
 
@@ -103,6 +108,7 @@ def train_pipeline(X_train, y_train, preprocessor, model):
     Returns:
         A fitted :obj:`sklearn.pipeline.Pipeline`
     """
+    # Assemble pipeline and train
     pipe = Pipeline(steps=[
         ("preprocessor", preprocessor),
         ("predictor", model)
@@ -134,6 +140,7 @@ def make_preprocessor(numeric_features, categorical_features, handle_unknown):
     Returns:
         A :obj:`sklearn.compose.ColumnTransformer` with the desired transformation steps
     """
+    # Scale numbers to mean 0 & stdev 1; one-hot encode categorical variables
     numeric_transformer = StandardScaler()
     categorical_transformer = OneHotEncoder(handle_unknown=handle_unknown)
 
@@ -154,6 +161,7 @@ def make_model(**kwargs):
     Returns:
         Untrained :obj:`sklearn.ensemble.GradientBoostingRegressor` object
     """
+    # Don't think there's anything else to say for this really
     model = GradientBoostingRegressor(**kwargs)
     return model
 
@@ -173,6 +181,10 @@ def parse_dict_to_dataframe(form_dict):
             associated values for each key
     """
     logger.debug("Converting dictionary to pandas DataFrame")
+
+    # This structure is intuitive for a single record and scalar values,
+    # but may behavior weird if, for example, lists or other multi-value
+    # data structures are stored in a key's value
     df = pd.DataFrame([form_dict.values()], columns=form_dict.keys())
 
     return df

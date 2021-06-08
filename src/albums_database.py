@@ -51,6 +51,7 @@ class Albums(Base):
 
 def create_db(engine_string: str) -> None:
     """Create database from provided engine string."""
+    # The Base.metadata object collects and manages Table operations
     engine = sqlalchemy.create_engine(engine_string)
     Base.metadata.create_all(engine)
     logger.info("Database created")
@@ -58,6 +59,7 @@ def create_db(engine_string: str) -> None:
 
 def delete_db(engine_string: str) -> None:
     """Delete database from provided engine string."""
+    # The Base.metadata object collects and manages Table operations
     engine = sqlalchemy.create_engine(engine_string)
     Base.metadata.drop_all(engine)
     logger.info("Database deleted")
@@ -81,6 +83,7 @@ class AlbumManager:
         Raises:
             ValueError: If neither an app nor an engine string is provided.
         """
+        # Regardless of input form, we want a session object for future use
         if app:
             self.database = SQLAlchemy(app)
             self.session = self.database.session
