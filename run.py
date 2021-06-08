@@ -5,6 +5,7 @@ instructions to the appropriate module in `src/`. It handles:
 - Database interaction (creation, deletion, ingestion)
 - Data downloading from source, uploading to S3, and downloading from S3
 - Data processing and model training pipeline
+- Making predictions on new data
 """
 import argparse
 import logging.config
@@ -14,15 +15,8 @@ import pandas as pd
 import yaml
 
 from config.flaskconfig import SQLALCHEMY_DATABASE_URI
-from src import clean, model, serialize
+from src import clean, load_data, model, serialize
 from src.add_albums import AlbumManager, create_db, delete_db
-from src.load_data import (
-    download_raw_data,
-    download_file_from_s3,
-    download_from_s3_pandas,
-    upload_file_to_s3,
-    upload_to_s3_pandas
-)
 
 # Using `pkg_resources` here allows Sphinx to find the logging config
 # file when building the documentation HTML pages
@@ -236,19 +230,19 @@ if __name__ == "__main__":
         # Assume data exists already in S3
         if args.download:
             if args.pandas:
-                download_from_s3_pandas(args.local_path, args.s3path, args.sep)
+                load_data.download_from_s3_pandas(args.local_path, args.s3path, args.sep)
             else:
-                download_file_from_s3(args.local_path, args.s3path)
+                load_data.download_file_from_s3(args.local_path, args.s3path)
         # Assume data does _not_ exist already in S3
         else:
             # Download data from internet
-            download_raw_data(args.local_path)
+            load_data.download_raw_data(args.local_path)
 
             # Upload to S3
             if args.pandas:
-                upload_to_s3_pandas(args.local_path, args.s3path, args.sep)
+                load_data.upload_to_s3_pandas(args.local_path, args.s3path, args.sep)
             else:
-                upload_file_to_s3(args.local_path, args.s3path)
+                load_data.upload_file_to_s3(args.local_path, args.s3path)
     elif sp_used == "pipeline":
         # Load configuration file for parameters and trained model object path
         # In PyYAML 5.1+, using `yaml.load` _without the `Loader` param_ has
