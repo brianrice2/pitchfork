@@ -10,14 +10,10 @@ SAVED_MODEL_PATH="${REPR_ACTUAL_DIR}/trained_model.joblib"
 SAVED_MODEL_PREDICTIONS_PATH="${REPR_ACTUAL_DIR}/cleaned_with_predictions.csv"
 
 
-# Acquire raw data
-python3 run.py load_data \
-  --local_path "${RAW_DATA_PATH}" \
-  --s3path "${S3_BUCKET}/${RAW_DATA_PATH}"
-
+# Assume that raw data already exists in S3 (it may be expensive to acquire)
 # Clean data
 python3 run.py pipeline clean \
-  --input "${RAW_DATA_PATH}" \
+  --input "${S3_BUCKET}/${RAW_DATA_PATH}" \
   --config "${PIPELINE_CONFIG}" \
   --output "${CLEANED_DATA_PATH}"
 
