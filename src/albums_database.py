@@ -53,16 +53,35 @@ def create_db(engine_string: str) -> None:
     """Create database from provided engine string."""
     # The Base.metadata object collects and manages Table operations
     engine = sqlalchemy.create_engine(engine_string)
-    Base.metadata.create_all(engine)
-    logger.info("Database created")
+
+    try:
+        Base.metadata.create_all(engine)
+    except sqlalchemy.exc.OperationalError:
+        logger.error("""
+            Could not create database!
+            Check your connection string and confirm that you:
+              1. Are on the Northwestern VPN, and
+              2. Have database permissions to create tables.""")
+    else:
+        logger.info("Database created")
 
 
 def delete_db(engine_string: str) -> None:
     """Delete database from provided engine string."""
     # The Base.metadata object collects and manages Table operations
     engine = sqlalchemy.create_engine(engine_string)
-    Base.metadata.drop_all(engine)
-    logger.info("Database deleted")
+
+    try:
+        Base.metadata.drop_all(engine)
+    except sqlalchemy.exc.OperationalError:
+        logger.error("""
+            Could not delete database!
+            Check your connection string and confirm that you:
+              1. Are on the Northwestern VPN, and
+              2. Have database permissions to delete tables."""
+        )
+    else:
+        logger.info("Database deleted")
 
 
 class AlbumManager:
