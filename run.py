@@ -314,7 +314,7 @@ if __name__ == "__main__":
                 try:
                     output.to_csv(args.output, index=False)
                 except botocore.exceptions.ClientError:
-                    logger.warning("Failed to upload to S3 (ad permissions). Skipped.")
+                    logger.warning("Failed to upload to S3 (bad permissions). Skipped.")
                 else:
                     logger.info("Output saved to %s", args.output)
 
