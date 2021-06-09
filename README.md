@@ -83,17 +83,16 @@ The dataset is released under the [Creative Commons Attribution 4.0 Internationa
 ├── config/                           <- Configuration files 
 │   ├── local/                        <- Private configuration files and environment variable
 |   |                                      settings (not tracked)
-│   ├── logging/                      <- Configuration of python loggers
+│   ├── logging/                      <- Configuration of Python loggers
 │   ├── flaskconfig.py                <- Configurations for Flask API
 │   └── pipeline.yaml                 <- Parameter values passed to functions. Tracked
-|                                           for reproducibility
+|                                           for reproducibility.
 │
-├── copilot/                          <- Deployment configuration for AWS Copilot, for running
-|                                          the app on ECS
+├── copilot/                          <- Deployment configuration for AWS Copilot
 |
 ├── data/                             <- Data files used for analysis or by the app itself
 │   ├── cleaned/                      <- Processed data
-│   └── raw/                          <- Raw datafile
+│   └── raw/                          <- Raw data
 |
 ├── deliverables/                     <- Final presentations, white papers, etc. for
 |                                          stakeholders
@@ -115,9 +114,11 @@ The dataset is released under the [Creative Commons Attribution 4.0 Internationa
 ├── Dockerfile_python                 <- Defines the Docker image for ingesting data & creating
 |                                          the database
 ├── Makefile                          <- Defines handy shortcuts for executing app functionality:
-|                                          ingesting data, training a model, and running the web app
+|                                          ingesting data, training a model, running the web
+|                                          app, unit tests, and more
 ├── requirements.txt                  <- Python package dependencies
-└── run.py                            <- Simplifies the execution of one or more of the src scripts
+└── run.py                            <- Orchestration function to simplify the execution of
+                                           one or more of the src scripts
 ```
 
 ## Running the app
@@ -278,7 +279,7 @@ Artifacts are saved locally and to S3 for future use (again, beware the writable
 
 Sure, creating and moving data into databases is fun, but eventually we should run the web app. To do so, first ensure the database is not already created or populated and run the command below most closely suited to your situation (it will still work, but the records will be added again, resulting in duplicate entries). You may either use a local SQLite database (default behavior if `MYSQL_*` or `SQLALCHEMY_DATABASE_URI` are not set) or a MySQL database running on RDS.
 
-Please note that, apart from the database specification, S3 credentials are required for the app to function as it pulls raw data and other artifacts during the pipeline from S3.
+Please note that, apart from the database specification, S3 credentials are required for the app to function as it pulls raw data and other artifacts during the pipeline from S3. Since the app creates and populates the database that it displays and interacts with, you must also have the appropriate database permissions for creating and inserting into tables!
 
 You have two options: specifying the `SQLALCHEMY_DATABASE_URI` connection string directly, or providing all the necessary `MYSQL_*` information.
 
