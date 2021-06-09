@@ -58,8 +58,6 @@ models/gbt_pipeline.joblib: data/cleaned/P4KxSpotify.csv config/pipeline.yaml
 
 model: models/gbt_pipeline.joblib config/pipeline.yaml
 
-pipeline: cleaned_data model
-
 models/predictions.csv: models/gbt_pipeline.joblib data/cleaned/P4KxSpotify.csv config/pipeline.yaml
 	python3 run.py pipeline predict \
 		--input "${S3_BUCKET}/${CLEANED_DATA_PATH}" \
@@ -79,6 +77,8 @@ models/performance_report.csv: models/predictions.csv
 
 evaluate: models/performance_report.csv
 
+pipeline: cleaned_data model predictions evaluate
+
 empty_database:
 	python3 run.py create_db
 
@@ -87,6 +87,9 @@ ingest_dataset: data/cleaned/P4KxSpotify.csv
 
 app: empty_database pipeline ingest_dataset
 	python3 app.py --model "${S3_BUCKET}/${SAVED_MODEL_PATH}"
+
+unit_tests:
+	python3 -m pytest -v
 
 reproducibility_tests:
 	./tests/run_reproducibility_tests.sh
