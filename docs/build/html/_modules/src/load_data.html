@@ -166,17 +166,17 @@
 <span class="sd">    Split an S3 filepath into the bucket name and subsequent path.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        s3path (str): File path in S3</span>
+<span class="sd">        s3path (str): File path in S3 (including "s3://" prefix)</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        tuple(str, str): Tuple containing S3 bucket name and S3 path</span>
 
 <span class="sd">    Raises:</span>
-<span class="sd">        ValueError: `s3path` not in the format "s3://bucket/path"</span>
+<span class="sd">        `ValueError` if `s3path` not in the format "s3://bucket/path"</span>
 <span class="sd">    """</span>
-    <span class="n">regex</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">"s3://([\w._-]+)/([\w./_-]+)"</span>
-
-    <span class="n">matches</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">regex</span><span class="p">,</span> <span class="n">s3path</span><span class="p">)</span>
+    <span class="c1"># Search string for bucket and path names</span>
+    <span class="n">pattern</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">"s3://([\w._-]+)/([\w./_-]+)"</span>
+    <span class="n">matches</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">s3path</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">matches</span><span class="p">:</span>
         <span class="n">s3bucket</span> <span class="o">=</span> <span class="n">matches</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
@@ -184,6 +184,7 @@
 
         <span class="k">return</span> <span class="n">s3bucket</span><span class="p">,</span> <span class="n">s3path</span>
 
+    <span class="c1"># If no matches were found, the user entered bad input</span>
     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
         <span class="sd">"""The provided S3 location could not be parsed.</span>
 <span class="sd">        Please confirm your path follows the structure "s3://bucket/path".</span>
@@ -203,7 +204,6 @@
 <span class="sd">    """</span>
     <span class="c1"># Separate bucket from path for boto3</span>
     <span class="n">s3bucket</span><span class="p">,</span> <span class="n">s3_just_path</span> <span class="o">=</span> <span class="n">parse_s3</span><span class="p">(</span><span class="n">s3path</span><span class="p">)</span>
-
     <span class="n">s3</span> <span class="o">=</span> <span class="n">boto3</span><span class="o">.</span><span class="n">resource</span><span class="p">(</span><span class="s2">"s3"</span><span class="p">)</span>
     <span class="n">bucket</span> <span class="o">=</span> <span class="n">s3</span><span class="o">.</span><span class="n">Bucket</span><span class="p">(</span><span class="n">s3bucket</span><span class="p">)</span>
 
@@ -228,10 +228,11 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        None</span>
 <span class="sd">    """</span>
-    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">local_path</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="n">sep</span><span class="p">)</span>
+    <span class="c1"># Assumes that input is already in a compatible format</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">local_path</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="n">sep</span><span class="p">)</span>
 
     <span class="k">try</span><span class="p">:</span>
-        <span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">s3path</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="n">sep</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">s3path</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="n">sep</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="k">except</span> <span class="n">botocore</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">NoCredentialsError</span><span class="p">:</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">MISSING_AWS_CREDENTIALS_MSG</span><span class="p">)</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">"Data not uploaded"</span><span class="p">)</span>
@@ -250,8 +251,8 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        None</span>
 <span class="sd">    """</span>
+    <span class="c1"># Separate bucket from path for boto3</span>
     <span class="n">s3bucket</span><span class="p">,</span> <span class="n">s3_just_path</span> <span class="o">=</span> <span class="n">parse_s3</span><span class="p">(</span><span class="n">s3path</span><span class="p">)</span>
-
     <span class="n">s3</span> <span class="o">=</span> <span class="n">boto3</span><span class="o">.</span><span class="n">resource</span><span class="p">(</span><span class="s2">"s3"</span><span class="p">)</span>
     <span class="n">bucket</span> <span class="o">=</span> <span class="n">s3</span><span class="o">.</span><span class="n">Bucket</span><span class="p">(</span><span class="n">s3bucket</span><span class="p">)</span>
 
@@ -277,12 +278,13 @@
 <span class="sd">        None</span>
 <span class="sd">    """</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">s3path</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="n">sep</span><span class="p">)</span>
+        <span class="c1"># Assumes that file is already in a compatible format</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">s3path</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="n">sep</span><span class="p">)</span>
     <span class="k">except</span> <span class="n">botocore</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">NoCredentialsError</span><span class="p">:</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">MISSING_AWS_CREDENTIALS_MSG</span><span class="p">)</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">"Data not downloaded"</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">local_path</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="n">sep</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">local_path</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="n">sep</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Data downloaded from </span><span class="si">%s</span><span class="s2"> to </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="n">s3path</span><span class="p">,</span> <span class="n">local_path</span><span class="p">)</span></div>
 
 
@@ -296,7 +298,9 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        None</span>
 <span class="sd">    """</span>
+    <span class="c1"># Download raw data from the internet</span>
     <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">RAW_DATA_SOURCE_URL</span><span class="p">)</span>
+
     <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">ok</span><span class="p">:</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">local_destination</span><span class="p">,</span> <span class="s2">"wb"</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">response</span><span class="p">:</span>

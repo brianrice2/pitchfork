@@ -4,10 +4,10 @@ src package
 Submodules
 ----------
 
-src.add\_albums module
-----------------------
+src.albums\_database module
+---------------------------
 
-.. automodule:: src.add_albums
+.. automodule:: src.albums_database
    :members:
    :undoc-members:
    :show-inheritance:
@@ -16,6 +16,14 @@ src.clean module
 ----------------
 
 .. automodule:: src.clean
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+src.evaluate\_performance module
+--------------------------------
+
+.. automodule:: src.evaluate_performance
    :members:
    :undoc-members:
    :show-inheritance:
@@ -32,6 +40,22 @@ src.model module
 ----------------
 
 .. automodule:: src.model
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+src.post\_process module
+------------------------
+
+.. automodule:: src.post_process
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+src.score\_model module
+-----------------------
+
+.. automodule:: src.score_model
    :members:
    :undoc-members:
    :show-inheritance:

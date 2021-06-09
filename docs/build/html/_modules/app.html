@@ -134,6 +134,7 @@
 <span></span><span class="sd">"""</span>
 <span class="sd">Run the single-page web application with Flask.</span>
 <span class="sd">"""</span>
+<span class="kn">import</span> <span class="nn">argparse</span>
 <span class="kn">import</span> <span class="nn">logging.config</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">traceback</span>
@@ -145,7 +146,7 @@
 
 <span class="kn">from</span> <span class="nn">src</span> <span class="kn">import</span> <span class="n">model</span>
 <span class="kn">from</span> <span class="nn">src</span> <span class="kn">import</span> <span class="n">serialize</span>
-<span class="kn">from</span> <span class="nn">src.add_albums</span> <span class="kn">import</span> <span class="n">Albums</span><span class="p">,</span> <span class="n">AlbumManager</span>
+<span class="kn">from</span> <span class="nn">src.albums_database</span> <span class="kn">import</span> <span class="n">Albums</span><span class="p">,</span> <span class="n">AlbumManager</span>
 
 <span class="c1"># Initialize the Flask application</span>
 <span class="c1"># By default, Flask looks for templates/ and static/ in the current</span>
@@ -154,8 +155,9 @@
 <span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">from_pyfile</span><span class="p">(</span><span class="s2">"config/flaskconfig.py"</span><span class="p">)</span>
 
 <span class="c1"># Define LOGGING_CONFIG in flask_config.py as the path to config file</span>
-<span class="c1"># Using `pkg_resources` here allows Sphinx to find the config files</span>
-<span class="c1"># when building the documentation HTML pages</span>
+<span class="c1"># Using `pkg_resources` here allows Sphinx to find the logging config</span>
+<span class="c1"># file when building the documentation HTML pages (only necessary for</span>
+<span class="c1"># root-level scripts)</span>
 <span class="n">logging</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">fileConfig</span><span class="p">(</span>
     <span class="n">pkg_resources</span><span class="o">.</span><span class="n">resource_filename</span><span class="p">(</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">"LOGGING_CONFIG"</span><span class="p">]),</span>
     <span class="n">disable_existing_loggers</span><span class="o">=</span><span class="kc">False</span>
@@ -215,7 +217,7 @@
         <span class="n">albums</span> <span class="o">=</span> <span class="n">albums</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">Albums</span><span class="o">.</span><span class="n">artist</span><span class="o">.</span><span class="n">like</span><span class="p">(</span><span class="s2">"%"</span> <span class="o">+</span> <span class="n">artist_name</span> <span class="o">+</span> <span class="s2">"%"</span><span class="p">))</span>
     <span class="k">if</span> <span class="n">score</span><span class="p">:</span>
         <span class="n">albums</span> <span class="o">=</span> <span class="n">albums</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">Albums</span><span class="o">.</span><span class="n">score</span> <span class="o">==</span> <span class="n">score</span><span class="p">)</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
         <span class="s2">"Found </span><span class="si">%s</span><span class="s2"> albums like </span><span class="se">\"</span><span class="si">%s</span><span class="se">\"</span><span class="s2"> by </span><span class="se">\"</span><span class="si">%s</span><span class="se">\"</span><span class="s2"> (max displayed: </span><span class="si">%s</span><span class="s2">)"</span><span class="p">,</span>
         <span class="nb">len</span><span class="p">(</span><span class="n">albums</span><span class="o">.</span><span class="n">all</span><span class="p">()),</span>
         <span class="n">album_name</span><span class="p">,</span>
@@ -263,8 +265,6 @@
 <span class="sd">        Redirect to index page</span>
 <span class="sd">    """</span>
     <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
-    <span class="n">pipeline</span> <span class="o">=</span> <span class="n">serialize</span><span class="o">.</span><span class="n">load_pipeline</span><span class="p">(</span><span class="n">pipeline_config</span><span class="p">[</span><span class="s2">"model"</span><span class="p">][</span><span class="s2">"saved_model_path"</span><span class="p">])</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Loaded saved model pipeline"</span><span class="p">)</span>
 
     <span class="c1"># Convert request form to the model's required `pandas.DataFrame` format</span>
     <span class="n">input_data</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">form</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
@@ -276,7 +276,11 @@
 
     <span class="k">try</span><span class="p">:</span>
         <span class="n">score</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">pipeline</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">validated_df</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">2</span><span class="p">)</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+
+        <span class="c1"># Clip predicted score between 0 and 10</span>
+        <span class="n">score</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">score</span><span class="p">))</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
             <span class="sd">"""Prediction: %0.2f.</span>
 <span class="sd">            Total time for loading model, parsing input, and performing inference: %0.4fs"""</span><span class="p">,</span>
             <span class="n">score</span><span class="p">,</span>
@@ -300,6 +304,14 @@
 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">'__main__'</span><span class="p">:</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">"Run web application"</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">"--model"</span><span class="p">,</span> <span class="s2">"-m"</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">"Path to trained model object"</span><span class="p">)</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+
+    <span class="c1"># Preload the trained model for extremely fast inference</span>
+    <span class="n">pipeline</span> <span class="o">=</span> <span class="n">serialize</span><span class="o">.</span><span class="n">load_pipeline</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">model</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"Loaded saved model pipeline"</span><span class="p">)</span>
+
     <span class="n">app</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">debug</span><span class="o">=</span><span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">"DEBUG"</span><span class="p">],</span> <span class="n">port</span><span class="o">=</span><span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">"PORT"</span><span class="p">],</span> <span class="n">host</span><span class="o">=</span><span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">"HOST"</span><span class="p">])</span>
 </pre></div>
       </article>

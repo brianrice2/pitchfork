@@ -61,7 +61,8 @@ def create_db(engine_string: str) -> None:
             Could not create database!
             Check your connection string and confirm that you:
               1. Are on the Northwestern VPN, and
-              2. Have database permissions to create tables.""")
+              2. Have database permissions to create tables.
+        """)
     else:
         logger.info("Database created")
 
@@ -78,8 +79,8 @@ def delete_db(engine_string: str) -> None:
             Could not delete database!
             Check your connection string and confirm that you:
               1. Are on the Northwestern VPN, and
-              2. Have database permissions to delete tables."""
-        )
+              2. Have database permissions to delete tables.
+        """)
     else:
         logger.info("Database deleted")
 

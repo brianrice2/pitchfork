@@ -170,7 +170,7 @@ These variables are interpreted to create a SQLAlchemy database URI (an "engine 
 
 #### Create the database
 
-To create the database in the location configured in `config/flaskconfig.py` run:
+To create the database according to your `MYSQL_*` environment variables (either locally or in RDS), run:
 
 ```bash
 docker run \
@@ -204,17 +204,17 @@ docker run -v "$(pwd)"/data/:/app/data/ pitchfork-setup run.py create_db
 
 ##### RDS instance
 
-Specify your environment variables according to your own RDS instance username and password, host (endpoint), port, and database name.
+Specify your environment variables according to your own RDS instance username and password, host (endpoint), port, and database name, then run the same command.
 
 You can inspect the database from a MySQL client via Docker:
 
 ```bash
 docker run -it --rm \
-    mysql:5.7.33 \
-    mysql \
-    -h$MYSQL_HOST \
-    -u$MYSQL_USER \
-    -p$MYSQL_PASSWORD
+  mysql:5.7.33 \
+  mysql \
+  -h$MYSQL_HOST \
+  -u$MYSQL_USER \
+  -p$MYSQL_PASSWORD
 ```
 
 And then inside MySQL:
@@ -252,25 +252,33 @@ docker run \
   pitchfork-setup run.py ingest_dataset --file "path/to/my/file.csv"
 ```
 
-### 3. Training a model
+### 3. Train a machine learning model
 
-Once the raw data has been downloaded to S3 through the process above, we can train a model to predict the Pitchfork rating for an album! `Dockerfile_pipeline` defines an image to load the existing raw data file, clean and process it, and train a gradient-boosted tree model. The cleaned dataset as well as trained model object are saved to S3 for future use.
+Once the raw data has been downloaded to S3 through the process above, we can train a model to predict the Pitchfork rating for an album! `Dockerfile_pipeline` defines an image to:
 
-Artifacts produced during this process are stored locally and in S3. If you prefer to retain the local copies you may mount a local volume, for example through `docker run -v "$(pwd)"/:/app/ ...`. Since artifacts are produced in both `data/` and `models/`, you must mount the root directory and not only the `data/` folder as was done earlier.
+1. Load the existing raw data file
+1. Clean and process it
+1. Train a gradient-boosted tree model
+1. Score the model
+1. Evaluate its performance
 
 ```bash
 docker build -f Dockerfile_pipeline -t pitchfork-pipeline .
 docker run \
   -e AWS_ACCESS_KEY_ID \
   -e AWS_SECRET_ACCESS_KEY \
-  pitchfork-pipeline make pipeline
+  pitchfork-pipeline pipeline
 ```
+
+Artifacts are saved locally and to S3 for future use (again, beware the writable layer). If you prefer to retain the local copies you may mount a local volume, for example through `docker run -v "$(pwd)"/:/app/ ...`. Since artifacts are produced in both `data/` and `models/`, you must mount the root directory and not only the `data/` folder as was done earlier.
 
 ### 4. Running the web application
 
-Sure, creating and moving data into databases is fun, but eventually we should run the web app. To do so, first ensure the database is not already created or populated and run the command below most closely suited to your situation (it will still work, but the dataset will be added again, resulting in duplicate entries). You may either use a local SQLite database (default behavior if `MYSQL_*` or `SQLALCHEMY_DATABASE_URI` are not set) or a MySQL database running on RDS.
+Sure, creating and moving data into databases is fun, but eventually we should run the web app. To do so, first ensure the database is not already created or populated and run the command below most closely suited to your situation (it will still work, but the records will be added again, resulting in duplicate entries). You may either use a local SQLite database (default behavior if `MYSQL_*` or `SQLALCHEMY_DATABASE_URI` are not set) or a MySQL database running on RDS.
 
 Please note that, apart from the database specification, S3 credentials are required for the app to function as it pulls raw data and other artifacts during the pipeline from S3.
+
+You have two options: specifying the `SQLALCHEMY_DATABASE_URI` connection string directly, or providing all the necessary `MYSQL_*` information.
 
 #### Custom connection string
 
@@ -302,35 +310,28 @@ docker run \
 
 ### 5. Deployment to AWS ECS
 
-If you wish to deploy the application onto ECS, view the [copilot manifest](/copilot/app/manifest.yml) for example configuration. As personal information like a username and password is required, you'll need to use secrets to securely store this information ([tutorial here](https://ecsworkshop.com/secrets/05-inject-params/)).
+If you wish to deploy the application onto ECS, view the [copilot manifest](/copilot/app/manifest.yml) for an example configuration. As personal information like a username and password is required, you'll need to use secrets to securely store this information ([tutorial here](https://ecsworkshop.com/secrets/05-inject-params/)).
 
-Your deployment to ECS is outside the scope and responsibility of this application, but the manifest is included for reference purposes to give an idea of what's required and how to configure some of the available options. 
+Your deployment to ECS is outside the scope and responsibility of this application, but the manifest is included for reference purposes to give an idea of what's required. 
 
 ### 0. Testing
 
-To run the unit tests in a Docker container, run:
+#### Unit tests
+
+To run the unit tests in a Docker container (from the `pitchfork-pipeline` image, specifically), run:
 
 ```bash
-docker build -f Dockerfile_python -t pitchfork-setup .
-docker run pitchfork-setup -m pytest -v
+docker run pitchfork-pipeline unit_tests
 ```
 
-In addition, there are some reproducibility tests to ensure that the pipeline is executed in a reproducible manner. There are a few ways to execute these tests:
+#### Reproducibility tests
 
-Locally:
+In addition, there are some tests to ensure that the pipeline is executed in a reproducible manner.:
+
+With Docker (using the same `Dockerfile_pipeline` as the unit tests):
 
 ```bash
-./tests/run_reproducibility_tests.sh
+docker run -e AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY pitchfork-pipeline reproducibility_tests
 ```
 
-or
-
-```bash
-make reproducibility_tests
-```
-
-With Docker (using the same `Dockerfile_python` as the unit tests):
-
-```bash
-docker run pitchfork-setup -m tests/run_reproducibility_tests.py
-```
+Please note S3 credentials are required as the reproducibility pipeline begins by pulling raw data from S3.

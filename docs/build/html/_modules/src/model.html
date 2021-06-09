@@ -135,14 +135,13 @@
 <span class="sd">Build, fit, and evaluate predictive models.</span>
 <span class="sd">"""</span>
 <span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">import</span> <span class="nn">math</span>
 <span class="kn">from</span> <span class="nn">time</span> <span class="kn">import</span> <span class="n">time</span>
 
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">NaN</span>
 <span class="kn">from</span> <span class="nn">sklearn.compose</span> <span class="kn">import</span> <span class="n">ColumnTransformer</span>
 <span class="kn">from</span> <span class="nn">sklearn.ensemble</span> <span class="kn">import</span> <span class="n">GradientBoostingRegressor</span>
-<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">max_error</span><span class="p">,</span> <span class="n">mean_squared_error</span><span class="p">,</span> <span class="n">median_absolute_error</span><span class="p">,</span> <span class="n">r2_score</span>
+
 <span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">train_test_split</span>
 <span class="kn">from</span> <span class="nn">sklearn.pipeline</span> <span class="kn">import</span> <span class="n">Pipeline</span>
 <span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">StandardScaler</span><span class="p">,</span> <span class="n">OneHotEncoder</span>
@@ -159,10 +158,10 @@
 <span class="p">]</span>
 
 
-<div class="viewcode-block" id="split_predictors_response"><a class="viewcode-back" href="../../src.html#src.model.split_predictors_response">[docs]</a><span class="k">def</span> <span class="nf">split_predictors_response</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">target_col</span><span class="o">=</span><span class="s2">"score"</span><span class="p">):</span>
+<div class="viewcode-block" id="split_predictors_response"><a class="viewcode-back" href="../../src.html#src.model.split_predictors_response">[docs]</a><span class="k">def</span> <span class="nf">split_predictors_response</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">target_col</span><span class="o">=</span><span class="s2">"score"</span><span class="p">):</span>
     <span class="sd">"""Separate predictor variables from response variable."""</span>
-    <span class="n">features</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">target_col</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-    <span class="n">target</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">target_col</span><span class="p">]</span>
+    <span class="n">features</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">target_col</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">target</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">target_col</span><span class="p">]</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
         <span class="sd">"""Split predictors and response variable.</span>
 <span class="sd">        Shapes: features=%s, target=%s"""</span><span class="p">,</span>
@@ -187,39 +186,61 @@
 <span class="sd">            (for example, random seed)</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        (X_train, X_val, X_test, y_train, y_val, y_test), each as DataFrames</span>
+<span class="sd">        (X_train, X_val, X_test, y_train, y_val, y_test), each as DataFrames.</span>
+<span class="sd">            X_val and y_val are omitted if the desired ratio does not specify</span>
+<span class="sd">            the size of a validation set.</span>
 <span class="sd">    """</span>
     <span class="c1"># Compute sizes and split according to ratio</span>
-    <span class="n">train_size</span><span class="p">,</span> <span class="n">val_size</span><span class="p">,</span> <span class="n">test_size</span> <span class="o">=</span> <span class="n">parse_ratio</span><span class="p">(</span><span class="n">train_val_test_ratio</span><span class="p">)</span>
+    <span class="n">train_size</span><span class="p">,</span> <span class="n">val_size</span><span class="p">,</span> <span class="n">test_size</span> <span class="o">=</span> <span class="n">_parse_ratio</span><span class="p">(</span><span class="n">train_val_test_ratio</span><span class="p">)</span>
     <span class="n">X_train_val</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_train_val</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span>
         <span class="n">features</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="n">test_size</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
     <span class="p">)</span>
-    <span class="n">X_train</span><span class="p">,</span> <span class="n">X_val</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_val</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span>
-        <span class="n">X_train_val</span><span class="p">,</span> <span class="n">y_train_val</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="p">(</span><span class="n">val_size</span> <span class="o">/</span> <span class="p">(</span><span class="n">val_size</span> <span class="o">+</span> <span class="n">train_size</span><span class="p">)),</span> <span class="o">**</span><span class="n">kwargs</span>
-    <span class="p">)</span>
 
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+    <span class="c1"># If no validation set is provided, additional splitting will throw an error</span>
+    <span class="k">if</span> <span class="n">val_size</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">X_train</span><span class="p">,</span> <span class="n">X_val</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_val</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span>
+            <span class="n">X_train_val</span><span class="p">,</span> <span class="n">y_train_val</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="p">(</span><span class="n">val_size</span> <span class="o">/</span> <span class="p">(</span><span class="n">val_size</span> <span class="o">+</span> <span class="n">train_size</span><span class="p">)),</span> <span class="o">**</span><span class="n">kwargs</span>
+        <span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+            <span class="sd">"""Data split into train/test sets.</span>
+<span class="sd">            Shapes: X_train=%s, X_val=%s, X_test=%s, y_train=%s, y_val=%s, y_test=%s"""</span><span class="p">,</span>
+            <span class="n">X_train</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span>
+            <span class="n">X_val</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span>
+            <span class="n">X_test</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span>
+            <span class="n">y_train</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span>
+            <span class="n">y_val</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span>
+            <span class="n">y_test</span><span class="o">.</span><span class="n">shape</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">X_train</span><span class="p">,</span> <span class="n">X_val</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_val</span><span class="p">,</span> <span class="n">y_test</span>
+
+    <span class="c1"># Otherwise just return train and test sets</span>
+    <span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span> <span class="o">=</span> <span class="n">X_train_val</span><span class="p">,</span> <span class="n">y_train_val</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
         <span class="sd">"""Data split into train/test sets.</span>
-<span class="sd">        Shapes: X_train=%s, X_val=%s, X_test=%s, y_train=%s, y_val=%s, y_test=%s"""</span><span class="p">,</span>
+<span class="sd">        Shapes: X_train=%s, X_test=%s, y_train=%s, y_test=%s"""</span><span class="p">,</span>
         <span class="n">X_train</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span>
-        <span class="n">X_val</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span>
         <span class="n">X_test</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span>
         <span class="n">y_train</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span>
-        <span class="n">y_val</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span>
         <span class="n">y_test</span><span class="o">.</span><span class="n">shape</span>
     <span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">X_train</span><span class="p">,</span> <span class="n">X_val</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_val</span><span class="p">,</span> <span class="n">y_test</span></div>
+    <span class="k">return</span> <span class="n">X_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_test</span></div>
 
 
-<div class="viewcode-block" id="parse_ratio"><a class="viewcode-back" href="../../src.html#src.model.parse_ratio">[docs]</a><span class="k">def</span> <span class="nf">parse_ratio</span><span class="p">(</span><span class="n">ratio</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_parse_ratio</span><span class="p">(</span><span class="n">ratio</span><span class="p">):</span>
     <span class="sd">"""Convert a train-val-test ratio from X:Y:Z to list of proportions in [0,1]."""</span>
     <span class="n">sizes</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">ratio</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">":"</span><span class="p">)]</span>
+
+    <span class="c1"># If only 2 pieces are given, keep train and test</span>
     <span class="n">sizes</span> <span class="o">=</span> <span class="p">[</span><span class="n">sizes</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mf">0.</span><span class="p">,</span> <span class="n">sizes</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sizes</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span> <span class="k">else</span> <span class="n">sizes</span>
+
+    <span class="c1"># Scale to [0,1]</span>
     <span class="n">_sum</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">sizes</span><span class="p">)</span>
     <span class="n">proportions</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">size</span> <span class="o">/</span> <span class="n">_sum</span> <span class="k">for</span> <span class="n">size</span> <span class="ow">in</span> <span class="n">sizes</span><span class="p">)</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Successfuly parsed ratio </span><span class="si">%s</span><span class="s2"> to </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="n">ratio</span><span class="p">,</span> <span class="s2">"/"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">proportions</span><span class="p">)))</span>
-    <span class="k">return</span> <span class="n">proportions</span></div>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"Successfuly parsed ratio </span><span class="si">%s</span><span class="s2"> to </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="n">ratio</span><span class="p">,</span> <span class="s2">"/"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">proportions</span><span class="p">)))</span>
+
+    <span class="k">return</span> <span class="n">proportions</span>
 
 
 <div class="viewcode-block" id="train_pipeline"><a class="viewcode-back" href="../../src.html#src.model.train_pipeline">[docs]</a><span class="k">def</span> <span class="nf">train_pipeline</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">preprocessor</span><span class="p">,</span> <span class="n">model</span><span class="p">):</span>
@@ -237,6 +258,7 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        A fitted :obj:`sklearn.pipeline.Pipeline`</span>
 <span class="sd">    """</span>
+    <span class="c1"># Assemble pipeline and train</span>
     <span class="n">pipe</span> <span class="o">=</span> <span class="n">Pipeline</span><span class="p">(</span><span class="n">steps</span><span class="o">=</span><span class="p">[</span>
         <span class="p">(</span><span class="s2">"preprocessor"</span><span class="p">,</span> <span class="n">preprocessor</span><span class="p">),</span>
         <span class="p">(</span><span class="s2">"predictor"</span><span class="p">,</span> <span class="n">model</span><span class="p">)</span>
@@ -268,6 +290,7 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        A :obj:`sklearn.compose.ColumnTransformer` with the desired transformation steps</span>
 <span class="sd">    """</span>
+    <span class="c1"># Scale numbers to mean 0 &amp; stdev 1; one-hot encode categorical variables</span>
     <span class="n">numeric_transformer</span> <span class="o">=</span> <span class="n">StandardScaler</span><span class="p">()</span>
     <span class="n">categorical_transformer</span> <span class="o">=</span> <span class="n">OneHotEncoder</span><span class="p">(</span><span class="n">handle_unknown</span><span class="o">=</span><span class="n">handle_unknown</span><span class="p">)</span>
 
@@ -288,29 +311,9 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        Untrained :obj:`sklearn.ensemble.GradientBoostingRegressor` object</span>
 <span class="sd">    """</span>
+    <span class="c1"># Don't think there's anything else to say for this really</span>
     <span class="n">model</span> <span class="o">=</span> <span class="n">GradientBoostingRegressor</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">model</span></div>
-
-
-<div class="viewcode-block" id="get_feature_importances"><a class="viewcode-back" href="../../src.html#src.model.get_feature_importances">[docs]</a><span class="k">def</span> <span class="nf">get_feature_importances</span><span class="p">(</span><span class="n">trained_pipeline</span><span class="p">,</span> <span class="n">numeric_features</span><span class="p">):</span>
-    <span class="sd">"""</span>
-<span class="sd">    Get feature importance measures from a trained model.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        trained_pipeline (:obj:`sklearn.pipeline.Pipeline`): Fitted model pipeline</span>
-<span class="sd">        numeric_features (list(str)): Names of numeric features</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        :obj:`pandas.Series` containing each feature and its importance</span>
-<span class="sd">    """</span>
-    <span class="n">categorical_features</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">trained_pipeline</span><span class="p">[</span><span class="s2">"preprocessor"</span><span class="p">]</span>
-        <span class="o">.</span><span class="n">transformers_</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
-        <span class="o">.</span><span class="n">get_feature_names</span><span class="p">())</span>
-    <span class="n">features</span> <span class="o">=</span> <span class="n">numeric_features</span> <span class="o">+</span> <span class="n">categorical_features</span>
-
-    <span class="n">importances</span> <span class="o">=</span> <span class="n">trained_pipeline</span><span class="p">[</span><span class="s2">"predictor"</span><span class="p">]</span><span class="o">.</span><span class="n">feature_importances_</span>
-
-    <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">importances</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">features</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="parse_dict_to_dataframe"><a class="viewcode-back" href="../../src.html#src.model.parse_dict_to_dataframe">[docs]</a><span class="k">def</span> <span class="nf">parse_dict_to_dataframe</span><span class="p">(</span><span class="n">form_dict</span><span class="p">):</span>
@@ -327,13 +330,17 @@
 <span class="sd">        :obj:`pandas.DataFrame` with keys as column names and values as the</span>
 <span class="sd">            associated values for each key</span>
 <span class="sd">    """</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Converting dictionary to pandas DataFrame"</span><span class="p">)</span>
-    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([</span><span class="n">form_dict</span><span class="o">.</span><span class="n">values</span><span class="p">()],</span> <span class="n">columns</span><span class="o">=</span><span class="n">form_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"Converting dictionary to pandas DataFrame"</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">df</span></div>
+    <span class="c1"># This structure is intuitive for a single record and scalar values,</span>
+    <span class="c1"># but may behavior weird if, for example, lists or other multi-value</span>
+    <span class="c1"># data structures are stored in a key's value</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([</span><span class="n">form_dict</span><span class="o">.</span><span class="n">values</span><span class="p">()],</span> <span class="n">columns</span><span class="o">=</span><span class="n">form_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+
+    <span class="k">return</span> <span class="n">data</span></div>
 
 
-<div class="viewcode-block" id="validate_dataframe"><a class="viewcode-back" href="../../src.html#src.model.validate_dataframe">[docs]</a><span class="k">def</span> <span class="nf">validate_dataframe</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">output_cols</span><span class="o">=</span><span class="n">PREDICTION_COLUMNS</span><span class="p">):</span>
+<div class="viewcode-block" id="validate_dataframe"><a class="viewcode-back" href="../../src.html#src.model.validate_dataframe">[docs]</a><span class="k">def</span> <span class="nf">validate_dataframe</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">output_cols</span><span class="o">=</span><span class="n">PREDICTION_COLUMNS</span><span class="p">):</span>
     <span class="sd">"""</span>
 <span class="sd">    Align a DataFrame with model pipeline's required order and names.</span>
 
@@ -342,7 +349,7 @@
 <span class="sd">    Creates the columns that don't exist (filling with NA).</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        df (:obj:`pandas.DataFrame`): Input DataFrame to validate/align</span>
+<span class="sd">        data (:obj:`pandas.DataFrame`): Input DataFrame to validate/align</span>
 <span class="sd">        output_cols (list(str), optional): Required columns for output</span>
 <span class="sd">            DataFrame. Defaults to those seen during training. If not</span>
 <span class="sd">            provided (`None`), no adjustment to the DataFrame's columns is made.</span>
@@ -353,75 +360,15 @@
     <span class="k">if</span> <span class="n">output_cols</span><span class="p">:</span>
         <span class="c1"># Create columns if they don't exist already</span>
         <span class="k">for</span> <span class="n">colname</span> <span class="ow">in</span> <span class="n">output_cols</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">colname</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Column </span><span class="si">%s</span><span class="s2"> not found. Creating and filling with NA."</span><span class="p">,</span> <span class="n">colname</span><span class="p">)</span>
-                <span class="n">df</span><span class="p">[</span><span class="n">colname</span><span class="p">]</span> <span class="o">=</span> <span class="n">NaN</span>
+            <span class="k">if</span> <span class="n">colname</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"Column </span><span class="si">%s</span><span class="s2"> not found. Creating and filling with NA."</span><span class="p">,</span> <span class="n">colname</span><span class="p">)</span>
+                <span class="n">data</span><span class="p">[</span><span class="n">colname</span><span class="p">]</span> <span class="o">=</span> <span class="n">NaN</span>
 
         <span class="c1"># Column order must match exactly</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Reordering input columns"</span><span class="p">)</span>
-        <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">output_cols</span><span class="p">]</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"Reordering input columns"</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">output_cols</span><span class="p">]</span>
 
-    <span class="k">return</span> <span class="n">df</span></div>
-
-
-<div class="viewcode-block" id="evaluate_model"><a class="viewcode-back" href="../../src.html#src.model.evaluate_model">[docs]</a><span class="k">def</span> <span class="nf">evaluate_model</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">):</span>
-    <span class="sd">"""</span>
-<span class="sd">    Evaluate performance against a variety of regression metrics.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        y_true (array-like): True values</span>
-<span class="sd">        y_pred (array-like): Predicted values</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        None (logs results).</span>
-<span class="sd">    """</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"Evaluating model performance"</span><span class="p">)</span>
-
-    <span class="n">mse</span> <span class="o">=</span> <span class="n">mean_squared_error</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)</span>
-    <span class="n">rmse</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">mse</span><span class="p">)</span>
-    <span class="n">mad</span> <span class="o">=</span> <span class="n">median_absolute_error</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)</span>
-    <span class="n">r_squared</span> <span class="o">=</span> <span class="n">r2_score</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)</span>
-    <span class="n">max_err</span> <span class="o">=</span> <span class="n">max_error</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)</span>
-
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"MSE:</span><span class="se">\t\t</span><span class="si">%0.4f</span><span class="s2">"</span><span class="p">,</span> <span class="n">mse</span><span class="p">)</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"RMSE:</span><span class="se">\t</span><span class="si">%0.4f</span><span class="s2">"</span><span class="p">,</span> <span class="n">rmse</span><span class="p">)</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"MAD:</span><span class="se">\t\t</span><span class="si">%0.4f</span><span class="s2">"</span><span class="p">,</span> <span class="n">mad</span><span class="p">)</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"R-squared:</span><span class="se">\t</span><span class="si">%0.4f</span><span class="s2">"</span><span class="p">,</span> <span class="n">r_squared</span><span class="p">)</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Max error:</span><span class="se">\t</span><span class="si">%0.4f</span><span class="s2">"</span><span class="p">,</span> <span class="n">max_err</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="append_predictions"><a class="viewcode-back" href="../../src.html#src.model.append_predictions">[docs]</a><span class="k">def</span> <span class="nf">append_predictions</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">input_data</span><span class="p">,</span> <span class="n">output_col</span><span class="o">=</span><span class="s2">"preds"</span><span class="p">):</span>
-    <span class="sd">"""</span>
-<span class="sd">    Append predictions to an existing input DataFrame.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        model (:obj:`sklearn.pipeline.Pipeline`): Trained model pipeline</span>
-<span class="sd">        input_data (:obj:`pandas.DataFrame`): Input data to predict on</span>
-<span class="sd">        output_col (str, optional): Name of column to place predicted</span>
-<span class="sd">            values in. Defaults to "preds".</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        array-like of predicted values</span>
-<span class="sd">    """</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-        <span class="s2">"Input data has </span><span class="si">%s</span><span class="s2"> columns: </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span>
-        <span class="nb">len</span><span class="p">(</span><span class="n">input_data</span><span class="o">.</span><span class="n">columns</span><span class="p">),</span>
-        <span class="s2">", "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">input_data</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
-    <span class="p">)</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"Validating input before predicting"</span><span class="p">)</span>
-    <span class="n">df</span> <span class="o">=</span> <span class="n">validate_dataframe</span><span class="p">(</span><span class="n">input_data</span><span class="p">)</span>
-
-    <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
-    <span class="n">preds</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-        <span class="s2">"Predictions made on input data. Time taken to predict: </span><span class="si">%0.4f</span><span class="s2"> seconds"</span><span class="p">,</span>
-        <span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span>
-    <span class="p">)</span>
-
-    <span class="n">df</span><span class="p">[</span><span class="n">output_col</span><span class="p">]</span> <span class="o">=</span> <span class="n">preds</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Predictions appended to original data"</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">df</span></div>
+    <span class="k">return</span> <span class="n">data</span></div>
 </pre></div>
       </article>
       <footer>

@@ -12,7 +12,13 @@ logger = logging.getLogger(__name__)
 
 def evaluate_model(results_data, y_true_colname, y_pred_colname):
     """
-    Evaluate performance against a variety of regression metrics.
+    Evaluate performance against a variety of regression metrics:
+
+    - MSE
+    - RMSE
+    - MAD
+    - R-squared
+    - Max error
 
     Args:
         results_data (:obj:`pandas.DataFrame`): DataFrame containing (at least)

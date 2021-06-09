@@ -19,7 +19,7 @@ make html
 If new files are added, the autodoc files should be recreated by running
 
 ```bash
-sphinx-apidoc -f -o source/ ../ 
+sphinx-apidoc -f -o source/ ../
 ```
 
 If new directories are added, the above command should be run for the new directory, and the directory needs to be added to `source/index.rst`.
