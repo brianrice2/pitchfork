@@ -1,4 +1,4 @@
-.PHONY: help raw_data cleaned_data model pipeline predictions empty_database ingest_dataset app reproducibility_tests cleanup
+.PHONY: help raw_data cleaned_data model predictions evaluate pipeline empty_database ingest_dataset app unit_tests reproducibility_tests cleanup
 
 PIPELINE_CONFIG="config/pipeline.yaml"
 S3_BUCKET="s3://2021-msia423-rice-brian"
@@ -17,16 +17,18 @@ help:
 	@echo '       Clean data for modeling'
 	@echo 'make model'
 	@echo '       Train a model pipeline'
-	@echo 'make pipeline'
-	@echo '       Clean data and train a model'
 	@echo 'make predictions'
 	@echo '       Make predictions on an input dataset'
+	@echo 'make pipeline'
+	@echo '       Clean data and train/evaluate a model'
 	@echo 'make empty_database'
 	@echo '       Create an empty MySQL/SQLite database'
 	@echo 'make ingest_dataset'
 	@echo '       Add albums from file into database'
 	@echo 'make app'
 	@echo '       Clean data, model, create and populate DB, and run web app'
+	@echo 'make unit_tests'
+	@echo '       Run pytest unit tests'
 	@echo 'make reproducibility_tests'
 	@echo '       Run additional reproducibility tests'
 	@echo 'make cleanup'
