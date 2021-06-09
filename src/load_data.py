@@ -77,8 +77,10 @@ def upload_file_to_s3(local_path, s3path):
     try:
         bucket.upload_file(local_path, s3_just_path)
     except botocore.exceptions.NoCredentialsError:
-        logger.error(MISSING_AWS_CREDENTIALS_MSG)
-        logger.error("Data not uploaded")
+        logger.warning(MISSING_AWS_CREDENTIALS_MSG)
+        logger.warning("Data not uploaded")
+    except boto3.exceptions.S3UploadFailedError:
+        logger.warning("Don't have appropriate permissions to upload. Skipped upload.")
     else:
         logger.info("Data uploaded from %s to %s", local_path, s3path)
 
@@ -101,8 +103,10 @@ def upload_to_s3_pandas(local_path, s3path, sep=","):
     try:
         data.to_csv(s3path, sep=sep, index=False)
     except botocore.exceptions.NoCredentialsError:
-        logger.error(MISSING_AWS_CREDENTIALS_MSG)
-        logger.error("Data not uploaded")
+        logger.warning(MISSING_AWS_CREDENTIALS_MSG)
+        logger.warning("Data not uploaded")
+    except boto3.exceptions.S3UploadFailedError:
+        logger.warning("Don't have appropriate permissions to upload. Skipped upload.")
     else:
         logger.info("Data uploaded from %s to %s", local_path, s3path)
 
