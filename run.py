@@ -11,6 +11,7 @@ import argparse
 import logging.config
 import pkg_resources
 
+import botocore
 import pandas as pd
 import yaml
 
@@ -310,8 +311,12 @@ if __name__ == "__main__":
         # Only the output from `model` cannot be saved in CSV format (returns a TMO)
         if args.output:
             if args.step != "model":
-                output.to_csv(args.output, index=False)
-                logger.info("Output saved to %s", args.output)
+                try:
+                    output.to_csv(args.output, index=False)
+                except botocore.exceptions.ClientError:
+                    logger.warning("Failed to upload to S3 (ad permissions). Skipped.")
+                else:
+                    logger.info("Output saved to %s", args.output)
 
                 if args.local_copy:
                     output.to_csv(args.local_copy, index=False)
