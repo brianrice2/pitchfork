@@ -40,7 +40,7 @@ FILL_MISSING_RECORDLABEL_DATA = (
 )
 
 
-def clean_dataset(data, config):
+def clean_dataset(data: pd.DataFrame, config) -> pd.DataFrame:
     """
     Perform full data processing pipeline.
 
@@ -81,7 +81,11 @@ def clean_dataset(data, config):
     return data
 
 
-def convert_str_to_datetime(data, colname="reviewdate", datetime_format="%B %d %Y"):
+def convert_str_to_datetime(
+    data: pd.DataFrame,
+    colname: str = "reviewdate",
+    datetime_format: str = "%B %d %Y"
+) -> pd.DataFrame:
     """
     Parse a string column to datetime format.
 
@@ -108,7 +112,7 @@ def convert_str_to_datetime(data, colname="reviewdate", datetime_format="%B %d %
     return data
 
 
-def convert_datetime_to_date(data, colname="reviewdate"):
+def convert_datetime_to_date(data: pd.DataFrame, colname: str = "reviewdate") -> pd.DataFrame:
     """
     Remove the time component of a datetime column.
 
@@ -132,7 +136,11 @@ def convert_datetime_to_date(data, colname="reviewdate"):
     return data
 
 
-def approximate_missing_year(data, fill_column="releaseyear", approximate_with="reviewdate"):
+def approximate_missing_year(
+        data: pd.DataFrame,
+        fill_column: str = "releaseyear",
+        approximate_with: str = "reviewdate"
+) -> pd.DataFrame:
     """
     Fill missing values in one column with the year of another datetime column.
 
@@ -165,7 +173,11 @@ def approximate_missing_year(data, fill_column="releaseyear", approximate_with="
     return data
 
 
-def fill_missing_manually(data, colname="recordlabel", fill_with=FILL_MISSING_RECORDLABEL_DATA):
+def fill_missing_manually(
+        data: pd.DataFrame,
+        colname: str = "recordlabel",
+        fill_with: tuple = FILL_MISSING_RECORDLABEL_DATA
+) -> pd.DataFrame:
     """
     Manually fill missing values.
 
@@ -196,7 +208,7 @@ def fill_missing_manually(data, colname="recordlabel", fill_with=FILL_MISSING_RE
     return data
 
 
-def strip_whitespace(data, colname="recordlabel"):
+def strip_whitespace(data: pd.DataFrame, colname: str = "recordlabel") -> pd.DataFrame:
     """
     Trim extra whitespace from values in a column.
 
@@ -218,7 +230,7 @@ def strip_whitespace(data, colname="recordlabel"):
     return data
 
 
-def bucket_values_together(data, colname, values, replace_with):
+def bucket_values_together(data: pd.DataFrame, colname: str, values: list, replace_with: list) -> pd.DataFrame:
     """
     Replace one or more values with a single value.
 
@@ -263,7 +275,7 @@ def bucket_values_together(data, colname, values, replace_with):
     return data
 
 
-def fill_na_with_str(data, colname="genre", fill_string="Missing"):
+def fill_na_with_str(data: pd.DataFrame, colname: str= "genre", fill_string: str = "Missing") -> pd.DataFrame:
     """
     Fill NA values with a string value.
 

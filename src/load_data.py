@@ -5,11 +5,12 @@ Copyright 2020, Chloe Mawer
 """
 import logging.config
 import re
-import requests
+import typing
 
 import boto3
 import botocore
 import pandas as pd
+import requests
 
 logger = logging.getLogger(__name__)
 
@@ -28,7 +29,7 @@ and AWS_SECRET_ACCESS_KEY environment variables."""
 RAW_DATA_SOURCE_URL = "https://zenodo.org/record/3603330/files/output-data.csv?download=1"
 
 
-def parse_s3(s3path):
+def parse_s3(s3path: str) -> typing.Tuple[str, str]:
     """
     Split an S3 filepath into the bucket name and subsequent path.
 
@@ -58,7 +59,7 @@ def parse_s3(s3path):
     """)
 
 
-def upload_file_to_s3(local_path, s3path):
+def upload_file_to_s3(local_path: str, s3path: str) -> None:
     """
     Upload a local file to S3.
 
@@ -85,7 +86,7 @@ def upload_file_to_s3(local_path, s3path):
         logger.info("Data uploaded from %s to %s", local_path, s3path)
 
 
-def upload_to_s3_pandas(local_path, s3path, sep=","):
+def upload_to_s3_pandas(local_path: str, s3path: str, sep: str = ",") -> None:
     """
     Upload a `pandas.DataFrame` to S3.
 
@@ -111,7 +112,7 @@ def upload_to_s3_pandas(local_path, s3path, sep=","):
         logger.info("Data uploaded from %s to %s", local_path, s3path)
 
 
-def download_file_from_s3(local_path, s3path):
+def download_file_from_s3(local_path: str, s3path: str) -> None:
     """
     Download a file from S3.
 
@@ -136,7 +137,7 @@ def download_file_from_s3(local_path, s3path):
         logger.info("Data downloaded from %s to %s", s3path, local_path)
 
 
-def download_from_s3_pandas(local_path, s3path, sep=","):
+def download_from_s3_pandas(local_path: str, s3path: str, sep: str = ",") -> None:
     """
     Download a `pandas.DataFrame` from S3.
 
@@ -159,7 +160,7 @@ def download_from_s3_pandas(local_path, s3path, sep=","):
         logger.info("Data downloaded from %s to %s", s3path, local_path)
 
 
-def download_raw_data(local_destination):
+def download_raw_data(local_destination: str) -> None:
     """
     Download the original dataset from source.
 

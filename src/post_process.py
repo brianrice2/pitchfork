@@ -2,13 +2,18 @@
 Analyze a trained model.
 """
 import logging
+import typing
 
 import pandas as pd
+import sklearn.pipeline
 
 logger = logging.getLogger(__name__)
 
 
-def get_feature_importance(trained_pipeline, numeric_features):
+def get_feature_importance(
+        trained_pipeline: sklearn.pipeline.Pipeline,
+        numeric_features: typing.List[str]
+) -> pd.Series:
     """
     Get feature importance measures from a trained model.
 

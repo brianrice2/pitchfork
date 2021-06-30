@@ -5,12 +5,15 @@ import logging
 from copy import deepcopy
 from time import time
 
+import pandas as pd
+import sklearn.pipeline
+
 from src import model
 
 logger = logging.getLogger(__name__)
 
 
-def get_predictions(trained_model, input_data):
+def get_predictions(trained_model: sklearn.pipeline.Pipeline, input_data: pd.DataFrame) -> list:
     """
     Get predicted values for input data.
 
@@ -41,7 +44,11 @@ def get_predictions(trained_model, input_data):
     return preds
 
 
-def append_predictions(trained_model, input_data, output_col="preds"):
+def append_predictions(
+        trained_model: sklearn.pipeline.Pipeline,
+        input_data: pd.DataFrame,
+        output_col: str = "preds"
+) -> pd.DataFrame:
     """
     Append predictions to an existing input DataFrame.
 

@@ -10,7 +10,7 @@ from sklearn.metrics import max_error, mean_squared_error, median_absolute_error
 logger = logging.getLogger(__name__)
 
 
-def evaluate_model(results_data, y_true_colname, y_pred_colname):
+def evaluate_model(results_data: pd.DataFrame, y_true_colname: str, y_pred_colname: str) -> pd.DataFrame:
     """
     Evaluate performance against a variety of regression metrics:
 

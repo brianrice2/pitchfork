@@ -5,13 +5,14 @@ import logging
 import os
 
 import joblib
+import sklearn.pipeline
 
 from src import load_data
 
 logger = logging.getLogger(__name__)
 
 
-def save_pipeline(pipeline, save_path):
+def save_pipeline(pipeline: sklearn.pipeline.Pipeline, save_path: str) -> None:
     """
     Serialize a fitted model pipeline.
 
@@ -38,7 +39,7 @@ def save_pipeline(pipeline, save_path):
     logger.info("Saved model to %s", save_path)
 
 
-def load_pipeline(load_path):
+def load_pipeline(load_path: str) -> sklearn.pipeline.Pipeline:
     """
     Deserialize a fitted model pipeline.
 

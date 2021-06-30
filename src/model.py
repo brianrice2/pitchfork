@@ -2,9 +2,11 @@
 Build, fit, and evaluate predictive models.
 """
 import logging
+import typing
 from time import time
 
 import pandas as pd
+import sklearn.compose
 from numpy import NaN
 from sklearn.compose import ColumnTransformer
 from sklearn.ensemble import GradientBoostingRegressor
@@ -25,7 +27,10 @@ PREDICTION_COLUMNS = [
 ]
 
 
-def split_predictors_response(data, target_col="score"):
+def split_predictors_response(
+        data: pd.DataFrame,
+        target_col: str = "score"
+) -> typing.Tuple[pd.DataFrame, pd.DataFrame]:
     """Separate predictor variables from response variable."""
     features = data.drop(target_col, axis=1)
     target = data[target_col]
@@ -39,7 +44,12 @@ def split_predictors_response(data, target_col="score"):
     return features, target
 
 
-def split_train_val_test(features, target, train_val_test_ratio, **kwargs):
+def split_train_val_test(
+        features: pd.DataFrame,
+        target: list,
+        train_val_test_ratio: str,
+        **kwargs
+) -> typing.Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     """
     Partition dataset into training, validation, and testing splits.
 
@@ -95,7 +105,7 @@ def split_train_val_test(features, target, train_val_test_ratio, **kwargs):
     return X_train, X_test, y_train, y_test
 
 
-def _parse_ratio(ratio):
+def _parse_ratio(ratio: str) -> typing.List[float]:
     """Convert a train-val-test ratio from X:Y:Z to list of proportions in [0,1]."""
     sizes = [float(n) for n in ratio.split(":")]
 
@@ -110,7 +120,12 @@ def _parse_ratio(ratio):
     return proportions
 
 
-def train_pipeline(X_train, y_train, preprocessor, model):
+def train_pipeline(
+        X_train: pd.DataFrame,
+        y_train: list,
+        preprocessor: sklearn.compose.ColumnTransformer,
+        model: sklearn.base.BaseEstimator
+) -> sklearn.pipeline.Pipeline:
     """
     Create and fit a preprocessing --> modeling pipeline.
 
@@ -139,7 +154,11 @@ def train_pipeline(X_train, y_train, preprocessor, model):
     return pipe
 
 
-def make_preprocessor(numeric_features, categorical_features, handle_unknown):
+def make_preprocessor(
+        numeric_features: typing.List[str],
+        categorical_features: typing.List[str],
+        handle_unknown: str
+) -> sklearn.compose.ColumnTransformer:
     """
     Define preprocessing steps for input features.
 
@@ -168,7 +187,7 @@ def make_preprocessor(numeric_features, categorical_features, handle_unknown):
     return preprocessor
 
 
-def make_model(**kwargs):
+def make_model(**kwargs) -> sklearn.base.BaseEstimator:
     """
     Create an untrained GBT model for use in a `sklearn.pipeline.Pipeline`.
 
@@ -183,7 +202,7 @@ def make_model(**kwargs):
     return model
 
 
-def parse_dict_to_dataframe(form_dict):
+def parse_dict_to_dataframe(form_dict: dict) -> pd.DataFrame:
     """
     Parse a dictionary to `pandas.DataFrame` format.
 
@@ -207,7 +226,7 @@ def parse_dict_to_dataframe(form_dict):
     return data
 
 
-def validate_dataframe(data, output_cols=PREDICTION_COLUMNS):
+def validate_dataframe(data: pd.DataFrame, output_cols: typing.List = PREDICTION_COLUMNS) -> pd.DataFrame:
     """
     Align a DataFrame with model pipeline's required order and names.
 
