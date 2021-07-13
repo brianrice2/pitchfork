@@ -135,9 +135,11 @@
 <span class="sd">Build, fit, and evaluate predictive models.</span>
 <span class="sd">"""</span>
 <span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">typing</span>
 <span class="kn">from</span> <span class="nn">time</span> <span class="kn">import</span> <span class="n">time</span>
 
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">sklearn.compose</span>
 <span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">NaN</span>
 <span class="kn">from</span> <span class="nn">sklearn.compose</span> <span class="kn">import</span> <span class="n">ColumnTransformer</span>
 <span class="kn">from</span> <span class="nn">sklearn.ensemble</span> <span class="kn">import</span> <span class="n">GradientBoostingRegressor</span>
@@ -158,7 +160,10 @@
 <span class="p">]</span>
 
 
-<div class="viewcode-block" id="split_predictors_response"><a class="viewcode-back" href="../../src.html#src.model.split_predictors_response">[docs]</a><span class="k">def</span> <span class="nf">split_predictors_response</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">target_col</span><span class="o">=</span><span class="s2">"score"</span><span class="p">):</span>
+<div class="viewcode-block" id="split_predictors_response"><a class="viewcode-back" href="../../src.html#src.model.split_predictors_response">[docs]</a><span class="k">def</span> <span class="nf">split_predictors_response</span><span class="p">(</span>
+        <span class="n">data</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+        <span class="n">target_col</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"score"</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Tuple</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]:</span>
     <span class="sd">"""Separate predictor variables from response variable."""</span>
     <span class="n">features</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">target_col</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
     <span class="n">target</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">target_col</span><span class="p">]</span>
@@ -172,7 +177,12 @@
     <span class="k">return</span> <span class="n">features</span><span class="p">,</span> <span class="n">target</span></div>
 
 
-<div class="viewcode-block" id="split_train_val_test"><a class="viewcode-back" href="../../src.html#src.model.split_train_val_test">[docs]</a><span class="k">def</span> <span class="nf">split_train_val_test</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">train_val_test_ratio</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="split_train_val_test"><a class="viewcode-back" href="../../src.html#src.model.split_train_val_test">[docs]</a><span class="k">def</span> <span class="nf">split_train_val_test</span><span class="p">(</span>
+        <span class="n">features</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+        <span class="n">target</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
+        <span class="n">train_val_test_ratio</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Tuple</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]:</span>
     <span class="sd">"""</span>
 <span class="sd">    Partition dataset into training, validation, and testing splits.</span>
 
@@ -228,7 +238,7 @@
     <span class="k">return</span> <span class="n">X_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_test</span></div>
 
 
-<span class="k">def</span> <span class="nf">_parse_ratio</span><span class="p">(</span><span class="n">ratio</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_parse_ratio</span><span class="p">(</span><span class="n">ratio</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
     <span class="sd">"""Convert a train-val-test ratio from X:Y:Z to list of proportions in [0,1]."""</span>
     <span class="n">sizes</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">ratio</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">":"</span><span class="p">)]</span>
 
@@ -243,7 +253,12 @@
     <span class="k">return</span> <span class="n">proportions</span>
 
 
-<div class="viewcode-block" id="train_pipeline"><a class="viewcode-back" href="../../src.html#src.model.train_pipeline">[docs]</a><span class="k">def</span> <span class="nf">train_pipeline</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">preprocessor</span><span class="p">,</span> <span class="n">model</span><span class="p">):</span>
+<div class="viewcode-block" id="train_pipeline"><a class="viewcode-back" href="../../src.html#src.model.train_pipeline">[docs]</a><span class="k">def</span> <span class="nf">train_pipeline</span><span class="p">(</span>
+        <span class="n">X_train</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+        <span class="n">y_train</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
+        <span class="n">preprocessor</span><span class="p">:</span> <span class="n">sklearn</span><span class="o">.</span><span class="n">compose</span><span class="o">.</span><span class="n">ColumnTransformer</span><span class="p">,</span>
+        <span class="n">model</span><span class="p">:</span> <span class="n">sklearn</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">BaseEstimator</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">sklearn</span><span class="o">.</span><span class="n">pipeline</span><span class="o">.</span><span class="n">Pipeline</span><span class="p">:</span>
     <span class="sd">"""</span>
 <span class="sd">    Create and fit a preprocessing --&gt; modeling pipeline.</span>
 
@@ -272,7 +287,11 @@
     <span class="k">return</span> <span class="n">pipe</span></div>
 
 
-<div class="viewcode-block" id="make_preprocessor"><a class="viewcode-back" href="../../src.html#src.model.make_preprocessor">[docs]</a><span class="k">def</span> <span class="nf">make_preprocessor</span><span class="p">(</span><span class="n">numeric_features</span><span class="p">,</span> <span class="n">categorical_features</span><span class="p">,</span> <span class="n">handle_unknown</span><span class="p">):</span>
+<div class="viewcode-block" id="make_preprocessor"><a class="viewcode-back" href="../../src.html#src.model.make_preprocessor">[docs]</a><span class="k">def</span> <span class="nf">make_preprocessor</span><span class="p">(</span>
+        <span class="n">numeric_features</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="n">categorical_features</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="n">handle_unknown</span><span class="p">:</span> <span class="nb">str</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">sklearn</span><span class="o">.</span><span class="n">compose</span><span class="o">.</span><span class="n">ColumnTransformer</span><span class="p">:</span>
     <span class="sd">"""</span>
 <span class="sd">    Define preprocessing steps for input features.</span>
 
@@ -301,7 +320,7 @@
     <span class="k">return</span> <span class="n">preprocessor</span></div>
 
 
-<div class="viewcode-block" id="make_model"><a class="viewcode-back" href="../../src.html#src.model.make_model">[docs]</a><span class="k">def</span> <span class="nf">make_model</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="make_model"><a class="viewcode-back" href="../../src.html#src.model.make_model">[docs]</a><span class="k">def</span> <span class="nf">make_model</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">sklearn</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">BaseEstimator</span><span class="p">:</span>
     <span class="sd">"""</span>
 <span class="sd">    Create an untrained GBT model for use in a `sklearn.pipeline.Pipeline`.</span>
 
@@ -316,7 +335,7 @@
     <span class="k">return</span> <span class="n">model</span></div>
 
 
-<div class="viewcode-block" id="parse_dict_to_dataframe"><a class="viewcode-back" href="../../src.html#src.model.parse_dict_to_dataframe">[docs]</a><span class="k">def</span> <span class="nf">parse_dict_to_dataframe</span><span class="p">(</span><span class="n">form_dict</span><span class="p">):</span>
+<div class="viewcode-block" id="parse_dict_to_dataframe"><a class="viewcode-back" href="../../src.html#src.model.parse_dict_to_dataframe">[docs]</a><span class="k">def</span> <span class="nf">parse_dict_to_dataframe</span><span class="p">(</span><span class="n">form_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
     <span class="sd">"""</span>
 <span class="sd">    Parse a dictionary to `pandas.DataFrame` format.</span>
 
@@ -340,7 +359,7 @@
     <span class="k">return</span> <span class="n">data</span></div>
 
 
-<div class="viewcode-block" id="validate_dataframe"><a class="viewcode-back" href="../../src.html#src.model.validate_dataframe">[docs]</a><span class="k">def</span> <span class="nf">validate_dataframe</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">output_cols</span><span class="o">=</span><span class="n">PREDICTION_COLUMNS</span><span class="p">):</span>
+<div class="viewcode-block" id="validate_dataframe"><a class="viewcode-back" href="../../src.html#src.model.validate_dataframe">[docs]</a><span class="k">def</span> <span class="nf">validate_dataframe</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">output_cols</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span> <span class="o">=</span> <span class="n">PREDICTION_COLUMNS</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
     <span class="sd">"""</span>
 <span class="sd">    Align a DataFrame with model pipeline's required order and names.</span>
 

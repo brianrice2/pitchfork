@@ -138,12 +138,15 @@
 <span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
 <span class="kn">from</span> <span class="nn">time</span> <span class="kn">import</span> <span class="n">time</span>
 
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">sklearn.pipeline</span>
+
 <span class="kn">from</span> <span class="nn">src</span> <span class="kn">import</span> <span class="n">model</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="get_predictions"><a class="viewcode-back" href="../../src.html#src.score_model.get_predictions">[docs]</a><span class="k">def</span> <span class="nf">get_predictions</span><span class="p">(</span><span class="n">trained_model</span><span class="p">,</span> <span class="n">input_data</span><span class="p">):</span>
+<div class="viewcode-block" id="get_predictions"><a class="viewcode-back" href="../../src.html#src.score_model.get_predictions">[docs]</a><span class="k">def</span> <span class="nf">get_predictions</span><span class="p">(</span><span class="n">trained_model</span><span class="p">:</span> <span class="n">sklearn</span><span class="o">.</span><span class="n">pipeline</span><span class="o">.</span><span class="n">Pipeline</span><span class="p">,</span> <span class="n">input_data</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
     <span class="sd">"""</span>
 <span class="sd">    Get predicted values for input data.</span>
 
@@ -174,7 +177,11 @@
     <span class="k">return</span> <span class="n">preds</span></div>
 
 
-<div class="viewcode-block" id="append_predictions"><a class="viewcode-back" href="../../src.html#src.score_model.append_predictions">[docs]</a><span class="k">def</span> <span class="nf">append_predictions</span><span class="p">(</span><span class="n">trained_model</span><span class="p">,</span> <span class="n">input_data</span><span class="p">,</span> <span class="n">output_col</span><span class="o">=</span><span class="s2">"preds"</span><span class="p">):</span>
+<div class="viewcode-block" id="append_predictions"><a class="viewcode-back" href="../../src.html#src.score_model.append_predictions">[docs]</a><span class="k">def</span> <span class="nf">append_predictions</span><span class="p">(</span>
+        <span class="n">trained_model</span><span class="p">:</span> <span class="n">sklearn</span><span class="o">.</span><span class="n">pipeline</span><span class="o">.</span><span class="n">Pipeline</span><span class="p">,</span>
+        <span class="n">input_data</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+        <span class="n">output_col</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"preds"</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
     <span class="sd">"""</span>
 <span class="sd">    Append predictions to an existing input DataFrame.</span>
 
