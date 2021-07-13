@@ -1,0 +1,2 @@
+# Ignore Jupyter notebooks from language breakdown
+*.ipynb linguist-documentation
