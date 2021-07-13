@@ -1,3 +1,5 @@
+[![Documentation Status](https://readthedocs.org/projects/pitchfork/badge/?version=latest)](https://pitchfork.readthedocs.io/en/latest/?badge=latest)
+
 # p4k.ai
 
 Developer: Brian Rice
