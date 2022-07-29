@@ -7,7 +7,7 @@ furo==2021.4.11b34
 joblib==1.0.1
 matplotlib==3.4.1
 mypy==0.902
-numpy==1.19.5
+numpy==1.22.0
 pandas==1.2.4
 pymysql==0.9.3
 pytest==5.4.2
