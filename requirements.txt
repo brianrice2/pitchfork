@@ -1,6 +1,6 @@
 boto3==1.12.32
 botocore==1.15.32
-Flask==1.1.1
+Flask==2.3.2
 Flask-SQLAlchemy==2.4.1
 fsspec==0.8.4
 furo==2021.4.11b34
